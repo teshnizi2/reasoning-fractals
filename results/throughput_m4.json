@@ -57,6 +57,13 @@
    "seconds": 74.48158478736877,
    "rollouts_per_s": 0.859272801226078,
    "gpu_util_after_pct": 98
+  },
+  {
+   "label": "torchfn-cpu",
+   "batch": 8,
+   "seconds": 21.83539319038391,
+   "rollouts_per_s": 0.3663776479886389,
+   "gpu_util_after_pct": 17
   }
  ]
 }

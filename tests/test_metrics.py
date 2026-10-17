@@ -45,4 +45,4 @@ def test_adjacent_gap_stats_counts_neighbour_differences():
     g = M.adjacent_gap_stats(s, thresholds=(1, 5, 10))
     # horizontal pairs: |2-2|=0 |2-9|=7 |9-9|=0 | |2-12|=10 |12-12|=0 |12-2|=10 ; vertical: 0 10 3 7
     assert g["n_pairs"] == 10 and g["max_gap"] == 10
-    assert g["frac_ge"] == {"1": 7 / 10, "5": 5 / 10, "10": 3 / 10}
+    assert g["frac_ge"] == {"1": 6 / 10, "5": 5 / 10, "10": 3 / 10}
