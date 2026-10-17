@@ -248,8 +248,10 @@ def tables_results(root: Path, N: dict[str, Any]) -> dict[str, str]:
         if sc.get("oscan"):
             o = sc["oscan"]
             lo = min(v["frac_solved_min"] for v in o["puzzles"].values())
-            rows.append(["outcome maps", f"{o['windows']} windows of 48 x 48 around native-scale base points, {len(o['puzzles'])} puzzles (job {o['job']})",
-                         "; ".join(f"{k}: {fmt(v['frac_solved_min'], 'pct0')}-{fmt(v['frac_solved_max'], 'pct0')} solved, up to {fmt(v['distinct_final_max'], 'int')} distinct final grids" for k, v in o["puzzles"].items())])
+            rows.append(["outcome maps", f"{o['windows']} windows of 48 x 48 around native-scale base points, {len(o['puzzles'])} puzzles (job {o['job']}, cancelled at 15 of 32 windows)",
+                         "; ".join(f"{'the hero puzzle' if k == 'asset' else 'puzzle #' + k[3:]}: {fmt(v['frac_solved_min'], 'pct1')}-{fmt(v['frac_solved_max'], 'pct1')} solved, "
+                                    f"up to {fmt(v['distinct_final_max'], 'int')} distinct final grids, neighbouring pixels share their outcome {fmt(v['neighbour_agree_mean'], 'pct0')} of the time "
+                                    f"(independent pixels would: {fmt(v['independent_agree_mean'], 'pct0')})" for k, v in o["puzzles"].items())])
         T["scans"] = md_table(["scan", "what was run", "result"], rows)
     th = []
     if "m4.cpu_rps" in N:

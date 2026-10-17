@@ -139,6 +139,12 @@ The hero slice stays within distance 1.4 of the all-zero state, while EqR's own 
 
 {{table:scans}}
 
+![outcome maps at native scale](results/figures/oscan_sheet.png)
+
+*Each tile is a 48 x 48 window of a random 2-D slice around a native-scale starting point, half-width h = 10, 30, 100, 300 (left to right, seeds 0 then 1). Top two
+rows: the hero's puzzle, coloured by settle time: rings and spirals with speckle, all solved. Bottom row: puzzle #72 of the scan, where the model fails about
+half the time: white = still changing at loop 24, blue-green = solved (darker = faster). Outcomes there look like noise.*
+
 So EqR is far from perfect on Sudoku-Extreme from its own random starts, but the *wrong* endings are not stable wrong answers: they wander. That is why the
 explorer calls a pixel that is still changing after 24 loops `UNSETTLED`, and reserves `STUCK` for a wrong grid that stopped changing.
 

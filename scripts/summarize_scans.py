@@ -5,7 +5,7 @@
 
 pscan  (job 5246311): 5565 Sudoku-Extreme puzzles x 16 EqR-style random starts (truncated normal, norm ~223), 24 loops.
 longrun (job 5246477): 400 starts that ended unsolved in the scan, re-run for 96 loops.
-oscan  (job 5246477): small outcome maps (48x48) of 2-D slices around native-scale base points.
+oscan  (job 5246477, cancelled after 15 of 32 windows to free the slot): outcome maps (48x48) of 2-D slices around native-scale base points.
 """
 from __future__ import annotations
 
@@ -44,10 +44,17 @@ def main() -> None:
         rows = json.loads(op.read_text())
         by = {}
         for r in rows:
+            z = np.load(ROOT / "data/cluster/oscan" / f"{r['puzzle']}_s{r['seed']}_{r['zl']}_h{r['h']:g}.npz")
+            sv = z["solved"].astype(bool)
+            p = float(sv.mean())
+            r["neighbour_agree"] = float(np.concatenate([(sv[:, 1:] == sv[:, :-1]).ravel(), (sv[1:] == sv[:-1]).ravel()]).mean())
+            r["independent_agree"] = p * p + (1 - p) ** 2  # what independent pixels with the same solved fraction would give
             by.setdefault(r["puzzle"], []).append(r)
         out["oscan"] = dict(job="5246477", windows=len(rows),
                             puzzles={k: dict(windows=len(v), frac_solved_min=min(x["frac_solved"] for x in v), frac_solved_max=max(x["frac_solved"] for x in v),
-                                             frac_censored_max=max(x["frac_censored"] for x in v), distinct_final_max=max(x["n_distinct_final"] for x in v))
+                                             frac_censored_max=max(x["frac_censored"] for x in v), distinct_final_max=max(x["n_distinct_final"] for x in v),
+                                             neighbour_agree_mean=float(np.mean([x["neighbour_agree"] for x in v])),
+                                             independent_agree_mean=float(np.mean([x["independent_agree"] for x in v])))
                                      for k, v in by.items()},
                             rows=rows)
     (ROOT / "results/scans.json").write_text(json.dumps(out, indent=1))
