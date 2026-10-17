@@ -27,7 +27,7 @@ def main() -> None:
     ap.add_argument("--hero", required=True)
     ap.add_argument("--keyframes", nargs="*", default=[])
     ap.add_argument("--out", default="site/data")
-    ap.add_argument("--ways", default="loopscape,series")
+    ap.add_argument("--ways", default="series,loopscape", help="colourways; the first is the explorer default")
     ap.add_argument("--format", default="webp", choices=["webp", "png"])
     a = ap.parse_args()
     dirs = [ROOT / a.hero] + [ROOT / k for k in sorted(a.keyframes)]
