@@ -24,6 +24,29 @@ click-a-pixel explorer, and measures how far the claims reach.
 | `RUNS.md` | one row per ALICE experiment (job ids, config, metric, verdict, GPU-hours) |
 | `tests/` | `pytest` suite (about 120 tests; the engine tests need the EqR weights under `data/raw`) |
 
+## How the picture is made
+
+![how it works](docs/how-it-works.svg)
+
+* **The model.** EqR (Equilibrium Reasoners, Huang, Geng & Kolter) keeps two latent states `z_H`, `z_L` of 97 x 512
+  numbers (16 register tokens + the 81 Sudoku cells). One *loop* is 3 x (6 updates of `z_L`, then one of `z_H`) with a
+  0.95 relaxation; after every loop `lm_head(z_H)` is decoded into a 9x9 grid. With its noise switched off (as loopscape
+  does) the whole thing is a deterministic map of the initial latent, run for 24 loops.
+* **The slice.** `z_H = a*u + b*v`, `z_L = 0`, with `u, v` a random orthonormal pair of directions in the 49,664-dimensional
+  space (`torch.manual_seed(0)`, QR), `(a, b)` on a grid in [-1, 1]^2. Every pixel is one starting thought for the same
+  puzzle.
+* **Settle time** of a pixel: `24 - #{loops whose decoded grid equals the final grid}` (loopscape's definition; the
+  loop after which the grid never changes again is stored as well). Pixels still changing at the last loop are flagged
+  *censored*.
+* **Outcome** of a pixel: the final decoded grid. Each distinct grid gets an id (0 = the true solution), stored with its
+  count and whether it is a valid Sudoku.
+* **Colour.** Settle time is the luminance (dark = fast), the outcome picks the hue: two colourways in
+  `render/colour.py`, an indigo-teal-mint one close to loopscape's look and one in the series palette (midnight and
+  amber). A pixel that ends on a wrong grid is drawn from a separate, clearly different ramp.
+* **Early exit.** A start is retired once its decoded grid has equalled the true solution for three loops in a row; the
+  remaining loops are filled in. Checked against full 24-loop runs on 4096 pixels (`RUNS.md` row 4): identical settle
+  time for 99.93% of the pixels, 2.7x faster.
+
 ## What was reproduced
 
 The upstream repository ships a 1000x1000 basin image of EqR on one Sudoku-Extreme puzzle
