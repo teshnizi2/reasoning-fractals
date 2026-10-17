@@ -53,6 +53,23 @@ Final report is <= 300 words and must include ALICE job IDs, GPU-hours used, wha
   Files: results/repro/probe_r47_k14.{json,raw.npz,npz}. (Notebook puzzle probe, 576 px: results/repro/probe_k24.*)
 - ALICE: env built (torch 2.14.1+cu130, ~/reasoning-fractals/env), code pushed, smoke job 5246129 submitted.
 
+## ALICE results so far (A100 80GB PCIe, torch 2.14.1+cu130; job ids in RUNS.md)
+- Smoke job 5246129 (RUNS row 1): eager fp32 23.0 rollouts/s, tf32 ~60, bf16 ~90 (B 256-1024; compile tf32 83).
+- **fp32 only**: on 4096 random pixels of the asset grid, fp32 agrees with the upstream asset on 65.0% of pixels
+  (99.9% in the 33% of pixels where the asset is locally flat, 48.1% in the filaments; Spearman 0.90) and
+  reproduces its level histogram (e.g. 971 vs 971 pixels at level 1); tf32 gives 21.9% (interior 42%), bf16 13.6%
+  (rho ~ 0): reduced precision is a different realisation even in flat regions. All deliverable renders use fp32.
+- **Outcome is almost never wrong**: 48x48 scale scan (h = 1, 4, 16, 64, 256; tf32 so indicative only) gives >= 99.7%
+  solved everywhere, 1-2 distinct wrong grids; the few unsolved pixels are the ones still changing at loop 24
+  (censored), not stable wrong attractors. So the fractal is in SETTLE TIME, as in the paper. The "which wrong
+  answer" colouring needs a puzzle where the model is genuinely torn: scan job 5246238 looks for one (5565 puzzles
+  x 16 native random starts).
+- **Early exit validated on a 1024-pixel pilot**: retire a pixel once its decoded grid equals the true solution for 3
+  loops in a row; 0 mispredictions, mean 8.8 loops instead of 24 (63% saved). (Latent residuals converge too slowly
+  to be useful.) Implemented as Engine.rollout_early (compaction); to be validated at scale vs full runs.
+- Jobs in flight: 5246208 (repro250 array 0-3, fp32, asset grid stride 4), 5246207 (stock loopscape path on the same
+  pixels), 5246238 (puzzle scan).
+
 ## Compute facts (measured)
 - One 24-step rollout = 21 L-level calls/step x 2 layers; ~0.615 TFLOP fp32 per rollout.
 - Stock loopscape path: ~1 rollout/s on MPS (B=16..128), 0.53/s on CPU (10 cores). GPU is shared: fp32 matmul

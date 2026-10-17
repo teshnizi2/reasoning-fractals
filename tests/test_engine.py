@@ -180,3 +180,22 @@ def test_rollout_early_never_retires_a_pixel_that_is_not_on_the_solution(torchfn
 def test_rollout_early_is_exposed_on_the_engine_for_torchfn_only(mlx_engine):
     with pytest.raises(NotImplementedError):
         mlx_engine.rollout_early(np.zeros((1, 97, 512), dtype=np.float32), solution=_solution())
+
+
+def test_one_batch_can_mix_puzzles_and_matches_single_puzzle_engines():
+    from render import puzzles as P
+    from render import sudoku as S
+    from render import weights as W
+    from render.engine import Engine
+
+    e = Engine(P.ASSET.question, backend="torchfn", device="cpu")
+    z = np.random.default_rng(9).standard_normal((2, 97, 512)).astype(np.float32)
+    tokens = np.stack([W.puzzle_tokens(P.ASSET.question), W.puzzle_tokens(P.NOTEBOOK.question)])
+    sols = np.stack([np.array([int(c) for c in p.answer], dtype=np.int8) for p in (P.ASSET, P.NOTEBOOK)])
+    traces, retired = e.rollout_early(z, solution=sols, m=3, tokens=tokens)
+    assert traces.shape == (2, 24, 81)
+    for k, p in enumerate((P.ASSET, P.NOTEBOOK)):
+        single = Engine(p.question, backend="torchfn", device="cpu").rollout(z[k : k + 1])[0]
+        np.testing.assert_array_equal(traces[k], single)
+        assert retired[k] < 24
+        assert S.is_valid_solution("".join(str(v) for v in traces[k, -1]))
