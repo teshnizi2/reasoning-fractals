@@ -129,6 +129,14 @@ def load_numbers(root: Path) -> dict[str, Any]:
         N["kf.gpu_hours"] = sum((k.get("gpu_seconds") or 0) for k in kfs) / 3600.0
         if kfs:
             N["kf.zoom_max"] = max(k.get("zoom") or 0 for k in kfs)
+    sd = _read(root, "results/scale_dependence.json")
+    if sd:
+        for r in sd["rows"]:
+            m_ = re.match(r"keyframe x(\d+) ", r["label"])
+            if m_:
+                z = m_.group(1)
+                N.update({f"scale.kf{z}.boxes": r["boundary_box_fraction"], f"scale.kf{z}.sb": r["basin_entropy"], f"scale.kf{z}.d": r["boundary_dimension"],
+                          f"scale.kf{z}.pitch": r["pitch"]})
     gh = _read(root, "results/alice/gpu_hours.json")
     if gh:
         N.update({"gpu.jobs": gh["total"]["jobs"], "gpu.a100_hours": gh["total"]["a100_hours"], "gpu.raw_hours": gh["total"]["gpu_hours_raw"]})

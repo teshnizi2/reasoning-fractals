@@ -43,7 +43,7 @@ adds a deep-zoom video and a click-a-pixel explorer, and measures how far the cl
 
 ![the explorer on a desktop](media/explorer-desktop.png)
 
-`site/` is a static page (no build step): the hero as a zoomable canvas with 0 nested zoom layers up to ×[pending: kf.zoom_max].
+`site/` is a static page (no build step): the hero as a zoomable canvas with 5 nested zoom layers up to ×128.
 Click or tap any pixel to see the Sudoku that starting thought led to: the 9x9 grid, the givens, the cells that differ from the true solution
 (amber, true digit small), a `SOLVED` / `UNSETTLED` / `STUCK` badge, and how many loops it needed. A few featured starts replay their thinking loop by loop
 (traces from the cluster's own engine). The inspector also says whether the pixel sits in a flat region or in the rounding-sensitive speckle.
@@ -162,10 +162,14 @@ metric. All metrics depend on the pixel pitch and on the labels, so each row say
 
 ### 3. Zoom: the fractal is "slim"
 
-Zooming into the map does not reveal the same complexity again and again: the share of 5x5 boxes that touch a basin boundary falls as the pitch gets
-finer, and the finest windows turn into flat domains next to fine speckle. This is the scale dependence the paper calls a *slim* fractal (appendix E).
-The zoom video and the explorer therefore stop at ×[pending: kf.zoom_max]; a chase to ×5,120 found no coherent structure beyond that, only speckle
-next to a flat domain.
+Zooming into the map does not reveal the same complexity again and again. Around the zoom target the share of 5x5 boxes that touch a basin boundary stays
+high down to about ×32 (75% at ×8, 71% at ×32) and then falls: 45% at ×64 and 31% at ×128, with the basin entropy
+dropping from 0.83 to 0.30. What is left at the finest layers is a flat domain next to fine speckle (the boundary dimension of that speckle edge is 1.93, close
+to the 2 of pure noise). This is the scale dependence the paper calls a *slim* fractal (appendix E). The zoom video and the explorer therefore stop at ×128;
+a trial window at ×5,120 found no coherent structure, only speckle next to a flat domain.
+
+All rows use the same 11 labels (settle time clipped to 2..12, as in the upstream image). The keyframes are unbiased (centred on the zoom target);
+the chase windows were chosen for their boundary richness.
 
 | field | pixel pitch (plane units) | pixels | 5x5 boxes touching a boundary | S_b | boundary dim. |
 |---|---|---|---|---|---|
@@ -178,7 +182,12 @@ next to a flat domain.
 | upstream image, every pixel | 2.0×10^-3 | 1000x1000 | 76% | 1.14 | 1.852 |
 | hero 2048x2048, every 2nd pixel | 2.0×10^-3 | 1024x1024 | 76% | 1.14 | 1.853 |
 | hero 2048x2048, every pixel | 9.8×10^-4 | 2048x2048 | 69% | 1.02 | 1.860 |
+| keyframe x8 (540x675, centred on the zoom target) | 4.6×10^-4 | 675x540 | 75% | 1.07 | 1.890 |
+| keyframe x16 (540x675, centred on the zoom target) | 2.3×10^-4 | 675x540 | 70% | 0.96 | 1.938 |
 | window x80 (160x160, chase2) | 1.6×10^-4 | 160x160 | 44% | 0.47 | 1.922 |
+| keyframe x32 (540x675, centred on the zoom target) | 1.2×10^-4 | 675x540 | 71% | 0.83 | 1.932 |
+| keyframe x64 (540x675, centred on the zoom target) | 5.8×10^-5 | 675x540 | 45% | 0.46 | 1.927 |
+| keyframe x128 (540x675, centred on the zoom target) | 2.9×10^-5 | 675x540 | 31% | 0.30 | 1.934 |
 | window x640 (160x160, chase2) | 2.0×10^-5 | 160x160 | 48% | 0.28 | 1.901 |
 | window x5120 (160x160, chase2) | 2.5×10^-6 | 160x160 | 73% | 0.63 | 1.998 |
 
@@ -259,7 +268,7 @@ Time to render, from those rates (`scripts/cost_estimate.py`; early exit compute
 | 2048x2048 hero: 4,194,304 px | 982.4 h | 50.3 h | 18.5 h | 35.0 h |
 | zoom: 5 keyframes of 540x675: 1,822,500 px | 426.9 h | 21.8 h | 8.0 h | 15.2 h |
 
-The hero and keyframes actually cost 29.7 and 0.0 GPU-hours of tile time (summed over workers; full A100s and MIG slices mixed);
+The hero and keyframes actually cost 29.7 and 15.1 GPU-hours of tile time (summed over workers; full A100s and MIG slices mixed);
 everything in this repository, scans and checks included, used 25.3 A100-equivalent hours (101 jobs, `results/alice/gpu_hours.json`).
 
 ## Honest limits
@@ -272,7 +281,7 @@ everything in this repository, scans and checks included, used 25.3 A100-equival
 * **Pixel-exact only where the map is smooth.** See section 4: a second float32 implementation agrees on 97% of pixels with flat surroundings
   and on 26% of speckle pixels; a 1e-6 nudge leaves 97% of flat-region pixels and 18% of speckle pixels unchanged. The reproduction of the upstream figure is statistical in the filaments for the same reason.
 * **float32 only.** TF32 and bfloat16 give different pictures (21.9% and 13.6% pixel agreement with the upstream image).
-* **Slim fractal.** The structure thins out under magnification (section 3); nothing was rendered beyond ×[pending: kf.zoom_max].
+* **Slim fractal.** The structure thins out under magnification (section 3); nothing was rendered beyond ×128.
 * **Early exit** retires a start after 3 loops on the solution: identical settle times for 99.93% of 4,096 test pixels. Batch size matters (B=2048 is a
   different cuBLAS kernel regime and agrees on only 93.7%), so production used the validated batch of 1,024.
 * **Metrics depend on the pixel pitch** (and on the labels: here settle time, as in the paper).

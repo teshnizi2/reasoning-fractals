@@ -133,10 +133,14 @@ metric. All metrics depend on the pixel pitch and on the labels, so each row say
 
 ### 3. Zoom: the fractal is "slim"
 
-Zooming into the map does not reveal the same complexity again and again: the share of 5x5 boxes that touch a basin boundary falls as the pitch gets
-finer, and the finest windows turn into flat domains next to fine speckle. This is the scale dependence the paper calls a *slim* fractal (appendix E).
-The zoom video and the explorer therefore stop at ×{{kf.zoom_max|int}}; a chase to ×5,120 found no coherent structure beyond that, only speckle
-next to a flat domain.
+Zooming into the map does not reveal the same complexity again and again. Around the zoom target the share of 5x5 boxes that touch a basin boundary stays
+high down to about ×32 ({{scale.kf8.boxes|pct0}} at ×8, {{scale.kf32.boxes|pct0}} at ×32) and then falls: {{scale.kf64.boxes|pct0}} at ×64 and {{scale.kf128.boxes|pct0}} at ×128, with the basin entropy
+dropping from {{scale.kf32.sb|f2}} to {{scale.kf128.sb|f2}}. What is left at the finest layers is a flat domain next to fine speckle (the boundary dimension of that speckle edge is {{scale.kf128.d|f2}}, close
+to the 2 of pure noise). This is the scale dependence the paper calls a *slim* fractal (appendix E). The zoom video and the explorer therefore stop at ×{{kf.zoom_max|int}};
+a trial window at ×5,120 found no coherent structure, only speckle next to a flat domain.
+
+All rows use the same 11 labels (settle time clipped to 2..12, as in the upstream image). The keyframes are unbiased (centred on the zoom target);
+the chase windows were chosen for their boundary richness.
 
 {{table:scale}}
 

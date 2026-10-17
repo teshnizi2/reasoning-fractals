@@ -137,6 +137,36 @@
    "uncertainty_r2": 0.999185501195594
   },
   {
+   "label": "keyframe x8 (540x675, centred on the zoom target)",
+   "source": "kf03 (settle time clipped to 2..12)",
+   "pitch": 0.00046382189239332097,
+   "shape": [
+    675,
+    540
+   ],
+   "basin_entropy": 1.0684889622296092,
+   "boundary_basin_entropy": 1.4254340808223718,
+   "boundary_box_fraction": 0.7495884773662551,
+   "uncertainty_exponent": 0.11033854394117826,
+   "boundary_dimension": 1.8896614560588216,
+   "uncertainty_r2": 0.9914842078099297
+  },
+  {
+   "label": "keyframe x16 (540x675, centred on the zoom target)",
+   "source": "kf04 (settle time clipped to 2..12)",
+   "pitch": 0.00023191094619666049,
+   "shape": [
+    675,
+    540
+   ],
+   "basin_entropy": 0.9593531351784447,
+   "boundary_basin_entropy": 1.3782016662628558,
+   "boundary_box_fraction": 0.6960905349794239,
+   "uncertainty_exponent": 0.06208664993607438,
+   "boundary_dimension": 1.9379133500639256,
+   "uncertainty_r2": 0.9889707352212487
+  },
+  {
    "label": "window x80 (160x160, chase2)",
    "source": "chase2/level1 (settle time clipped to 2..12)",
    "pitch": 0.00015723270440251574,
@@ -150,6 +180,51 @@
    "uncertainty_exponent": 0.07752154696059739,
    "boundary_dimension": 1.9224784530394026,
    "uncertainty_r2": 0.9984379351345205
+  },
+  {
+   "label": "keyframe x32 (540x675, centred on the zoom target)",
+   "source": "kf05 (settle time clipped to 2..12)",
+   "pitch": 0.00011595547309833024,
+   "shape": [
+    675,
+    540
+   ],
+   "basin_entropy": 0.8258213109992608,
+   "boundary_basin_entropy": 1.1620958126019905,
+   "boundary_box_fraction": 0.7106310013717421,
+   "uncertainty_exponent": 0.06825660064260233,
+   "boundary_dimension": 1.9317433993573976,
+   "uncertainty_r2": 0.9983978440311524
+  },
+  {
+   "label": "keyframe x64 (540x675, centred on the zoom target)",
+   "source": "kf06 (settle time clipped to 2..12)",
+   "pitch": 5.797773654916512e-05,
+   "shape": [
+    675,
+    540
+   ],
+   "basin_entropy": 0.4550801266268335,
+   "boundary_basin_entropy": 1.005161073506928,
+   "boundary_box_fraction": 0.4527434842249657,
+   "uncertainty_exponent": 0.07253603054283005,
+   "boundary_dimension": 1.92746396945717,
+   "uncertainty_r2": 0.9968982092885946
+  },
+  {
+   "label": "keyframe x128 (540x675, centred on the zoom target)",
+   "source": "kf07 (settle time clipped to 2..12)",
+   "pitch": 2.898886827458256e-05,
+   "shape": [
+    675,
+    540
+   ],
+   "basin_entropy": 0.29672288397597024,
+   "boundary_basin_entropy": 0.9447957301527945,
+   "boundary_box_fraction": 0.31406035665294924,
+   "uncertainty_exponent": 0.06586016556807452,
+   "boundary_dimension": 1.9341398344319254,
+   "uncertainty_r2": 0.986258986999274
   },
   {
    "label": "window x640 (160x160, chase2)",

@@ -39,6 +39,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hero", default=None, help="merged hero run dir (field.npz)")
     ap.add_argument("--chase", nargs="*", default=[], help="chase run dirs (chase.json + level*.npz)")
+    ap.add_argument("--keyframes", nargs="*", default=[], help="merged keyframe run dirs (field.npz + spec.json)")
     ap.add_argument("--out", default="results/scale_dependence.json")
     a = ap.parse_args()
     rows = []
@@ -51,6 +52,12 @@ def main():
         h = np.clip(np.load(ROOT / a.hero / "field.npz")["settle_nb"], 2, 12)  # the upstream image's 11 levels (top one saturated)
         for s in (1, 2, 4, 8):
             rows.append(entry(f"hero 2048x2048, every {R_ord(s)} pixel" if s > 1 else "hero 2048x2048, every pixel", h[::s, ::s], 2.0 / 2047 * s, "hero (settle time clipped to 2..12)"))
+    for d in a.keyframes:
+        d = Path(ROOT / d)
+        spec = json.loads((d / "spec.json").read_text())
+        kf = np.clip(np.load(d / "field.npz")["settle_nb"], 2, 12)
+        rows.append(entry(f"keyframe x{spec['zoom']:g} ({kf.shape[1]}x{kf.shape[0]}, centred on the zoom target)", kf,
+                          2 * spec["half_width"] / (spec["nx"] - 1), f"{d.name} (settle time clipped to 2..12)"))
     for d in a.chase:
         d = Path(ROOT / d)
         meta = json.loads((d / "chase.json").read_text())
@@ -69,7 +76,7 @@ def main():
     for axi, key, lab in zip(ax, ("boundary_dimension", "basin_entropy", "boundary_box_fraction"),
                              ("boundary dimension 2 - alpha", "basin entropy S_b", "fraction of boxes touching a boundary")):
         axi.set_facecolor("#151a23")
-        for kind, col in (("upstream", "#8893ab"), ("ours", "#f59e0b"), ("hero", "#f59e0b"), ("window", "#7fdc9b")):
+        for kind, col in (("upstream", "#8893ab"), ("ours", "#f59e0b"), ("hero", "#f59e0b"), ("keyframe", "#fcc95a"), ("window", "#7fdc9b")):
             pts = [(r["pitch"], r[key]) for r in rows if r["label"].startswith(kind)]
             if pts:
                 axi.plot(*zip(*pts), "o-", color=col, label=kind, ms=6)
