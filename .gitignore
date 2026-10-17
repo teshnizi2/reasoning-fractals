@@ -17,3 +17,5 @@ site/data-big/
 site/data-proto/
 site/data-heroonly/
 data/local/
+# the videos are rebuilt by scripts/finish.sh 6 (50+ MB each)
+media/*.mp4
