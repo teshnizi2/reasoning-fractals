@@ -80,19 +80,28 @@ def main() -> None:
             cache[t] = ZV.render_frame(layers, cx, cy, z, (w, h), view_width_units=a.view_width)
         f = cache[t]
         sec = i / a.fps
-        if not a.no_counter:
-            z = cam.at(t)[2]
-            f = OV.draw_text(f, OV.zoom_label(z), (int(54 * sc), h - int(112 * sc)), int(38 * sc), "mono", (245, 158, 11))
-            f = OV.draw_text(f, "zoom", (int(56 * sc), h - int(146 * sc)), int(20 * sc), "mono", (190, 198, 214), alpha=0.85)
-        for c in caps:
-            al = OV.caption_alpha(sec, c["t_in"], c["t_out"])
-            if al > 0:
-                f = OV.draw_text(f, c["text"], (int(c["x"] * sc), int(c["y"] * sc)), int(c["size"] * sc), c.get("font", "sans"),
-                                 tuple(c.get("color", (232, 236, 245))), alpha=al)
+
+        def overlay(frame: np.ndarray) -> np.ndarray:
+            fh, fw = frame.shape[:2]
+            k = fw / 1080.0  # captions are specified for 1080-wide frames
+            if not a.no_counter:
+                z = cam.at(t)[2]
+                frame = OV.draw_text(frame, OV.zoom_label(z), (int(54 * k), fh - int(112 * k)), int(38 * k), "mono", (245, 158, 11))
+                frame = OV.draw_text(frame, "zoom", (int(56 * k), fh - int(146 * k)), int(20 * k), "mono", (190, 198, 214), alpha=0.85)
+            for c in caps:
+                al = OV.caption_alpha(sec, c["t_in"], c["t_out"])
+                y = c["y"] if fh > fw else c.get("y_square", c["y"])  # square cut can use its own caption rows
+                if al > 0:
+                    frame = OV.draw_text(frame, c["text"], (int(c["x"] * k), int(y * k)), int(c["size"] * k), c.get("font", "sans"),
+                                         tuple(c.get("color", (232, 236, 245))), alpha=al)
+            return frame
+
+        raw = f
+        f = overlay(raw)
         p1.stdin.write(f.tobytes())
         if p2:
             top = (h - w) // 2
-            p2.stdin.write(np.ascontiguousarray(f[top : top + w]).tobytes())
+            p2.stdin.write(np.ascontiguousarray(overlay(np.ascontiguousarray(raw[top : top + w]))).tobytes())
         if i % 60 == 0:
             print(f"frame {i}/{len(ts)}  zoom x{cam.at(t)[2]:.1f}", flush=True)
     for p in (p1, p2):
