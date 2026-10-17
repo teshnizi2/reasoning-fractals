@@ -67,26 +67,26 @@
     }
    }
   },
-  "zoom: 10 keyframes of 540x675": {
-   "pixels": 3645000,
+  "zoom: 5 keyframes of 540x675": {
+   "pixels": 1822500,
    "hours": {
     "m4_mlx_fp32": {
-     "hours": 853.7060514092444
+     "hours": 426.8530257046222
     },
     "m4_mps_torch_fp32": {
-     "hours": 972.2882386296988
+     "hours": 486.1441193148494
     },
     "a100_fp32_eager": {
-     "hours": 43.671566928969696
+     "hours": 21.835783464484848
     },
     "a100_fp32_eager_early_exit": {
-     "hours": 16.08629799904371
+     "hours": 8.043148999521854
     },
     "a100_mig4g_fp32_full": {
-     "hours": 82.61889399655047
+     "hours": 41.309446998275234
     },
     "a100_mig4g_fp32_full_early_exit": {
-     "hours": 30.43243562433973
+     "hours": 15.216217812169864
     }
    }
   }

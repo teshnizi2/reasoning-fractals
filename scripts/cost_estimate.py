@@ -37,7 +37,7 @@ if ee:
 jobs = {
     "1000x1000 (the upstream asset's resolution)": 1000 * 1000,
     "2048x2048 hero": 2048 * 2048,
-    "zoom: 10 keyframes of 540x675": 10 * 540 * 675,
+    "zoom: 5 keyframes of 540x675": 5 * 540 * 675,
 }
 steps = 24
 out = dict(script="scripts/cost_estimate.py", loops_per_rollout=steps, early_exit_mean_loops=mean_loops, rates=rates, estimates={})
