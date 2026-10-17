@@ -69,6 +69,9 @@ def main() -> None:
     layers, man = load_layers(pack, a.way)
     w, h = (int(v) for v in a.size.split("x"))
     pair = json.loads((ROOT / a.pair).read_text()) if a.pair else None
+    if pair:  # the pair's own samples must be the finest thing on screen: drop layers finer than the pair's layer
+        layers = [L for L in layers if L.pitch >= pair["pitch"] * 0.999]
+        assert layers and abs(layers[-1].pitch - pair["pitch"]) < 1e-9 * max(1.0, pair["pitch"]) + 1e-12, "pair.json does not match any layer of the pack"
     deep = layers[-1]
     end_px = a.end_px if a.end_px else (56.0 if pair else 2.0)
     zoom_end = (end_px / deep.pitch) / (w / a.view_width)
