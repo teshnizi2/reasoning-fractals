@@ -71,26 +71,32 @@ def main() -> None:
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from matplotlib.colors import ListedColormap
+    from PIL import Image
 
-    cmap = ListedColormap(colours / 255.0)
-    fig, ax = plt.subplots(1, 4, figsize=(20, 5.6), facecolor="#0e1117")
+    from render import colour as C
+
+    rgb = np.asarray(Image.open(ASSET).convert("RGB"))
+    pal = colours.astype(np.uint8)
+    flip = lambda a: a[::-1]  # our arrays have row 0 = y_min; show everything y-up like the asset itself  # noqa: E731
     panels = [
-        (ours_levels, f"ours  ({k}x{k}, EqR fp32 on A100)", cmap),
-        (asset_at, "upstream asset, same pixels", cmap),
-        (np.where(match, 0, 1), f"disagree (amber): {100 * (1 - agree):.1f}%", ListedColormap(["#151a23", "#f59e0b"])),
-        (levels[::-1, :], "upstream asset, full 1000x1000", cmap),
+        (f"ours: {k}x{k} pixels of the asset's grid\nEqR, fp32, A100", flip(pal[ours_levels])),
+        ("upstream asset, the same pixels", flip(pal[asset_at])),
+        (f"disagree (amber): {100 * (1 - agree):.1f}% of pixels\nflat regions {100 * (1 - match[interior].mean()):.2f}%, filaments {100 * (1 - match[~interior].mean()):.1f}%",
+         flip(np.where(match[..., None], np.array([21, 26, 35], np.uint8), np.array([245, 158, 11], np.uint8)))),
+        (f"upstream asset, area-averaged to {k}x{k}", C.downsample(rgb, stride)),
+        ("upstream asset, full 1000x1000", rgb),
     ]
-    for axi, (img, title, cm) in zip(ax, panels):
-        axi.imshow(img, cmap=cm, origin="upper" if title.startswith("upstream asset, full") is False else "lower",
-                   interpolation="nearest", vmin=0, vmax=10 if cm is cmap else 1)
-        axi.set_title(title, color="#e8ecf5", fontsize=12, loc="left")
+    fig, ax = plt.subplots(1, 5, figsize=(25, 5.6), facecolor="#0e1117")
+    for axi, (title, img) in zip(ax, panels):
+        axi.imshow(img, interpolation="nearest")
+        axi.set_title(title, color="#e8ecf5", fontsize=11, loc="left")
         axi.axis("off")
-    fig.suptitle(f"Reproduction on the asset's own grid: {100 * agree:.1f}% of {k * k:,} pixels identical "
-                 f"({100 * match[interior].mean():.1f}% where the asset is locally flat, "
-                 f"{100 * match[~interior].mean():.1f}% in the fractal filaments)", color="#e8ecf5", fontsize=13, x=0.01, ha="left")
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
-    fig.savefig(out / f"{a.tag}_side_by_side.png", dpi=110, facecolor="#0e1117")
+    fig.suptitle(f"Reproduction on the asset's own grid: {100 * agree:.1f}% of {k * k:,} pixels identical, "
+                 f"basin entropy {summary['metrics_ours']['basin_entropy']:.3f} vs {summary['metrics_asset_same_pixels']['basin_entropy']:.3f}, "
+                 f"boundary dimension {summary['metrics_ours']['boundary_dimension']:.3f} vs {summary['metrics_asset_same_pixels']['boundary_dimension']:.3f}",
+                 color="#e8ecf5", fontsize=13, x=0.01, ha="left")
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    fig.savefig(out / f"{a.tag}_side_by_side.png", dpi=100, facecolor="#0e1117")
     print(json.dumps({k_: summary[k_] for k_ in ("agreement", "spearman", "agreement_interior", "agreement_boundary", "within_one_level")}, indent=1))
 
 

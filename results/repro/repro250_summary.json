@@ -1,0 +1,348 @@
+{
+ "script": "scripts/repro_report.py",
+ "run": "data/cluster/repro250",
+ "spec": {
+  "name": "repro250",
+  "puzzle": "2.6..4.9..7....6..8.......27.9.3..2..8.4.2......7.95..3.79...4.......3.6.1...3...",
+  "mode": "asset",
+  "n": 250,
+  "n_asset": 1000,
+  "stride": 4,
+  "tile": 125,
+  "batch": 1024,
+  "precision": "fp32",
+  "latent_precision": "float32",
+  "steps": 24,
+  "plane_seed": 0,
+  "plane_file": "data/plane_seed0.npz",
+  "backend": "torchfn",
+  "device": "cuda",
+  "compile": false,
+  "note": "every 4th pixel of the upstream 1000x1000 grid (orientation xy_fy), true fp32 matmuls, notebook float32 arithmetic"
+ },
+ "orientation": "xy_fy",
+ "level_offset": 2,
+ "grid": [
+  250,
+  250
+ ],
+ "stride": 4,
+ "n_pixels": 62500,
+ "agreement": 0.64424,
+ "spearman": 0.8891176598099269,
+ "agreement_interior": 0.9993890953520338,
+ "frac_interior": 0.314288,
+ "agreement_boundary": 0.4814616048720162,
+ "agreement_by_asset_level": [
+  1.0,
+  0.9882619439868204,
+  0.9329787234042554,
+  0.7145010046885466,
+  0.5331756850744193,
+  0.34524264424914025,
+  0.2159468438538206,
+  0.1525211399937363,
+  0.1061750333185251,
+  0.08706315144083385,
+  0.17724932581515077
+ ],
+ "within_one_level": 0.747024,
+ "contingency": [
+  [
+   370,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   4,
+   14397,
+   110,
+   14,
+   13,
+   6,
+   8,
+   6,
+   4,
+   1,
+   5
+  ],
+  [
+   3,
+   79,
+   13155,
+   195,
+   166,
+   137,
+   111,
+   79,
+   61,
+   38,
+   76
+  ],
+  [
+   0,
+   11,
+   194,
+   4267,
+   397,
+   296,
+   213,
+   187,
+   112,
+   80,
+   215
+  ],
+  [
+   0,
+   6,
+   178,
+   416,
+   3833,
+   721,
+   490,
+   450,
+   293,
+   235,
+   567
+  ],
+  [
+   0,
+   12,
+   121,
+   282,
+   696,
+   1807,
+   567,
+   506,
+   350,
+   239,
+   654
+  ],
+  [
+   1,
+   9,
+   110,
+   188,
+   527,
+   602,
+   845,
+   490,
+   319,
+   239,
+   583
+  ],
+  [
+   0,
+   4,
+   85,
+   144,
+   442,
+   499,
+   438,
+   487,
+   277,
+   245,
+   572
+  ],
+  [
+   0,
+   10,
+   47,
+   102,
+   282,
+   354,
+   319,
+   306,
+   239,
+   174,
+   418
+  ],
+  [
+   0,
+   5,
+   36,
+   86,
+   218,
+   221,
+   252,
+   222,
+   153,
+   142,
+   296
+  ],
+  [
+   0,
+   7,
+   105,
+   218,
+   545,
+   665,
+   560,
+   530,
+   417,
+   309,
+   723
+  ]
+ ],
+ "hist_ours": [
+  378,
+  14540,
+  14141,
+  5912,
+  7119,
+  5308,
+  3803,
+  3263,
+  2225,
+  1702,
+  4109
+ ],
+ "hist_asset_same_pixels": [
+  370,
+  14568,
+  14100,
+  5972,
+  7189,
+  5234,
+  3913,
+  3193,
+  2251,
+  1631,
+  4079
+ ],
+ "hist_asset_full": [
+  5981,
+  234256,
+  227025,
+  95713,
+  114082,
+  82673,
+  61447,
+  50919,
+  36164,
+  26536,
+  65204
+ ],
+ "frac_solved": 0.999152,
+ "frac_censored": 0.001216,
+ "metrics_ours": {
+  "shape": [
+   250,
+   250
+  ],
+  "n_labels": 11,
+  "basin_entropy": 1.4164420189258982,
+  "boundary_basin_entropy": 1.5572141808771964,
+  "boundary_box_fraction": 0.9096,
+  "log2_criterion": true,
+  "uncertainty_exponent": 0.1273134811560449,
+  "boundary_dimension": 1.8726865188439552,
+  "uncertainty_r2": 0.9964073879642116,
+  "uncertainty_fractions": [
+   0.6020474684308376,
+   0.6642173532841041,
+   0.6981239664708901,
+   0.7218192696039863,
+   0.7382477839620697
+  ],
+  "box_size": 5
+ },
+ "metrics_asset_same_pixels": {
+  "shape": [
+   250,
+   250
+  ],
+  "n_labels": 11,
+  "basin_entropy": 1.4121632554832333,
+  "boundary_basin_entropy": 1.5518277532782783,
+  "boundary_box_fraction": 0.91,
+  "log2_criterion": true,
+  "uncertainty_exponent": 0.127759533126206,
+  "boundary_dimension": 1.872240466873794,
+  "uncertainty_r2": 0.9954383904837423,
+  "uncertainty_fractions": [
+   0.6006470772871043,
+   0.6634643412359114,
+   0.6978103438444432,
+   0.7210160962496722,
+   0.7368130282415997
+  ],
+  "box_size": 5
+ },
+ "metrics_asset_full": {
+  "1": {
+   "shape": [
+    1000,
+    1000
+   ],
+   "n_labels": 11,
+   "basin_entropy": 1.1414280485072477,
+   "boundary_basin_entropy": 1.4964151270128774,
+   "boundary_box_fraction": 0.762775,
+   "log2_criterion": true,
+   "uncertainty_exponent": 0.14764857286358765,
+   "boundary_dimension": 1.8523514271364123,
+   "uncertainty_r2": 0.9999542353816228,
+   "uncertainty_fractions": [
+    0.4894136257317848,
+    0.5413008198579341,
+    0.5752000618781733,
+    0.6005318870673073,
+    0.6204234203599451
+   ],
+   "box_size": 5
+  },
+  "2": {
+   "shape": [
+    500,
+    500
+   ],
+   "n_labels": 11,
+   "basin_entropy": 1.2700422114259873,
+   "boundary_basin_entropy": 1.5173742071995069,
+   "boundary_box_fraction": 0.837,
+   "log2_criterion": true,
+   "uncertainty_exponent": 0.14315317731864347,
+   "boundary_dimension": 1.8568468226813566,
+   "uncertainty_r2": 0.9994064540297432,
+   "uncertainty_fractions": [
+    0.5414723340575044,
+    0.6005183056876806,
+    0.6361640252750203,
+    0.6618429362611737,
+    0.6813501852697833
+   ],
+   "box_size": 5
+  },
+  "4": {
+   "shape": [
+    250,
+    250
+   ],
+   "n_labels": 11,
+   "basin_entropy": 1.4123735843705196,
+   "boundary_basin_entropy": 1.5637440039531882,
+   "boundary_box_fraction": 0.9032,
+   "log2_criterion": true,
+   "uncertainty_exponent": 0.12686857946317592,
+   "boundary_dimension": 1.8731314205368241,
+   "uncertainty_r2": 0.9970696814607731,
+   "uncertainty_fractions": [
+    0.6011983806971373,
+    0.6622336118668222,
+    0.6960385796560741,
+    0.7203481510621558,
+    0.7364790764790765
+   ],
+   "box_size": 5
+  }
+ }
+}
