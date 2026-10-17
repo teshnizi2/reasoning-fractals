@@ -52,3 +52,15 @@ is a different realisation even in flat regions. All deliverable layers are fp32
 backend on an A100-80GB-PCIe is ~23 rollouts/s in fp32 (a rollout = 24 loops of one starting thought); early exit
 (retire a pixel after its decoded grid has equalled the true solution for 3 loops) cuts the loops computed per pixel
 to ~9 (`RUNS.md`).
+
+## Capacity notes (what the cluster actually allowed, 17 Oct)
+
+* `gpu-short` runs under the QOS `qos-short-gpu`: **12 GPUs per user** (cpu=192). The account is shared with the
+  dream-engine build, which held ~5 full A100s, so this project ran on ~7 GPU slots at a time. Pending jobs show
+  `QOSMaxGRESPerUser`; they cost nothing while they wait.
+* The cap counts *slots*, so a full A100 (62 rollouts/s with early exit) is worth ~1.9 A100 MIG slices of type
+  `gpu:4g.40gb` (33 rollouts/s, same A100 silicon, same kernels' fp32 semantics). Production arrays therefore mix
+  both: `sbatch --array=0-23 --gres=gpu:a100:1 ...` for the first workers and `--array=24-47 --gres=gpu:4g.40gb:1 ...`
+  for the rest, with one shared `WORKERS=48` so the tile assignment never overlaps. (`--gres` on the command line
+  overrides the `#SBATCH` line in the script.)
+* Comma-separated values cannot go through `--export` (use `CX=..,CY=..`, not `C0=x,y`).
