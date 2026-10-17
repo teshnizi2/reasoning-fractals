@@ -1,0 +1,57 @@
+{
+ "script": "scripts/apply_replay.py",
+ "engine": "torchfn-cuda-fp32",
+ "nudged": 5,
+ "eps": 1e-06,
+ "items": 660,
+ "reproduced": 644,
+ "by_kind": {
+  "hero:fast": {
+   "items": 12,
+   "reproduced": 12,
+   "nudge_stable": 12
+  },
+  "hero:slow": {
+   "items": 12,
+   "reproduced": 6,
+   "nudge_stable": 0
+  },
+  "hero:wrong": {
+   "items": 12,
+   "reproduced": 2,
+   "nudge_stable": 0
+  },
+  "hero:pair": {
+   "items": 24,
+   "reproduced": 24,
+   "nudge_stable": 3
+  }
+ },
+ "roughness": {
+  "rough0": {
+   "n": 150,
+   "reproduced": 150,
+   "nudge_stable": 146,
+   "mean_max_change": 0.08666666666666667
+  },
+  "rough1": {
+   "n": 150,
+   "reproduced": 150,
+   "nudge_stable": 83,
+   "mean_max_change": 1.9
+  },
+  "rough2": {
+   "n": 150,
+   "reproduced": 150,
+   "nudge_stable": 26,
+   "mean_max_change": 4.16
+  },
+  "rough5": {
+   "n": 150,
+   "reproduced": 150,
+   "nudge_stable": 29,
+   "mean_max_change": 4.56
+  }
+ },
+ "finale": null
+}

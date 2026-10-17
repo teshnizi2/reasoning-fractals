@@ -113,8 +113,8 @@ h1 {
 
 /* ---------- inspector ---------- */
 .inspector {
-  position: absolute; top: calc(92px + var(--safe-t)); right: calc(18px + var(--safe-r)); bottom: calc(46px + var(--safe-b));
-  width: 336px; max-height: calc(100% - 140px - var(--safe-t) - var(--safe-b));
+  position: absolute; top: calc(118px + var(--safe-t)); right: calc(18px + var(--safe-r)); bottom: calc(46px + var(--safe-b));
+  width: 336px; max-height: calc(100% - 166px - var(--safe-t) - var(--safe-b));
   overflow: auto; padding: 14px 16px 16px;
   border: 1px solid var(--hair); border-radius: 16px;
   background: var(--glass); backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2);

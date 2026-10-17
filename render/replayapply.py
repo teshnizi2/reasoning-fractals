@@ -17,12 +17,14 @@ def _groups(plan: list[dict], results: list[dict]) -> dict[tuple[str, str, int],
     return out
 
 
-def sensitivity_note(settle: int, nudged: list[int]) -> str:
+def sensitivity_note(settle: int, nudged: list[int], unsettled: bool = False) -> str:
     n = len(nudged)
+    here = "still changing at loop 24" if unsettled else str(settle)
     if all(v == settle for v in nudged):
-        return f"{n} re-runs of this start with a rounding-sized nudge (relative 1e-6) all agree: {settle} loops."
+        return f"{n} re-runs of this start with a rounding-sized nudge (relative 1e-6) all agree: {here} loops." if not unsettled else \
+            f"{n} re-runs of this start with a rounding-sized nudge (relative 1e-6) all end the same way."
     return (f"Rounding-sensitive: {n} re-runs with a nudge of relative 1e-6 give {', '.join(str(v) for v in nudged)} loops "
-            f"(this computation: {settle}).")
+            f"(this computation: {here}).")
 
 
 def featured(plan: list[dict], results: list[dict], ny: int) -> list[dict]:
@@ -54,7 +56,7 @@ def featured(plan: list[dict], results: list[dict], ny: int) -> list[dict]:
                 tt = title(r["settle"], r["settle"])
             out.append(dict(id=kind, label=label, title=tt, layer=0, col=int(p["col"]), row=int(ny - 1 - p["row"]), zoom=zoom,
                             settle=int(r["settle"]), solved=bool(r["flags"] & 1), trace=r["trace"],
-                            note=sensitivity_note(int(r["settle"]), r["nudged"])))
+                            note=sensitivity_note(int(r["settle"]), r["nudged"], unsettled=bool(r["flags"] & 4))))
             break
     return out
 
