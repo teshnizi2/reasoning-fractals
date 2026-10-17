@@ -14,7 +14,8 @@ from PIL import Image
 
 @dataclass
 class Camera:
-    """Fly-in path: log-zoom with a cubic ease-in-out; the centre drifts to the target early in the move."""
+    """Fly-in path: log-zoom with a smoothstep ease (peak speed 1.5x the mean, about one octave per second in a
+    17 s, 12-octave move); the centre drifts to the target early in the move."""
 
     c0: tuple[float, float]
     c1: tuple[float, float]
@@ -23,7 +24,7 @@ class Camera:
 
     def at(self, t: float) -> tuple[float, float, float]:
         t = min(1.0, max(0.0, t))
-        e = 4 * t ** 3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+        e = t * t * (3 - 2 * t)
         zoom = float(np.exp(np.log(self.zoom0) + (np.log(self.zoom1) - np.log(self.zoom0)) * e))
         m = _smooth(0.0, 0.45, e)
         return (self.c0[0] + (self.c1[0] - self.c0[0]) * m, self.c0[1] + (self.c1[1] - self.c0[1]) * m, zoom)
