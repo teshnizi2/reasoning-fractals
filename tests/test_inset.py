@@ -33,3 +33,12 @@ def test_cell_geometry_has_nine_by_nine_cells_filling_the_box():
     cell = IN.cell_box((10, 20), 180, 4, 7)
     x0, y0, x1, y1 = cell
     assert (x1 - x0) == 20 and (y1 - y0) == 20 and x0 == 10 + 7 * 20 and y0 == 20 + 4 * 20 + IN.HEADER
+
+
+def test_given_cells_do_not_punch_holes_in_the_card():
+    """ImageDraw on an RGBA layer replaces pixels: a translucent highlight would make given cells see-through."""
+    bright = np.full((400, 400, 3), (239, 163, 36), dtype=np.uint8)
+    out = IN.draw_sudoku(bright, grid=A, puzzle=Q, solution=A, xy=(50, 60), size=180, loop=24, settle=7)
+    x0, y0, x1, y1 = IN.cell_box((50, 60), 180, 0, 0)  # cell (0, 0) is a given ('2')
+    px = out[(y0 + y1) // 2, x0 + 2]  # inside the cell, away from the digit
+    assert px.astype(int).sum() < 300, px  # dark card colour, not the bright background showing through

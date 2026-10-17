@@ -134,3 +134,22 @@ def test_finer_layers_fade_out_towards_their_footprint_edge_instead_of_ending_in
     steps = np.abs(np.diff(row[:, 0]))
     assert steps.max() < 60, steps.max()                      # no hard edge: the change from red to blue is spread over many pixels
     assert 5 < np.count_nonzero((row[:, 0] > 20) & (row[:, 0] < 180)) < 80  # but it is a ramp, not a global blend
+
+
+def test_camera_with_a_knee_spends_most_of_the_time_before_the_knee_and_stays_smooth():
+    cam = ZV.Camera(c0=(0.0, 0.0), c1=(0.1, 0.1), zoom0=1.0, zoom1=3600.0, knee=(0.72, 0.6))
+    assert cam.at(0.0)[2] == 1.0 and abs(cam.at(1.0)[2] - 3600.0) < 1e-6
+    p_at = lambda t: np.log(cam.at(t)[2]) / np.log(3600.0)  # noqa: E731
+    assert abs(p_at(0.72) - 0.6) < 1e-9
+    ts = np.linspace(0, 1, 401)
+    ps = np.array([p_at(t) for t in ts])
+    assert (np.diff(ps) >= -1e-12).all()  # never goes backwards
+    v = np.diff(ps) / np.diff(ts)
+    assert abs(v[285] - v[290]) < 0.1 and v[0] < 0.05 and v[-1] < 0.05  # no kink at the knee, gentle at both ends
+    assert v[300] > v[200]  # the block regime after the knee is faster than the layered zoom before it
+
+
+def test_camera_without_a_knee_is_unchanged():
+    a = ZV.Camera(c0=(0.0, 0.0), c1=(0.2, -0.3), zoom0=1.0, zoom1=4096.0)
+    b = ZV.Camera(c0=(0.0, 0.0), c1=(0.2, -0.3), zoom0=1.0, zoom1=4096.0, knee=None)
+    assert a.at(0.37) == b.at(0.37) and abs(a.at(0.5)[2] - 64.0) < 1e-6

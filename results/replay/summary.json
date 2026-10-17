@@ -3,8 +3,8 @@
  "engine": "torchfn-cuda-fp32",
  "nudged": 5,
  "eps": 1e-06,
- "items": 660,
- "reproduced": 644,
+ "items": 1260,
+ "reproduced": 1175,
  "by_kind": {
   "hero:fast": {
    "items": 12,
@@ -25,6 +25,11 @@
    "items": 24,
    "reproduced": 24,
    "nudge_stable": 3
+  },
+  "keyframes:pair": {
+   "items": 600,
+   "reproduced": 531,
+   "nudge_stable": 65
   }
  },
  "roughness": {
@@ -53,5 +58,25 @@
    "mean_max_change": 4.56
   }
  },
- "finale": null
+ "finale": {
+  "layer": "kf07",
+  "gap": 16,
+  "pitch": 2.898886827458256e-05,
+  "verified": {
+   "criterion": "median",
+   "rank": "depth",
+   "robust_gap": 4,
+   "runs_keeping_order": 5,
+   "runs": 6,
+   "a_range": [
+    5,
+    6
+   ],
+   "b_range": [
+    6,
+    21
+   ],
+   "nudged_runs": 5
+  }
+ }
 }

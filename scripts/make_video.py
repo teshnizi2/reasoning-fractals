@@ -76,7 +76,12 @@ def main() -> None:
     end_px = a.end_px if a.end_px else (56.0 if pair else 2.0)
     zoom_end = (end_px / deep.pitch) / (w / a.view_width)
     c_end = (pair["a"]["x"] / 2 + pair["b"]["x"] / 2, pair["a"]["y"] / 2 + pair["b"]["y"] / 2) if pair else deep.center
-    cam = ZV.Camera(c0=layers[0].center, c1=c_end, zoom0=1.0, zoom1=max(zoom_end, 2.0))
+    zoom1 = max(zoom_end, 2.0)
+    zoom_layers = (2.0 / deep.pitch) / (w / a.view_width)  # the deepest layer fills the frame at 2 px per sample: where real layers end
+    knee = None
+    if zoom1 > 1.5 * zoom_layers:  # beyond the last layer the picture is magnified pixels: go faster there (7 of 10 s on the layers)
+        knee = (0.72, float(np.log(zoom_layers) / np.log(zoom1)))
+    cam = ZV.Camera(c0=layers[0].center, c1=c_end, zoom0=1.0, zoom1=zoom1, knee=knee)
     move = a.seconds - a.hold - a.finale
     assert move > 3, "not enough time for the move"
     ts = ZV.timeline(a.fps, a.hold, move, a.finale)
@@ -97,7 +102,7 @@ def main() -> None:
         cx, cy, z = cam.at(u)
         if pair:  # slide the pair up to PAIR_Y (in the 1350-high frame) during the last part of the move
             k = size[1] / 1350.0
-            m = ZV._smooth(0.5, 1.0, u * u * (3 - 2 * u))
+            m = ZV._smooth(0.5, 1.0, cam.progress(u))
             cx, cy = ZV.shifted_center(cx, cy, z, size, a.view_width, (0.0, (PAIR_Y - 1350 / 2) * k * m))
         return cx, cy, z, a.view_width
 
@@ -118,8 +123,7 @@ def main() -> None:
                 frame = OV.draw_caption(frame, c["text"], (int(c["x"] * k), int(y * k)), int(c["size"] * k), c.get("font", "sans"),
                                         tuple(c.get("color", (232, 236, 245))), alpha=al)
         if not a.no_kicker:
-            frame = OV.draw_text(frame, "●", (int(54 * k), int(30 * k)), int(20 * k), "mono", AMBER, shadow=False)
-            frame = OV.draw_text(frame, "LATENT ATLAS · EQR ON ONE SUDOKU", (int(86 * k), int(31 * k)), int(20 * k), "mono", (170, 180, 202), alpha=0.95)
+            frame = OV.draw_caption(frame, "●  LATENT ATLAS · EQR ON ONE SUDOKU", (int(54 * k), int(26 * k)), int(20 * k), "mono", (170, 180, 202), bg_alpha=0.55)
         if not a.no_credit:
             frame = OV.draw_caption(frame, CREDIT, (int(54 * k), fh - int(66 * k)), int(21 * k), "mono", (170, 180, 202), alpha=1.0, bg_alpha=0.62)
         return frame

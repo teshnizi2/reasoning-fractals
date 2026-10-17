@@ -21,10 +21,22 @@ class Camera:
     c1: tuple[float, float]
     zoom0: float
     zoom1: float
+    knee: tuple[float, float] | None = None  # (time fraction, progress in log-zoom) the path passes through, e.g. where the layers end
+
+    def progress(self, t: float) -> float:
+        """Share of the log-zoom range covered at time fraction t: smoothstep, or a monotone cubic through the knee."""
+        t = min(1.0, max(0.0, t))
+        if self.knee is None:
+            return t * t * (3 - 2 * t)
+        tk, pk = self.knee
+        mk = 0.5 * (pk / tk + (1.0 - pk) / (1.0 - tk))  # slope at the knee: the mean of the two segments' mean speeds
+        t0, t1, p0, p1, m0, m1 = (0.0, tk, 0.0, pk, 0.0, mk) if t <= tk else (tk, 1.0, pk, 1.0, mk, 0.0)
+        h = t1 - t0
+        x = (t - t0) / h
+        return float((2 * x**3 - 3 * x**2 + 1) * p0 + (x**3 - 2 * x**2 + x) * h * m0 + (-2 * x**3 + 3 * x**2) * p1 + (x**3 - x**2) * h * m1)
 
     def at(self, t: float) -> tuple[float, float, float]:
-        t = min(1.0, max(0.0, t))
-        e = t * t * (3 - 2 * t)
+        e = self.progress(t)
         zoom = float(np.exp(np.log(self.zoom0) + (np.log(self.zoom1) - np.log(self.zoom0)) * e))
         m = _smooth(0.0, 0.45, e)
         return (self.c0[0] + (self.c1[0] - self.c0[0]) * m, self.c0[1] + (self.c1[1] - self.c0[1]) * m, zoom)

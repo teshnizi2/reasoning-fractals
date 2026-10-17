@@ -29,6 +29,8 @@ def main() -> None:
     ap.add_argument("--pair-out", default="results/video/pair.json")
     ap.add_argument("--summary", default="results/replay/summary.json")
     ap.add_argument("--min-robust-gap", type=int, default=3)
+    ap.add_argument("--criterion", default="median", choices=["strict", "median"], help="strict: every re-run keeps the gap; median: median gap and order in all but one run")
+    ap.add_argument("--rank", default="depth", choices=["depth", "robust"], help="depth: the finest layer that passes wins")
     ap.add_argument("--loop-seconds", type=float, default=0.28)
     a = ap.parse_args()
     assert len(a.plan) == len(a.replay), "one replay output per plan"
@@ -49,10 +51,9 @@ def main() -> None:
     for k in a.keyframes:
         spec = json.loads((ROOT / k / "spec.json").read_text())
         pitches[Path(k).name] = 2 * spec["half_width"] / (TR.spec_dims(spec)[1] - 1)
-    best = RA.pick_finale(plan, res, pitches, P.ASSET.answer, min_robust_gap=a.min_robust_gap)
-    if best is None:  # no pair keeps its gap in every nudged re-run: fall back to the median criterion and say so
-        best = RA.pick_finale(plan, res, pitches, P.ASSET.answer, min_robust_gap=a.min_robust_gap, criterion="median")
-        print("no pair passed the strict robustness test; using the median criterion" if best else "no finale pair found")
+    # the finest layer with a pair whose slow/fast order survives the nudges (median gap >= min_robust_gap, order kept in all but one run)
+    best = RA.pick_finale(plan, res, pitches, P.ASSET.answer, min_robust_gap=a.min_robust_gap, criterion=a.criterion, rank=a.rank)
+    print("finale pair:", None if best is None else (best["layer"], best["a"]["settle"], best["b"]["settle"], best["verified"]))
 
     by_id = {r["id"]: r for r in res}
     kinds: dict[str, dict] = {}

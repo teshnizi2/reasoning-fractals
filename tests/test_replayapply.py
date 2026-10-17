@@ -93,3 +93,16 @@ def test_median_criterion_accepts_a_pair_whose_order_mostly_survives_the_nudges(
     soft = RA.pick_finale(plan, res, pitches={"kf07": 3e-5}, solution=SOL, min_robust_gap=3, criterion="median")
     assert soft is not None and soft["verified"]["criterion"] == "median" and soft["verified"]["runs_keeping_order"] == 5  # plain + 4 of 5 nudged
     assert RA.pick_finale(plan, res, pitches={"kf07": 3e-5}, solution=SOL, min_robust_gap=3)  is None
+
+
+def test_rank_by_depth_prefers_the_finest_layer_that_passes():
+    a3, b3 = finale_items("kf03", 0, 3, 14)
+    a7, b7 = finale_items("kf07", 0, 4, 12)
+    plan = [a3, b3, a7, b7]
+    res = [result(a3, nudged=[3, 3, 3, 3, 3]), result(b3, nudged=[14, 14, 14, 14, 14]),     # kf03: rock solid, big gap
+           result(a7, nudged=[4, 4, 4, 4, 4]), result(b7, nudged=[9, 8, 12, 7, 11])]          # kf07: still a clear gap
+    pitches = {"kf03": 5e-4, "kf07": 3e-5}
+    by_robust = RA.pick_finale(plan, res, pitches, SOL, min_robust_gap=3, criterion="median", rank="robust")
+    by_depth = RA.pick_finale(plan, res, pitches, SOL, min_robust_gap=3, criterion="median", rank="depth")
+    assert by_robust["layer"] == "kf03" and by_depth["layer"] == "kf07"
+    assert by_depth["verified"]["rank"] == "depth"

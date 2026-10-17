@@ -35,7 +35,7 @@ def draw_sudoku(frame: np.ndarray, grid: str, puzzle: str, solution: str, xy: tu
     c = size // 9
     gw = c * 9
     hd = header(size)
-    d.rounded_rectangle([xy[0] - 10, xy[1] - 8, xy[0] + gw + 10, xy[1] + hd + gw + 10], radius=12, fill=(14, 17, 23, a(0.82)),
+    d.rounded_rectangle([xy[0] - 10, xy[1] - 8, xy[0] + gw + 10, xy[1] + hd + gw + 10], radius=12, fill=(14, 17, 23, a(0.95)),
                         outline=(46, 58, 82, a(1.0)), width=2)
     tick_h = max(7, hd // 5)
     if title:
@@ -63,7 +63,7 @@ def draw_sudoku(frame: np.ndarray, grid: str, puzzle: str, solution: str, xy: tu
             ch = grid[i]
             wrong = (not given) and ch != solution[i]
             if given:
-                d.rectangle([x0, y0, x1, y1], fill=(232, 236, 245, a(0.10)))
+                d.rectangle([x0, y0, x1, y1], fill=(36, 39, 45, a(0.95)))  # the given-cell tint, already blended with the card: ImageDraw replaces pixels, it does not blend
             elif wrong:
                 d.rectangle([x0, y0, x1, y1], fill=(*AMBER, a(0.95)))
             d.rectangle([x0, y0, x1, y1], outline=(38, 49, 73, a(1.0)), width=1)

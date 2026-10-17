@@ -67,11 +67,11 @@ def _monotone(trace: list[str], solution: str, settle: int) -> bool:
 
 
 def pick_finale(plan: list[dict], results: list[dict], pitches: dict[str, float], solution: str, min_robust_gap: int = 3,
-                criterion: str = "strict") -> dict | None:
+                criterion: str = "strict", rank: str = "robust") -> dict | None:
     """Best neighbouring pair of a keyframe for the video: both verified, monotone, and the slow/fast ordering survives
     the rounding-sized nudges.  ``strict``: every re-run keeps a gap of at least ``min_robust_gap`` loops; ``median``: the
     median gap over the plain and nudged runs is at least that and the order holds in all but one run.  Ranked by the
-    robust (or median) gap, then depth, then stored gap."""
+    robust (or median) gap, then depth, then stored gap; with ``rank="depth"`` the finest layer that passes wins (then the robust gap)."""
     groups = _groups(plan, results)
     best = None
     for (layer, kind, gi), g in groups.items():
@@ -98,13 +98,13 @@ def pick_finale(plan: list[dict], results: list[dict], pitches: dict[str, float]
             raise ValueError(f"unknown criterion {criterion!r}")
         if robust < min_robust_gap:
             continue
-        score = (robust, -pitches[layer], abs(tb - ta))
+        score = (robust, -pitches[layer], abs(tb - ta)) if rank == "robust" else (-pitches[layer], robust, abs(tb - ta))
         if best is None or score > best[0]:
             best = (score, dict(
                 layer=layer, gap=abs(tb - ta), pitch=pitches[layer], render_row=pa["row"], col=pa["col"],
                 a=dict(x=pa["x"], y=pa["y"], settle=ta, trace=ra["trace"], label="A"),
                 b=dict(x=pb["x"], y=pb["y"], settle=tb, trace=rb["trace"], label="B"),
-                verified=dict(criterion=criterion, robust_gap=robust, runs_keeping_order=keeping, runs=len(gaps), a_range=[min([ta] + ra["nudged"]), max([ta] + ra["nudged"])],
+                verified=dict(criterion=criterion, rank=rank, robust_gap=robust, runs_keeping_order=keeping, runs=len(gaps), a_range=[min([ta] + ra["nudged"]), max([ta] + ra["nudged"])],
                               b_range=[min([tb] + rb["nudged"]), max([tb] + rb["nudged"])], nudged_runs=len(ra["nudged"])),
             ))
     return best[1] if best else None
