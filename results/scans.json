@@ -1,0 +1,72 @@
+{
+ "script": "scripts/summarize_scans.py",
+ "pscan": {
+  "job": "5246311",
+  "n_puzzles": 5565,
+  "k": 16,
+  "steps": 24,
+  "seconds": 2663.5466480255127,
+  "frac_solved": 0.9007075471698113,
+  "always_solved": 4281,
+  "never_solved": 115,
+  "partial": 1169,
+  "multistable": 664,
+  "by_rating": [
+   {
+    "lo": 0,
+    "hi": 1,
+    "n": 124,
+    "frac_solved": 0.9964717741935484,
+    "always": 0.9838709677419355
+   },
+   {
+    "lo": 1,
+    "hi": 5,
+    "n": 105,
+    "frac_solved": 0.9654761904761905,
+    "always": 0.9428571428571428
+   },
+   {
+    "lo": 5,
+    "hi": 20,
+    "n": 221,
+    "frac_solved": 0.8339932126696833,
+    "always": 0.6425339366515838
+   },
+   {
+    "lo": 20,
+    "hi": 100,
+    "n": 751,
+    "frac_solved": 0.874167776298269,
+    "always": 0.7270306258322237
+   },
+   {
+    "lo": 100,
+    "hi": 1000000,
+    "n": 4364,
+    "frac_solved": 0.9043738542621448,
+    "always": 0.772685609532539
+   }
+  ],
+  "asset": {
+   "rating": 47,
+   "frac_solved": 1.0,
+   "mean_settle": 4.125
+  },
+  "note": "starts are EqR's own initialisation (truncated normal), not the notebook's near-zero plane"
+ },
+ "longrun": {
+  "job": "5246477",
+  "loops": 96,
+  "n": 400,
+  "frac_solved_by_end": 0.4675,
+  "first_solved_percentiles": {
+   "10": 10.0,
+   "50": 25.0,
+   "90": 69.4
+  },
+  "still_wrong_and_changing": 213,
+  "still_wrong_and_frozen": 0,
+  "note": "same latents as the scan, but a different batch composition than the scan run: native-scale outcomes are chaotic, so individual starts need not repeat their scan outcome"
+ }
+}
