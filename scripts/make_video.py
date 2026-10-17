@@ -55,7 +55,7 @@ def main() -> None:
     ap.add_argument("--hold", type=float, default=1.2, help="seconds parked on the first frame")
     ap.add_argument("--finale", type=float, default=7.5, help="seconds parked at the end (the pair finale, or a plain hold)")
     ap.add_argument("--pair", default=None, help="pair.json from scripts/apply_replay.py")
-    ap.add_argument("--captions", default=None, help="JSON list of {text,size,font,color,x,y,t_in,t_out}; {a_settle}/{b_settle} come from --pair")
+    ap.add_argument("--captions", default=None, help="JSON list of {text,size,font,color,x,y,t_in,t_out}; {a_settle}/{b_settle}/{wob}/{wob_lo}/{wob_hi} come from --pair")
     ap.add_argument("--no-counter", action="store_true")
     ap.add_argument("--no-credit", action="store_true")
     ap.add_argument("--no-kicker", action="store_true")
@@ -85,6 +85,11 @@ def main() -> None:
         pair = dict(pair, t_in=t_arrive + 0.5)
     caps = json.loads((ROOT / a.captions).read_text()) if a.captions else []
     fmt = {"a_settle": pair["a"]["settle"] if pair else "", "b_settle": pair["b"]["settle"] if pair else ""}
+    if pair and pair.get("verified", {}).get("a_range"):  # the less stable pixel of the pair, with the loop counts its nudged re-runs gave
+        v = pair["verified"]
+        wob = "A" if (v["a_range"][1] - v["a_range"][0]) > (v["b_range"][1] - v["b_range"][0]) else "B"
+        lo, hi = v["a_range" if wob == "A" else "b_range"]
+        fmt.update(wob=wob, wob_lo=lo, wob_hi=hi)
     for c in caps:
         c["text"] = c["text"].format(**fmt)
 
@@ -105,6 +110,8 @@ def main() -> None:
         if not a.no_counter and fin < 1.0:
             frame = OV.draw_caption(frame, f"zoom {OV.zoom_label(view[2])}", (int(54 * k), fh - int(168 * k)), int(36 * k), "mono", AMBER, alpha=1.0 - fin)
         for c in caps:
+            if square and c.get("only") == "portrait":
+                continue
             al = OV.caption_alpha(sec, c["t_in"], c["t_out"])
             y = c.get("y_square", c["y"]) if square else c["y"]
             if al > 0:
