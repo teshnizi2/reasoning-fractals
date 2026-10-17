@@ -1,0 +1,112 @@
+{
+ "script": "scripts/summarize_replay_test.py",
+ "job": "5246629",
+ "engine": "torchfn-cuda-fp32",
+ "items": 448,
+ "nudged": 3,
+ "eps": 1e-06,
+ "reproduced": 438,
+ "by_kind": {
+  "fast": {
+   "n": 12,
+   "reproduced": 12,
+   "nudge_stable": 12,
+   "mean_max_change": 0.0,
+   "mean_stored_settle": 3.0
+  },
+  "slow": {
+   "n": 12,
+   "reproduced": 4,
+   "nudge_stable": 0,
+   "mean_max_change": 15.333333333333334,
+   "mean_stored_settle": 22.0
+  },
+  "pair": {
+   "n": 24,
+   "reproduced": 23,
+   "nudge_stable": 1,
+   "mean_max_change": 9.291666666666666,
+   "mean_stored_settle": 12.916666666666666
+  },
+  "rough0": {
+   "n": 100,
+   "reproduced": 100,
+   "nudge_stable": 98,
+   "mean_max_change": 0.05,
+   "mean_stored_settle": 3.61
+  },
+  "rough1": {
+   "n": 100,
+   "reproduced": 100,
+   "nudge_stable": 59,
+   "mean_max_change": 1.46,
+   "mean_stored_settle": 4.89
+  },
+  "rough2": {
+   "n": 100,
+   "reproduced": 100,
+   "nudge_stable": 23,
+   "mean_max_change": 2.96,
+   "mean_stored_settle": 7.18
+  },
+  "rough5": {
+   "n": 100,
+   "reproduced": 99,
+   "nudge_stable": 18,
+   "mean_max_change": 4.64,
+   "mean_stored_settle": 9.23
+  }
+ },
+ "mismatches": [
+  {
+   "id": "hero:slow:0:single",
+   "stored": 22,
+   "replay": 23
+  },
+  {
+   "id": "hero:slow:1:single",
+   "stored": 22,
+   "replay": 21
+  },
+  {
+   "id": "hero:slow:3:single",
+   "stored": 22,
+   "replay": 21
+  },
+  {
+   "id": "hero:slow:4:single",
+   "stored": 22,
+   "replay": 23
+  },
+  {
+   "id": "hero:slow:6:single",
+   "stored": 22,
+   "replay": 23
+  },
+  {
+   "id": "hero:slow:8:single",
+   "stored": 22,
+   "replay": 21
+  },
+  {
+   "id": "hero:slow:10:single",
+   "stored": 22,
+   "replay": 23
+  },
+  {
+   "id": "hero:slow:11:single",
+   "stored": 22,
+   "replay": 23
+  },
+  {
+   "id": "hero:pair:4:b",
+   "stored": 22,
+   "replay": 23
+  },
+  {
+   "id": "hero:rough5:95:single",
+   "stored": 22,
+   "replay": 23
+  }
+ ]
+}
