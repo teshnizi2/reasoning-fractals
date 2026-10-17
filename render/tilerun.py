@@ -71,6 +71,9 @@ def pixel_coords(spec: dict, t: Tile) -> np.ndarray:
         hh = hw * (ny - 1) / (nx - 1) if nx > 1 else hw  # square pixels
         x, y = cx + hw * ax_x[cc], cy + hh * ax_y[rr]
         return np.stack([x.ravel(), y.ravel()], axis=-1)
+    if spec["mode"] == "notebook":  # loopscape's mesh(n) verbatim: float32 axis, float32 latent arithmetic
+        ax = SL.axis(spec["n"])
+        return np.stack([ax[cc].ravel(), ax[rr].ravel()], axis=-1)
     if spec["mode"] == "asset":
         ax = SL.axis(spec["n_asset"])
         s = spec["stride"]

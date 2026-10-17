@@ -220,3 +220,16 @@ def test_merge_exposes_dictionary_arrays_for_cross_layer_unification(tmp_path):
     assert f["dict_grids"].dtype == np.int8 and f["dict_grids"].shape == (8, 81)
     assert (f["dict_grids"][0] == SOL).all() and f["dict_counts"].sum() == 64
     assert len(f["dictionary"]) == len(f["dict_grids"])
+
+
+def test_notebook_mode_is_the_notebook_mesh_at_any_resolution():
+    from render import slices as SL
+
+    spec = make_spec(mode="notebook", n=37, tile=16)
+    spec.pop("latent_precision")  # the default for notebook mode must be the notebook's float32 arithmetic
+    full = SL.mesh(37).reshape(37, 37, 2)
+    for t in TR.plan_tiles(37, 16):
+        got = TR.pixel_coords(spec, t).reshape(t.h, t.w, 2)
+        np.testing.assert_array_equal(got, full[t.r0 : t.r0 + t.h, t.c0 : t.c0 + t.w])
+    assert TR.pixel_coords(spec, TR.plan_tiles(37, 16)[0]).dtype == np.float32
+    assert TR._latent_precision(spec) == "float32"

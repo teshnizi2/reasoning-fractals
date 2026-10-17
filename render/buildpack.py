@@ -23,11 +23,15 @@ def build(layer_dirs: list, out_dir, puzzle: dict, ways: list[str], meta_extra: 
     for i, d in enumerate(layer_dirs):
         d = Path(d)
         spec = json.loads((d / "spec.json").read_text())
-        if spec["mode"] != "window":
-            raise ValueError(f"{d}: only window-mode renders go into an explorer pack")
+        if spec["mode"] == "notebook":  # loopscape's mesh(n): the window [-1, 1]^2
+            center, half_width = (0.0, 0.0), 1.0
+        elif spec["mode"] == "window":
+            center, half_width = tuple(spec["center"]), spec["half_width"]
+        else:
+            raise ValueError(f"{d}: only window/notebook-mode renders go into an explorer pack")
         ny, nx = TR.spec_dims(spec)
         fields.append(TR.merge(spec, d, sol))
-        metas.append(PK.LayerMeta(id=i, center=tuple(spec["center"]), half_width=spec["half_width"], nx=nx, ny=ny,
+        metas.append(PK.LayerMeta(id=i, center=center, half_width=half_width, nx=nx, ny=ny,
                                   kind="base" if i == 0 else "zoom"))
     dictionary, remapped = PK.unify(sol, fields)
     for f, g in zip(fields, remapped):

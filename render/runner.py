@@ -26,13 +26,15 @@ def run_pixels(
     progress: Callable[[int, int, float], None] | None = None,
     keep_traces: bool = False,
     early_m: int | None = None,
+    base: tuple[np.ndarray, np.ndarray] | None = None,
 ) -> dict:
     """Roll out ``engine`` from z_H = a*u + b*v (z_L = 0) for every coordinate pair.
 
     Returns a dict of per-pixel arrays (see ``outcomes.Outcomes``), plus ``seconds`` (wall time of the
     rollouts) and, if ``keep_traces``, the decoded traces (N, T, 81) int8.  With ``early_m`` the engine's
     early-exit rollout retires pixels that sit on the true solution for that many loops; ``retired_at`` (N,)
-    then reports how many loops each pixel was actually computed for.
+    then reports how many loops each pixel was actually computed for.  ``base`` = (z0_H, z0_L) starts every pixel
+    from that point plus the plane offset (z_H = z0_H + a*u + b*v, z_L = z0_L) instead of the notebook's origin.
     """
     u, v = plane
     n = len(coords)
@@ -42,11 +44,15 @@ def run_pixels(
     t0 = time.time()
     for s in range(0, n, batch):
         z = SL.latents(coords[s : s + batch], u, v, precision=precision)
+        z_l = None
+        if base is not None:
+            z = (z + base[0][None]).astype(np.float32)
+            z_l = np.broadcast_to(base[1][None], z.shape).astype(np.float32)
         if early_m:
-            tr, retired = engine.rollout_early(z, solution=solution, m=early_m)
+            tr, retired = engine.rollout_early(z, z_l, solution=solution, m=early_m)
             retired_all.append(retired)
         else:
-            tr = engine.rollout(z)
+            tr = engine.rollout(z) if z_l is None else engine.rollout(z, z_l)
         res = O.analyze(tr, puzzle, solution)
         for k in _FIELDS:
             parts[k].append(getattr(res, k))

@@ -82,3 +82,24 @@ def test_run_pixels_uses_the_early_exit_rollout_when_asked_and_reports_loops():
     assert res["retired_at"].tolist() == [4, 4, 4]
     plain = RU.run_pixels(StubEarlyEngine(), coords, stub_plane(), PUZZLE, SOL, batch=2)
     assert "retired_at" not in plain
+
+
+class SpyEngine(StubEngine):
+    def __init__(self):
+        super().__init__()
+        self.seen = []
+
+    def rollout(self, z_h, z_l=None):
+        self.seen.append((z_h.copy(), None if z_l is None else z_l.copy()))
+        return super().rollout(z_h, z_l)
+
+
+def test_run_pixels_can_start_from_a_base_point_for_both_latents():
+    eng = SpyEngine()
+    zh0 = np.full((97, 512), 0.5, dtype=np.float32)
+    zl0 = np.full((97, 512), -2.0, dtype=np.float32)
+    coords = np.array([[1.0, 2.0], [3.0, 0.0]], dtype=np.float32)
+    RU.run_pixels(eng, coords, stub_plane(), PUZZLE, SOL, batch=2, base=(zh0, zl0))
+    zh, zl = eng.seen[0]
+    assert zh[0, 0, 0] == 1.5 and zh[0, 0, 1] == 2.5 and zh[1, 0, 0] == 3.5  # base + a*u + b*v
+    assert (zl == -2.0).all() and zl.shape == (2, 97, 512)
