@@ -143,6 +143,30 @@ Because the field thins out when zoomed (see above), keyframes cover only zoom 8
 in render/chase.py). Jobs 5246430-5246439: per level an array of 10 tasks on full A100s and 10 on 4g.40gb slices,
 WORKERS=20, one 135x135 tile per task. More levels (k = 8, 9) only if chase windows at x640 still show structure.
 
+## Findings added 17 Oct ~16:30 (read before writing README / POST)
+- **Cross-engine reproducibility depends on local roughness** (local MLX replay of random chase-window pixels vs the stored A100
+  fp32 values; throwaway study, repo script `scripts/replay_agreement.py` re-creates it -> results/replay_agreement.json):
+  roughness 0 (all 4 neighbours equal): 98-100% equal; roughness 1: 48-67%; roughness 2-4: 23-40%; roughness >= 5: 14%;
+  stored settle >= 8 in dust: 0 of 13 reproduced. Nudging the latent by relative 1e-6 (a few dozen ulps) also moves dust
+  pixels' settle times by several loops. So the speckled "dust" is rounding-sensitive (chaotic); flat domains and borders
+  between big flat domains are not. Statistics of the dust reproduce, single dust pixels do not.
+- **Native-scale starts (puzzle scan, job 5246311, RUNS row pending):** 5565 puzzles x 16 EqR-style random starts (norm ~223):
+  90.07% solved, 4281 puzzles always solved, 664 puzzles with 15-85% solved (multistable). Long-run check (job 5246477,
+  400 unsolved starts, 96 loops): 46.75% reach the solution by loop 96, the remaining 213 are all STILL CHANGING (0 frozen):
+  the "wrong" outcomes are wandering transients, not fixed wrong grids -> the badge word STUCK is wrong for them (UNSETTLED).
+  The asset puzzle itself is >= 99.8% solved at native-scale base points (oscan rows for asset: 8 windows).
+- Chase #2 (job 5246357): x80 boundary 0.34, x640 0.30, x5120 0.48 but at x5120 it is salt-and-pepper next to a flat domain;
+  nothing coherent below ~x128 => keyframes stop at k=7 (x128). No k=8,9.
+- Zoom compositor had a half-sample offset for magnified layers (fixed 17 Oct, tests); blocks are drawn hard-edged once a
+  sample is >3-8 screen px ("one pixel = one thought").
+- **Video finale** = two neighbouring starts of the deepest keyframe as big blocks with their Sudoku replays beneath
+  (`render/finale.py`, `scripts/make_video.py --pair`). Pair must come from the CUDA engine's own replay because MLX does not
+  reproduce dust pixels: pipeline = `scripts/plan_replay.py` -> rsync `results/replay/replay_in.json` to the cluster ->
+  `sbatch alice/replay.slurm` -> `alice/sync.sh pull replay` -> `scripts/apply_replay.py` (featured starts into the pack
+  manifest + results/video/pair.json). Pair choice: both pixels reproduced by the plain replay, monotone traces, slow/fast
+  ordering with gap >= 3 loops surviving every nudged re-run.
+- Explorer drawer text no longer claims "new filaments at every scale"; inspector says flat vs speckled (rounding-sensitive).
+
 ## Next steps
 1. Re-run engine tests (background, log) and fix; commit.
 2. Reproduction: sparse pixel check + aligned low-res grid + metrics vs the asset -> `results/repro/`.
