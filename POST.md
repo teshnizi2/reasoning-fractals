@@ -6,13 +6,13 @@ Every number below comes from `results/` (the sources are listed at the end). No
 
 I gave a small Sudoku-solving model the same puzzle 4.2 million times and changed only its first "thought".
 
-Each pixel is one starting thought; colour is how many loops the model needs before its answer stops changing. The map is a fractal: 12% of neighbouring pixels differ by five loops or more.
+Each pixel is one starting thought. Colour is how many loops the model needs before its answer stops changing. The map is a fractal: 12% of neighbouring pixels differ by five loops or more.
 
-99.9% still reach the right grid. The fractal is in how long it thinks, not whether it gets there.
+99.9% reach the right grid. The fractal is in how long it thinks, not whether it gets there.
 
-I rebuilt the loopscape figure (Lai, Bao, Quinn, Gilpin) on A100s: boundary dimension 1.853 against their 1.852. One caveat: nudge a start by one part in a million and a speckle pixel's loop count moves. Smooth regions don't care.
+I rebuilt the loopscape figure (Lai, Bao, Quinn, Gilpin) on A100s: boundary dimension 1.853 against their 1.852. Caveat: nudge a start by one part in a million and a speckle pixel's loop count moves. Smooth regions don't care.
 
-Zoom video and click-a-pixel explorer attached.
+The video zooms down to two neighbouring starts: 5 loops vs 21.
 
 ## Alternative hooks
 
@@ -25,3 +25,4 @@ Zoom video and click-a-pixel explorer attached.
 - 4.2 million starting thoughts, 99.9% solved, 12% of neighbour pairs >= 5 loops, largest gap 21 loops: `results/metrics.json` (hero), `scripts/compute_metrics.py`.
 - Boundary dimension 1.853 vs 1.852: `results/metrics.json` (hero, labels clipped to the upstream's 11 levels, every 2nd pixel) and `results/repro/repro250_summary.json` (upstream image analysed with the same code), `results/scale_dependence.json`.
 - "One part in a million" nudges, smooth vs speckle pixels: `results/replay/summary.json` (97% of smooth-region pixels unchanged, 17-19% of speckle pixels), `alice/replay.py`.
+- Two neighbouring starts, 5 vs 21 loops (median-verified order over 6 runs, 5 of them nudged): `results/video/pair.json`.
