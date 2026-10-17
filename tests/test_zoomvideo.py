@@ -98,11 +98,11 @@ def test_layers_sampled_from_one_smooth_function_reproduce_it_at_every_zoom():
         return ZV.Layer(center=centre, half_width=hw, img=np.tile(row[None, :, None], (n, 1, 3)).round().astype(np.uint8))
 
     # rounding to uint8 limits the accuracy to ~0.5 level; a half-sample error at the coarse pitch is ~16 levels
-    layers = [ramp_layer((0.0, 0.0), 1.0, 33), ramp_layer((0.25, 0.1), 0.25, 33)]
-    for zoom, cx in ((1.0, 0.0), (2.0, 0.25), (3.0, 0.25), (6.0, 0.25)):
+    layers = [ramp_layer((0.0, 0.0), 1.0, 129), ramp_layer((0.25, 0.1), 0.25, 129)]
+    for zoom, cx in ((1.0, 0.0), (2.0, 0.25), (3.0, 0.25)):  # all below the hard-block pitch of 3 px per sample
         f = ZV.render_frame(layers, cx, 0.1, zoom, (120, 90), view_width_units=2.0)
         xs = cx + (np.arange(120) + 0.5 - 60) / (120 / (2.0 / zoom))
         want = np.clip(127.5 * (xs + 1.0), 0, 255)
         err = np.abs(f[45, :, 0].astype(float) - want)
         inner = slice(8, 112)  # away from the frame edge
-        assert err[inner].max() < 2.5, (zoom, err[inner].max())
+        assert err[inner].max() < 1.5, (zoom, err[inner].max())
