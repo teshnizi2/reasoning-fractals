@@ -29,6 +29,7 @@ from render import zoomvideo as ZV  # noqa: E402
 BG = (14, 17, 23)
 AMBER = (245, 158, 11)
 MUTED = (136, 147, 171)
+MAP = None  # set in main(): the plane extent of the base layer, so finer layers never draw past the map's edge
 PAIR_Y = 400  # screen y of the pair's centre in the 1080x1350 frame (render/finale.py PORTRAIT)
 CREDIT = "EqR (Huang, Geng, Kolter) · loopscape (Lai, Bao, Quinn, Gilpin)"
 
@@ -72,6 +73,10 @@ def main() -> None:
     if pair:  # the pair's own samples must be the finest thing on screen: drop layers finer than the pair's layer
         layers = [L for L in layers if L.pitch >= pair["pitch"] * 0.999]
         assert layers and abs(layers[-1].pitch - pair["pitch"]) < 1e-9 * max(1.0, pair["pitch"]) + 1e-12, "pair.json does not match any layer of the pack"
+    global MAP
+    b0 = layers[0]
+    MAP = (b0.center[0] - b0.half_width, b0.center[0] + b0.half_width, b0.center[1] - b0.half_width * (b0.ny - 1) / (b0.nx - 1),
+           b0.center[1] + b0.half_width * (b0.ny - 1) / (b0.nx - 1))
     deep = layers[-1]
     end_px = a.end_px if a.end_px else (56.0 if pair else 2.0)
     zoom_end = (end_px / deep.pitch) / (w / a.view_width)
@@ -81,7 +86,8 @@ def main() -> None:
     knee = None
     if zoom1 > 1.5 * zoom_layers:  # beyond the last layer the picture is magnified pixels: go faster there (7 of 10 s on the layers)
         knee = (0.72, float(np.log(zoom_layers) / np.log(zoom1)))
-    cam = ZV.Camera(c0=layers[0].center, c1=c_end, zoom0=1.0, zoom1=zoom1, knee=knee)
+    # swing to the target while the picture is still the whole map (the centre is there by ~x5), then dive
+    cam = ZV.Camera(c0=layers[0].center, c1=c_end, zoom0=1.0, zoom1=zoom1, knee=knee, pan_end=float(np.log(5.0) / np.log(zoom1)))
     move = a.seconds - a.hold - a.finale
     assert move > 3, "not enough time for the move"
     ts = ZV.timeline(a.fps, a.hold, move, a.finale)
@@ -110,6 +116,11 @@ def main() -> None:
         fh, fw = frame.shape[:2]
         k = fw / 1080.0
         fin = 0.0 if not pair else min(1.0, max(0.0, (sec - pair["t_in"]) / FI.CARD_FADE))
+        edge_alpha = 1.0 - ZV._smooth(10.0, 30.0, view[2])  # the map's edge: a hairline while it can be in the frame
+        if edge_alpha > 0.0:
+            x0, y1_ = ZV.to_screen(MAP[0], MAP[2], *view[:3], (fw, fh), view[3])
+            x1, y0_ = ZV.to_screen(MAP[1], MAP[3], *view[:3], (fw, fh), view[3])
+            frame = OV.draw_rect_outline(frame, (x0, y0_, x1, y1_), (88, 104, 140), alpha=0.9 * edge_alpha, width=max(2, int(round(2 * k))))
         if pair:
             frame = FI.draw_finale(frame, pair, sec, view, FI.scaled(FI.SQUARE if square else FI.PORTRAIT, k))
         if not a.no_counter and fin < 1.0:
@@ -134,7 +145,7 @@ def main() -> None:
         if u in (0.0, 1.0) and u in raw_cache:
             return raw_cache[u]
         view = view_at(u, (w, h))
-        raw = ZV.render_frame(layers, view[0], view[1], view[2], (w, h), view_width_units=a.view_width, background=BG)
+        raw = ZV.render_frame(layers, view[0], view[1], view[2], (w, h), view_width_units=a.view_width, background=BG, clip=MAP)
         if u in (0.0, 1.0):
             raw_cache[u] = raw
         return raw

@@ -11,9 +11,9 @@
    "a100_hours": 0.13833333333333334
   },
   "rf-render": {
-   "jobs": 91,
-   "gpu_hours_raw": 35.42194444444443,
-   "a100_hours": 23.439920634920618
+   "jobs": 163,
+   "gpu_hours_raw": 46.058888888888866,
+   "a100_hours": 29.672460317460303
   },
   "rf-eechk": {
    "jobs": 1,
@@ -36,15 +36,15 @@
    "a100_hours": 0.28968253968253965
   },
   "rf-replay": {
-   "jobs": 2,
-   "gpu_hours_raw": 0.13305555555555557,
-   "a100_hours": 0.07603174603174603
+   "jobs": 3,
+   "gpu_hours_raw": 0.21611111111111111,
+   "a100_hours": 0.12349206349206349
   }
  },
  "total": {
-  "jobs": 101,
-  "gpu_hours_raw": 38.40499999999999,
-  "a100_hours": 25.31369047619046
+  "jobs": 174,
+  "gpu_hours_raw": 49.12499999999998,
+  "a100_hours": 31.59369047619046
  },
  "jobs": [
   {
@@ -940,12 +940,12 @@
   {
    "JobID": "5246865_3",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:09:31",
-   "ElapsedRaw": "571",
+   "State": "COMPLETED",
+   "Elapsed": "00:12:12",
+   "ElapsedRaw": "732",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:00:17",
-   "End": "Unknown"
+   "End": "2026-10-17T19:12:29"
   },
   {
    "JobID": "5246865_4",
@@ -960,92 +960,752 @@
   {
    "JobID": "5246865_5",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:08:44",
-   "ElapsedRaw": "524",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:39",
+   "ElapsedRaw": "579",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:01:04",
-   "End": "Unknown"
+   "End": "2026-10-17T19:10:43"
   },
   {
    "JobID": "5246865_6",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:08:44",
-   "ElapsedRaw": "524",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:00",
+   "ElapsedRaw": "600",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:01:04",
-   "End": "Unknown"
+   "End": "2026-10-17T19:11:04"
   },
   {
    "JobID": "5246865_7",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:05:31",
-   "ElapsedRaw": "331",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:31",
+   "ElapsedRaw": "691",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:04:17",
-   "End": "Unknown"
+   "End": "2026-10-17T19:15:48"
   },
   {
    "JobID": "5246865_8",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:05:31",
-   "ElapsedRaw": "331",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:07",
+   "ElapsedRaw": "487",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:04:17",
-   "End": "Unknown"
+   "End": "2026-10-17T19:12:24"
   },
   {
    "JobID": "5246865_9",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:05:15",
-   "ElapsedRaw": "315",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:05",
+   "ElapsedRaw": "605",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:04:33",
-   "End": "Unknown"
+   "End": "2026-10-17T19:14:38"
   },
   {
    "JobID": "5246865_10",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:04:16",
-   "ElapsedRaw": "256",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:09",
+   "ElapsedRaw": "489",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:05:32",
-   "End": "Unknown"
+   "End": "2026-10-17T19:13:41"
   },
   {
    "JobID": "5246865_11",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:00:31",
-   "ElapsedRaw": "31",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:42",
+   "ElapsedRaw": "702",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:09:17",
-   "End": "Unknown"
+   "End": "2026-10-17T19:20:59"
   },
   {
    "JobID": "5246865_12",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:00:31",
-   "ElapsedRaw": "31",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:40",
+   "ElapsedRaw": "520",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:09:17",
-   "End": "Unknown"
+   "End": "2026-10-17T19:17:57"
   },
   {
    "JobID": "5246865_13",
    "JobName": "rf-render",
-   "State": "RUNNING",
-   "Elapsed": "00:00:31",
-   "ElapsedRaw": "31",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:53",
+   "ElapsedRaw": "593",
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:09:17",
-   "End": "Unknown"
+   "End": "2026-10-17T19:19:10"
+  },
+  {
+   "JobID": "5246865_14",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:55",
+   "ElapsedRaw": "595",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:11:17",
+   "End": "2026-10-17T19:21:12"
+  },
+  {
+   "JobID": "5246865_15",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:01",
+   "ElapsedRaw": "661",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:11:17",
+   "End": "2026-10-17T19:22:18"
+  },
+  {
+   "JobID": "5246865_16",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:59",
+   "ElapsedRaw": "599",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:12:32",
+   "End": "2026-10-17T19:22:31"
+  },
+  {
+   "JobID": "5246865_17",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:24",
+   "ElapsedRaw": "684",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:12:32",
+   "End": "2026-10-17T19:23:56"
+  },
+  {
+   "JobID": "5246865_18",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:31",
+   "ElapsedRaw": "691",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:14:18",
+   "End": "2026-10-17T19:25:49"
+  },
+  {
+   "JobID": "5246865_19",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:31",
+   "ElapsedRaw": "631",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:15:18",
+   "End": "2026-10-17T19:25:49"
+  },
+  {
+   "JobID": "5246866_0",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:03",
+   "ElapsedRaw": "603",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:16:18",
+   "End": "2026-10-17T19:26:21"
+  },
+  {
+   "JobID": "5246866_1",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:23",
+   "ElapsedRaw": "563",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:18:18",
+   "End": "2026-10-17T19:27:41"
+  },
+  {
+   "JobID": "5246866_2",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:41",
+   "ElapsedRaw": "641",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:19:18",
+   "End": "2026-10-17T19:29:59"
+  },
+  {
+   "JobID": "5246866_3",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:57",
+   "ElapsedRaw": "657",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:21:18",
+   "End": "2026-10-17T19:32:15"
+  },
+  {
+   "JobID": "5246866_4",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:32",
+   "ElapsedRaw": "632",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:21:18",
+   "End": "2026-10-17T19:31:50"
+  },
+  {
+   "JobID": "5246866_5",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:56",
+   "ElapsedRaw": "596",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:22:32",
+   "End": "2026-10-17T19:32:28"
+  },
+  {
+   "JobID": "5246866_6",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:51",
+   "ElapsedRaw": "531",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:22:32",
+   "End": "2026-10-17T19:31:23"
+  },
+  {
+   "JobID": "5246866_7",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:39",
+   "ElapsedRaw": "519",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:23:56",
+   "End": "2026-10-17T19:32:35"
+  },
+  {
+   "JobID": "5246866_8",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:55",
+   "ElapsedRaw": "655",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:26:18",
+   "End": "2026-10-17T19:37:13"
+  },
+  {
+   "JobID": "5246866_9",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:42",
+   "ElapsedRaw": "582",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:26:18",
+   "End": "2026-10-17T19:36:00"
+  },
+  {
+   "JobID": "5246866_10",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:23",
+   "ElapsedRaw": "443",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:26:32",
+   "End": "2026-10-17T19:33:55"
+  },
+  {
+   "JobID": "5246866_11",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:23",
+   "ElapsedRaw": "503",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:28:18",
+   "End": "2026-10-17T19:36:41"
+  },
+  {
+   "JobID": "5246866_12",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:08",
+   "ElapsedRaw": "608",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:30:18",
+   "End": "2026-10-17T19:40:26"
+  },
+  {
+   "JobID": "5246866_13",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:33",
+   "ElapsedRaw": "513",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:31:32",
+   "End": "2026-10-17T19:40:05"
+  },
+  {
+   "JobID": "5246866_14",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:20",
+   "ElapsedRaw": "440",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:32:18",
+   "End": "2026-10-17T19:39:38"
+  },
+  {
+   "JobID": "5246866_15",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:10",
+   "ElapsedRaw": "610",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:32:18",
+   "End": "2026-10-17T19:42:28"
+  },
+  {
+   "JobID": "5246866_16",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:16",
+   "ElapsedRaw": "616",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:32:32",
+   "End": "2026-10-17T19:42:48"
+  },
+  {
+   "JobID": "5246866_17",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:35",
+   "ElapsedRaw": "575",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:33:18",
+   "End": "2026-10-17T19:42:53"
+  },
+  {
+   "JobID": "5246866_18",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:24",
+   "ElapsedRaw": "504",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:34:18",
+   "End": "2026-10-17T19:42:42"
+  },
+  {
+   "JobID": "5246866_19",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:30",
+   "ElapsedRaw": "690",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:36:18",
+   "End": "2026-10-17T19:47:48"
+  },
+  {
+   "JobID": "5246867_0",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:49",
+   "ElapsedRaw": "589",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:37:18",
+   "End": "2026-10-17T19:47:07"
+  },
+  {
+   "JobID": "5246867_1",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:26",
+   "ElapsedRaw": "626",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:37:18",
+   "End": "2026-10-17T19:47:44"
+  },
+  {
+   "JobID": "5246867_2",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:21",
+   "ElapsedRaw": "561",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:40:19",
+   "End": "2026-10-17T19:49:40"
+  },
+  {
+   "JobID": "5246867_3",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:26",
+   "ElapsedRaw": "446",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:40:19",
+   "End": "2026-10-17T19:47:45"
+  },
+  {
+   "JobID": "5246867_4",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:26",
+   "ElapsedRaw": "626",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:40:32",
+   "End": "2026-10-17T19:50:58"
+  },
+  {
+   "JobID": "5246867_5",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:38",
+   "ElapsedRaw": "638",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:42:32",
+   "End": "2026-10-17T19:53:10"
+  },
+  {
+   "JobID": "5246867_6",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:28",
+   "ElapsedRaw": "448",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:43:19",
+   "End": "2026-10-17T19:50:47"
+  },
+  {
+   "JobID": "5246867_7",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:24",
+   "ElapsedRaw": "444",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:43:19",
+   "End": "2026-10-17T19:50:43"
+  },
+  {
+   "JobID": "5246867_8",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:04",
+   "ElapsedRaw": "664",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:43:19",
+   "End": "2026-10-17T19:54:23"
+  },
+  {
+   "JobID": "5246867_9",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:08:27",
+   "ElapsedRaw": "507",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:45:19",
+   "End": "2026-10-17T19:53:46"
+  },
+  {
+   "JobID": "5246867_10",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:25",
+   "ElapsedRaw": "445",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:47:19",
+   "End": "2026-10-17T19:54:44"
+  },
+  {
+   "JobID": "5246867_11",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:21",
+   "ElapsedRaw": "441",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:48:19",
+   "End": "2026-10-17T19:55:40"
+  },
+  {
+   "JobID": "5246867_12",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:53",
+   "ElapsedRaw": "593",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:48:19",
+   "End": "2026-10-17T19:58:12"
+  },
+  {
+   "JobID": "5246867_13",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:34",
+   "ElapsedRaw": "454",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:48:19",
+   "End": "2026-10-17T19:55:53"
+  },
+  {
+   "JobID": "5246867_14",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:19",
+   "ElapsedRaw": "439",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:50:19",
+   "End": "2026-10-17T19:57:38"
+  },
+  {
+   "JobID": "5246867_15",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:23",
+   "ElapsedRaw": "443",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:51:19",
+   "End": "2026-10-17T19:58:42"
+  },
+  {
+   "JobID": "5246867_16",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:40",
+   "ElapsedRaw": "580",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:51:19",
+   "End": "2026-10-17T20:00:59"
+  },
+  {
+   "JobID": "5246867_17",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:24",
+   "ElapsedRaw": "444",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:51:19",
+   "End": "2026-10-17T19:58:43"
+  },
+  {
+   "JobID": "5246867_18",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:21",
+   "ElapsedRaw": "441",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:53:19",
+   "End": "2026-10-17T20:00:40"
+  },
+  {
+   "JobID": "5246867_19",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:21",
+   "ElapsedRaw": "441",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:54:19",
+   "End": "2026-10-17T20:01:40"
+  },
+  {
+   "JobID": "5246868_0",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:24",
+   "ElapsedRaw": "684",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:54:32",
+   "End": "2026-10-17T20:05:56"
+  },
+  {
+   "JobID": "5246868_1",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:10:15",
+   "ElapsedRaw": "615",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:55:19",
+   "End": "2026-10-17T20:05:34"
+  },
+  {
+   "JobID": "5246868_2",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:28",
+   "ElapsedRaw": "448",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:56:19",
+   "End": "2026-10-17T20:03:47"
+  },
+  {
+   "JobID": "5246868_3",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:22",
+   "ElapsedRaw": "442",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:56:19",
+   "End": "2026-10-17T20:03:41"
+  },
+  {
+   "JobID": "5246868_4",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:07",
+   "ElapsedRaw": "667",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:58:19",
+   "End": "2026-10-17T20:09:26"
+  },
+  {
+   "JobID": "5246868_5",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:51",
+   "ElapsedRaw": "471",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:58:19",
+   "End": "2026-10-17T20:06:10"
+  },
+  {
+   "JobID": "5246868_6",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:25",
+   "ElapsedRaw": "445",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:59:19",
+   "End": "2026-10-17T20:06:44"
+  },
+  {
+   "JobID": "5246868_7",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:19",
+   "ElapsedRaw": "439",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:59:19",
+   "End": "2026-10-17T20:06:38"
+  },
+  {
+   "JobID": "5246868_8",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:09:11",
+   "ElapsedRaw": "551",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:01:19",
+   "End": "2026-10-17T20:10:30"
+  },
+  {
+   "JobID": "5246868_9",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:34",
+   "ElapsedRaw": "454",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:01:19",
+   "End": "2026-10-17T20:08:53"
+  },
+  {
+   "JobID": "5246868_10",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:20",
+   "ElapsedRaw": "440",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:02:19",
+   "End": "2026-10-17T20:09:39"
+  },
+  {
+   "JobID": "5246868_11",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:22",
+   "ElapsedRaw": "442",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:04:19",
+   "End": "2026-10-17T20:11:41"
+  },
+  {
+   "JobID": "5246868_12",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:00:04",
+   "ElapsedRaw": "4",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:04:19",
+   "End": "2026-10-17T20:04:23"
+  },
+  {
+   "JobID": "5246868_13",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:00:03",
+   "ElapsedRaw": "3",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:04:32",
+   "End": "2026-10-17T20:04:35"
+  },
+  {
+   "JobID": "5246868_14",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:00:05",
+   "ElapsedRaw": "5",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:05:19",
+   "End": "2026-10-17T20:05:24"
+  },
+  {
+   "JobID": "5246868_15",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:21",
+   "ElapsedRaw": "441",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:05:32",
+   "End": "2026-10-17T20:12:53"
+  },
+  {
+   "JobID": "5246868_16",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:32",
+   "ElapsedRaw": "452",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:06:20",
+   "End": "2026-10-17T20:13:52"
+  },
+  {
+   "JobID": "5246868_17",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:25",
+   "ElapsedRaw": "445",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:06:20",
+   "End": "2026-10-17T20:13:45"
+  },
+  {
+   "JobID": "5246868_18",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:20",
+   "ElapsedRaw": "440",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:06:20",
+   "End": "2026-10-17T20:13:40"
+  },
+  {
+   "JobID": "5246868_19",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:07:24",
+   "ElapsedRaw": "444",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:07:20",
+   "End": "2026-10-17T20:14:44"
   },
   {
    "JobID": "5247124",
@@ -1056,6 +1716,76 @@
    "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
    "Start": "2026-10-17T19:03:32",
    "End": "2026-10-17T19:09:00"
+  },
+  {
+   "JobID": "5247171_12",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:04:20",
+   "ElapsedRaw": "260",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:52:19",
+   "End": "2026-10-17T19:56:39"
+  },
+  {
+   "JobID": "5247171_13",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:03:57",
+   "ElapsedRaw": "237",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T19:57:19",
+   "End": "2026-10-17T20:01:16"
+  },
+  {
+   "JobID": "5247171_14",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:03:57",
+   "ElapsedRaw": "237",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:01:19",
+   "End": "2026-10-17T20:05:16"
+  },
+  {
+   "JobID": "5247171_15",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:03:57",
+   "ElapsedRaw": "237",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:05:20",
+   "End": "2026-10-17T20:09:17"
+  },
+  {
+   "JobID": "5247171_16",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:04:03",
+   "ElapsedRaw": "243",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:09:20",
+   "End": "2026-10-17T20:13:23"
+  },
+  {
+   "JobID": "5247171_17",
+   "JobName": "rf-render",
+   "State": "CANCELLED by 3263",
+   "Elapsed": "00:01:22",
+   "ElapsedRaw": "82",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:13:32",
+   "End": "2026-10-17T20:14:54"
+  },
+  {
+   "JobID": "5247635",
+   "JobName": "rf-replay",
+   "State": "COMPLETED",
+   "Elapsed": "00:04:59",
+   "ElapsedRaw": "299",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T20:15:05",
+   "End": "2026-10-17T20:20:04"
   }
  ]
 }

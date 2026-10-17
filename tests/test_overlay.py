@@ -47,3 +47,14 @@ def test_caption_pill_sits_behind_the_text_and_grows_with_each_line():
     assert OV.draw_caption(frame, "x", (40, 40), 36, "sans", (232, 236, 245), alpha=0.0).tolist() == frame.tolist()
     # text pixels are light on the dark pill
     assert one[40:80, 40:300].max() > 225
+
+
+def test_draw_rect_outline_draws_only_the_outline_with_the_given_alpha():
+    frame = np.zeros((120, 160, 3), dtype=np.uint8)
+    out = OV.draw_rect_outline(frame, (20, 30, 100, 90), (200, 100, 0), alpha=0.5, width=2)
+    assert frame.sum() == 0 and out is not frame
+    assert out[30, 50].tolist() == [100, 50, 0]          # on the top edge: half the colour
+    assert out[60, 60].sum() == 0                          # the inside is untouched
+    assert OV.draw_rect_outline(frame, (20, 30, 100, 90), (200, 100, 0), alpha=0.0).sum() == 0
+    off = OV.draw_rect_outline(frame, (-500, -500, 5000, 5000), (200, 100, 0), alpha=1.0, width=2)  # edges far off screen: nothing, no crash
+    assert off.sum() == 0

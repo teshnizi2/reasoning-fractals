@@ -153,3 +153,25 @@ def test_camera_without_a_knee_is_unchanged():
     a = ZV.Camera(c0=(0.0, 0.0), c1=(0.2, -0.3), zoom0=1.0, zoom1=4096.0)
     b = ZV.Camera(c0=(0.0, 0.0), c1=(0.2, -0.3), zoom0=1.0, zoom1=4096.0, knee=None)
     assert a.at(0.37) == b.at(0.37) and abs(a.at(0.5)[2] - 64.0) < 1e-6
+
+
+def test_camera_pan_finishes_at_the_requested_progress():
+    cam = ZV.Camera(c0=(0.0, 0.0), c1=(0.8, 0.6), zoom0=1.0, zoom1=1024.0, pan_end=0.2)
+    p = lambda t: np.log(cam.at(t)[2]) / np.log(1024.0)  # noqa: E731
+    ts = np.linspace(0, 1, 2001)
+    reached = [t for t in ts if abs(cam.at(t)[0] - 0.8) < 1e-9]
+    assert reached and p(reached[0]) <= 0.2 + 1e-3          # centre is on the target from progress 0.2 on
+    assert cam.at(0.0)[:2] == (0.0, 0.0)
+    default = ZV.Camera(c0=(0.0, 0.0), c1=(0.8, 0.6), zoom0=1.0, zoom1=1024.0)
+    assert default.pan_end == 0.45                           # the old behaviour stays the default
+
+
+def test_clip_hides_finer_layers_outside_the_given_rectangle():
+    base = ZV.Layer(center=(0.0, 0.0), half_width=1.0, img=np.full((64, 64, 3), (0, 0, 200), np.uint8))
+    fine = ZV.Layer(center=(0.9, 0.0), half_width=0.3, img=np.full((64, 64, 3), (200, 0, 0), np.uint8))  # sticks out past x = 1
+    f = ZV.render_frame([base, fine], 0.9, 0.0, 4.0, (200, 100), view_width_units=2.0, clip=(-1.0, 1.0, -1.0, 1.0), background=(9, 9, 9))
+    # the frame spans x = 0.9 +- 0.25; x > 1.0 is the right 40% of the frame (px >= 120): background there, fine layer's red only for x <= 1
+    assert tuple(f[50, 150]) == (9, 9, 9)                      # beyond the clip: background, not the fine layer
+    assert f[50, 60, 0] > 150 and f[50, 60, 2] < 60             # inside the clip and the fine layer: red
+    f2 = ZV.render_frame([base, fine], 0.9, 0.0, 4.0, (200, 100), view_width_units=2.0, background=(9, 9, 9))
+    assert f2[50, 150, 0] > 150                                  # without the clip the fine layer shows past the edge

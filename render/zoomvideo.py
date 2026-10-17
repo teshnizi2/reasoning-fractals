@@ -22,6 +22,7 @@ class Camera:
     zoom0: float
     zoom1: float
     knee: tuple[float, float] | None = None  # (time fraction, progress in log-zoom) the path passes through, e.g. where the layers end
+    pan_end: float = 0.45  # share of the log-zoom range by which the centre has arrived on the target
 
     def progress(self, t: float) -> float:
         """Share of the log-zoom range covered at time fraction t: smoothstep, or a monotone cubic through the knee."""
@@ -38,7 +39,7 @@ class Camera:
     def at(self, t: float) -> tuple[float, float, float]:
         e = self.progress(t)
         zoom = float(np.exp(np.log(self.zoom0) + (np.log(self.zoom1) - np.log(self.zoom0)) * e))
-        m = _smooth(0.0, 0.45, e)
+        m = _smooth(0.0, self.pan_end, e)
         return (self.c0[0] + (self.c1[0] - self.c0[0]) * m, self.c0[1] + (self.c1[1] - self.c0[1]) * m, zoom)
 
 
@@ -102,8 +103,10 @@ class Layer:
 
 
 def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: tuple[int, int],
-                 view_width_units: float = 2.0, resample=Image.BICUBIC, background: tuple[int, int, int] = (0, 0, 0)) -> np.ndarray:
-    """One frame (height, width, 3) uint8. ``zoom`` 1 shows ``view_width_units`` of plane across the width."""
+                 view_width_units: float = 2.0, resample=Image.BICUBIC, background: tuple[int, int, int] = (0, 0, 0),
+                 clip: tuple[float, float, float, float] | None = None) -> np.ndarray:
+    """One frame (height, width, 3) uint8. ``zoom`` 1 shows ``view_width_units`` of plane across the width.
+    ``clip`` = (xmin, xmax, ymin, ymax) of the plane: nothing is drawn outside it (the map's edge stays straight)."""
     w, h = size
     scale = w / (view_width_units / zoom)  # frame px per plane unit
     prev_pitch_px = 0.0
@@ -112,6 +115,7 @@ def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: t
     py = cy - (yy + 0.5 - h / 2) / scale  # plane y
     out = np.empty((h, w, 3), dtype=np.float64)
     out[:] = background
+    inside_clip = np.ones((h, w), dtype=bool) if clip is None else (px >= clip[0]) & (px <= clip[1]) & (py >= clip[2]) & (py <= clip[3])
     for i, L in enumerate(layers):
         pitch_px = L.pitch * scale
         alpha = 1.0 if i == 0 else layer_alpha(prev_pitch_px)
@@ -121,7 +125,7 @@ def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: t
         # source pixel coordinates: sample k sits at x = centre - hw + k * pitch (pixel centres)
         sx = (px - (L.center[0] - L.half_width)) / L.pitch + 0.5
         sy = ((L.center[1] + L.half_width * (L.ny - 1) / (L.nx - 1)) - py) / L.pitch + 0.5
-        inside = (sx >= 0) & (sx <= L.nx) & (sy >= 0) & (sy <= L.ny)
+        inside = (sx >= 0) & (sx <= L.nx) & (sy >= 0) & (sy <= L.ny) & inside_clip
         if not inside.any():
             continue
         src = Image.fromarray(L.img)

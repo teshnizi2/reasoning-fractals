@@ -75,3 +75,18 @@ def draw_caption(frame: np.ndarray, text: str, xy: tuple[int, int], size: int, f
     for i, ln in enumerate(lines):
         d.text((xy[0], xy[1] + int(i * size * line_gap)), ln, font=f, fill=(*color, int(round(255 * a))))
     return np.asarray(Image.alpha_composite(base, layer).convert("RGB")).copy()
+
+
+def draw_rect_outline(frame: np.ndarray, box: tuple[float, float, float, float], color: tuple[int, int, int], alpha: float = 1.0,
+                      width: int = 2) -> np.ndarray:
+    """Copy of ``frame`` with the outline of ``box`` = (x0, y0, x1, y1) drawn in ``color`` at opacity ``alpha`` (edges off screen are clipped)."""
+    if alpha <= 0.0:
+        return frame.copy()
+    base = Image.fromarray(frame).convert("RGBA")
+    layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    x0, y0, x1, y1 = box
+    if max(abs(v) for v in box) > 20000:  # far off screen: PIL would still try to rasterise it
+        return frame.copy()
+    d.rectangle([x0, y0, x1, y1], outline=(*color, int(round(255 * min(1.0, alpha)))), width=width)
+    return np.asarray(Image.alpha_composite(base, layer).convert("RGB")).copy()
