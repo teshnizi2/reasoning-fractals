@@ -95,7 +95,7 @@ h1 {
 .r-pos b + .lbl { margin-left: 12px; }
 
 /* ---------- legend ---------- */
-.legend { position: absolute; left: calc(26px + var(--safe-l)); bottom: calc(52px + var(--safe-b)); width: 230px; }
+.legend { position: absolute; left: calc(18px + var(--safe-l)); bottom: calc(46px + var(--safe-b)); width: 250px; padding: 9px 10px 8px; border-radius: 12px; background: rgba(14, 17, 23, 0.62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .legend .bar { height: 9px; border-radius: 5px; border: 1px solid rgba(232, 236, 245, 0.18); }
 .legend .ticks { display: flex; justify-content: space-between; margin-top: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
 .legend .ticks .mid { letter-spacing: 0.1em; text-transform: uppercase; font-size: 9.5px; }
@@ -171,7 +171,7 @@ h1 {
 .tiny { margin: 4px 0 0; font-size: 0.78rem; line-height: 1.35; color: var(--muted); }
 
 /* ---------- credit ---------- */
-.credit { position: absolute; left: calc(26px + var(--safe-l)); right: calc(26px + var(--safe-r)); bottom: calc(14px + var(--safe-b)); font-family: var(--mono); font-size: 10px; letter-spacing: 0.02em; color: var(--muted); max-width: 980px; }
+.credit { position: absolute; left: calc(18px + var(--safe-l)); bottom: calc(10px + var(--safe-b)); font-family: var(--mono); font-size: 10px; letter-spacing: 0.02em; color: var(--muted); max-width: min(980px, calc(100% - 36px)); padding: 4px 8px; border-radius: 8px; background: rgba(14, 17, 23, 0.62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .credit a { color: #b9c4de; }
 
 /* ---------- drawer ---------- */
