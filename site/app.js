@@ -148,7 +148,7 @@ function draw() {
     const [sx, sy] = toScreen(L.left, L.top), w = L.w * sc, h = L.h * sc;
     if (sx > S.W || sy > S.H || sx + w < 0 || sy + h < 0 || w < 2) continue;
     ctx.globalAlpha = alpha;
-    ctx.imageSmoothingEnabled = pitchPx < 2.6;
+    ctx.imageSmoothingEnabled = S.smooth || pitchPx < 2.6;
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(im, sx, sy, w, h);
     ctx.globalAlpha = 1;
@@ -375,6 +375,7 @@ cv.addEventListener("wheel", (e) => {
 
 function zoomBy(f) { cancelTour(); zoomAbout(S.W / 2, S.H / 2, f); updateReadout(); }
 function home() { cancelTour(); S.view = { cx: base().center[0], cy: base().center[1], scale: S.fit }; S.dirty = true; updateReadout(); }
+$("btnSmooth").onclick = () => { S.smooth = !S.smooth; S.dirty = true; $("btnSmooth").setAttribute("aria-pressed", String(S.smooth)); };
 $("btnIn").onclick = () => zoomBy(1.8);
 $("btnOut").onclick = () => zoomBy(1 / 1.8);
 $("btnHome").onclick = home;
@@ -420,6 +421,7 @@ addEventListener("keydown", (e) => {
   else if (k === "ArrowUp") { cancelTour(); S.view.cy += step; limitCentre(); S.dirty = true; }
   else if (k === "ArrowDown") { cancelTour(); S.view.cy -= step; limitCentre(); S.dirty = true; }
   else if (k === "c" || k === "C") $("btnWay").click();
+  else if (k === "p" || k === "P") { S.smooth = !S.smooth; S.dirty = true; $("btnSmooth").setAttribute("aria-pressed", String(S.smooth)); }
   else if (k === "t" || k === "T") $("btnTour").click();
   else if (k === "?" || k === "/") openDrawer(drawer.hidden);
   else return;

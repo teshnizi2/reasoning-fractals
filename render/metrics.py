@@ -54,3 +54,12 @@ def outcome_summary(settle: np.ndarray, flags: np.ndarray, gid: np.ndarray, max_
         mean_settle=float(settle.mean()),
         max_settle=int(settle.max()),
     )
+
+
+def adjacent_gap_stats(settle: np.ndarray, thresholds=(1, 2, 5, 10)) -> dict:
+    """How different are neighbouring starts?  Distribution of |settle(p) - settle(q)| over horizontal and vertical
+    neighbour pairs: the fraction of pairs differing by at least each threshold, and the largest gap."""
+    s = np.asarray(settle).astype(np.int64)
+    gaps = np.concatenate([np.abs(np.diff(s, axis=1)).ravel(), np.abs(np.diff(s, axis=0)).ravel()])
+    return dict(n_pairs=int(gaps.size), max_gap=int(gaps.max()), mean_gap=float(gaps.mean()),
+                frac_ge={str(t): float((gaps >= t).mean()) for t in thresholds})

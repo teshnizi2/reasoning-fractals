@@ -32,6 +32,7 @@ def field_report(run: Path, strides: tuple[int, ...]) -> dict:
         name=meta.get("name", run.name), shape=list(z["settle_nb"].shape), precision=meta.get("precision"),
         gpu_seconds=meta.get("gpu_seconds"), mean_loops_computed=meta.get("mean_loops_computed"),
         zoom=spec.get("zoom"), center=spec.get("center"), half_width=spec.get("half_width"),
+        adjacent_gap=M.adjacent_gap_stats(z["settle_nb"]),
         settle_time_metrics={str(s): M.label_metrics(z["settle_nb"][::s, ::s]) for s in strides if min(z["settle_nb"].shape) // s >= 20},
     )
     # outcome labels (which grid each start ends on) when there is more than one outcome

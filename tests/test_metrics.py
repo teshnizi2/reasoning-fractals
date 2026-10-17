@@ -38,3 +38,11 @@ def test_outcome_summary_counts_solved_censored_and_distinct():
     s = M.outcome_summary(settle, flags, gid)
     assert s["frac_solved"] == 0.75 and s["n_outcomes"] == 2 and s["n_wrong_outcomes"] == 1
     assert s["settle_hist"][3] == 2 and s["mean_settle"] == pytest.approx(5.0)
+
+
+def test_adjacent_gap_stats_counts_neighbour_differences():
+    s = np.array([[2, 2, 9, 9], [2, 12, 12, 2]], dtype=np.uint8)
+    g = M.adjacent_gap_stats(s, thresholds=(1, 5, 10))
+    # horizontal pairs: |2-2|=0 |2-9|=7 |9-9|=0 | |2-12|=10 |12-12|=0 |12-2|=10 ; vertical: 0 10 3 7
+    assert g["n_pairs"] == 10 and g["max_gap"] == 10
+    assert g["frac_ge"] == {"1": 7 / 10, "5": 5 / 10, "10": 3 / 10}

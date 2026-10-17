@@ -50,6 +50,13 @@
    "seconds": 17.31423282623291,
    "rollouts_per_s": 0.9240952319734487,
    "gpu_util_after_pct": 99
+  },
+  {
+   "label": "stock-loopscape-mps",
+   "batch": 64,
+   "seconds": 74.48158478736877,
+   "rollouts_per_s": 0.859272801226078,
+   "gpu_util_after_pct": 98
   }
  ]
 }
