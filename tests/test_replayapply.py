@@ -83,3 +83,13 @@ def test_roughness_summary_counts_reproduction_and_nudge_stability_per_stratum()
     assert s["rough0"] == dict(n=2, reproduced=2, nudge_stable=1, mean_max_change=0.5)
     assert s["rough5"]["n"] == 2 and s["rough5"]["reproduced"] == 1 and s["rough5"]["nudge_stable"] == 1
     assert abs(s["rough5"]["mean_max_change"] - (4.0 + 0.0) / 2) < 1e-9  # max |nudged - plain| per item: 11 vs 7, 12, 9 -> 4; 10 vs 10, 10, 10 -> 0
+
+
+def test_median_criterion_accepts_a_pair_whose_order_mostly_survives_the_nudges():
+    a, b = finale_items("kf07", 0, 3, 14)
+    plan = [a, b]
+    res = [result(a, nudged=[3, 3, 3, 4, 3]), result(b, nudged=[2, 12, 9, 13, 11])]  # one nudge flips the order (b=2 < a=3)
+    assert RA.pick_finale(plan, res, pitches={"kf07": 3e-5}, solution=SOL, min_robust_gap=3) is None  # strict: every run must keep the gap
+    soft = RA.pick_finale(plan, res, pitches={"kf07": 3e-5}, solution=SOL, min_robust_gap=3, criterion="median")
+    assert soft is not None and soft["verified"]["criterion"] == "median" and soft["verified"]["runs_keeping_order"] == 5  # plain + 4 of 5 nudged
+    assert RA.pick_finale(plan, res, pitches={"kf07": 3e-5}, solution=SOL, min_robust_gap=3)  is None

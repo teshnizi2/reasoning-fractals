@@ -50,6 +50,9 @@ def main() -> None:
         spec = json.loads((ROOT / k / "spec.json").read_text())
         pitches[Path(k).name] = 2 * spec["half_width"] / (TR.spec_dims(spec)[1] - 1)
     best = RA.pick_finale(plan, res, pitches, P.ASSET.answer, min_robust_gap=a.min_robust_gap)
+    if best is None:  # no pair keeps its gap in every nudged re-run: fall back to the median criterion and say so
+        best = RA.pick_finale(plan, res, pitches, P.ASSET.answer, min_robust_gap=a.min_robust_gap, criterion="median")
+        print("no pair passed the strict robustness test; using the median criterion" if best else "no finale pair found")
 
     by_id = {r["id"]: r for r in res}
     kinds: dict[str, dict] = {}

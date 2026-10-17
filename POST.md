@@ -6,13 +6,13 @@ Every number below comes from `results/` (the sources are listed at the end). No
 
 I gave a small Sudoku-solving model the same puzzle 4.2 million times and changed only its first "thought".
 
-Each pixel is one starting thought. Colour is how many loops the model needs before its answer stops changing. The map is a fractal: 12% of neighbouring pixels differ by five loops or more.
+Each pixel is one starting thought; colour is how many loops the model needs before its answer stops changing. The map is a fractal: 12% of neighbouring pixels differ by five loops or more.
 
-99.9% of them still reach the right grid. The fractal is in how long it thinks, not in whether it gets there.
+99.9% still reach the right grid. The fractal is in how long it thinks, not whether it gets there.
 
-I rebuilt the loopscape figure (Lai, Bao, Quinn, Gilpin) on A100s. Boundary dimension 1.853, theirs 1.852. One caveat I did not expect: nudge a start by one part in a million and a speckle pixel's loop count moves, while a smooth-region pixel almost never does.
+I rebuilt the loopscape figure (Lai, Bao, Quinn, Gilpin) on A100s: boundary dimension 1.853 against their 1.852. One caveat: nudge a start by one part in a million and a speckle pixel's loop count moves. Smooth regions don't care.
 
-Zoom video and a click-a-pixel explorer attached.
+Zoom video and click-a-pixel explorer attached.
 
 ## Alternative hooks
 

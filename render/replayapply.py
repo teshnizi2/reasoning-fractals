@@ -66,9 +66,12 @@ def _monotone(trace: list[str], solution: str, settle: int) -> bool:
     return not any(eq[:settle]) and all(eq[settle:])
 
 
-def pick_finale(plan: list[dict], results: list[dict], pitches: dict[str, float], solution: str, min_robust_gap: int = 3) -> dict | None:
-    """Best neighbouring pair of a keyframe for the video: both verified, monotone, and the slow/fast ordering with a gap of
-    at least ``min_robust_gap`` loops survives every nudged re-run.  Ranked by that robust gap, then depth, then stored gap."""
+def pick_finale(plan: list[dict], results: list[dict], pitches: dict[str, float], solution: str, min_robust_gap: int = 3,
+                criterion: str = "strict") -> dict | None:
+    """Best neighbouring pair of a keyframe for the video: both verified, monotone, and the slow/fast ordering survives
+    the rounding-sized nudges.  ``strict``: every re-run keeps a gap of at least ``min_robust_gap`` loops; ``median``: the
+    median gap over the plain and nudged runs is at least that and the order holds in all but one run.  Ranked by the
+    robust (or median) gap, then depth, then stored gap."""
     groups = _groups(plan, results)
     best = None
     for (layer, kind, gi), g in groups.items():
@@ -84,7 +87,15 @@ def pick_finale(plan: list[dict], results: list[dict], pitches: dict[str, float]
             continue
         sgn = 1 if tb > ta else -1
         gaps = [sgn * (tb - ta)] + [sgn * (nb - na) for na, nb in zip(ra["nudged"], rb["nudged"])]
-        robust = min(gaps)
+        keeping = sum(1 for g in gaps if g > 0)
+        if criterion == "strict":
+            robust = min(gaps)
+        elif criterion == "median":
+            robust = sorted(gaps)[len(gaps) // 2]
+            if keeping < len(gaps) - 1:
+                continue
+        else:
+            raise ValueError(f"unknown criterion {criterion!r}")
         if robust < min_robust_gap:
             continue
         score = (robust, -pitches[layer], abs(tb - ta))
@@ -93,7 +104,7 @@ def pick_finale(plan: list[dict], results: list[dict], pitches: dict[str, float]
                 layer=layer, gap=abs(tb - ta), pitch=pitches[layer], render_row=pa["row"], col=pa["col"],
                 a=dict(x=pa["x"], y=pa["y"], settle=ta, trace=ra["trace"], label="A"),
                 b=dict(x=pb["x"], y=pb["y"], settle=tb, trace=rb["trace"], label="B"),
-                verified=dict(robust_gap=robust, a_range=[min([ta] + ra["nudged"]), max([ta] + ra["nudged"])],
+                verified=dict(criterion=criterion, robust_gap=robust, runs_keeping_order=keeping, runs=len(gaps), a_range=[min([ta] + ra["nudged"]), max([ta] + ra["nudged"])],
                               b_range=[min([tb] + rb["nudged"]), max([tb] + rb["nudged"])], nudged_runs=len(ra["nudged"])),
             ))
     return best[1] if best else None
