@@ -44,7 +44,14 @@ Final report is <= 300 words and must include ALICE job IDs, GPU-hours used, wha
 - Asset puzzle IDENTIFIED: `blake2s(question, digest_size=8).hexdigest()` == 7d68927f389fbdaa for
   `2.6..4.9..7....6..8.......27.9.3..2..8.4.2......7.95..3.79...4.......3.6.1...3...` (rating 47, 422,786-row
   test.csv from HF sapientinc/sudoku-extreme, saved in data/raw/sudoku-extreme/).
-- NEXT: probe this puzzle under the notebook parametrisation; if still no match, scan z0/h variants.
+- **Probe on the asset puzzle (notebook parametrisation: z_H = a*u + b*v, z_L = 0, (a,b) in [-1,1]^2, plane seed 0,
+  24 loops, noise 0) on 196 pixels of the asset's own grid: orientation `xy_fy` (asset row 0 = y = +1, i.e.
+  imshow origin='lower'), asset level = settle_nb - 2 (levels 0..10 = T 2..12, top level saturated), pixel
+  agreement 67%, Spearman 0.92 (all other 7 orientations: agreement 13-24%, |rho| < 0.27).** Contingency: the
+  smooth low-T regions match 100% (levels 0-1: 42/42; level 2: 47/51), mismatches sit in the speckled
+  high-T fractal dust, where outcomes are sensitive to floating-point details (MLX vs the authors' stack).
+  Files: results/repro/probe_r47_k14.{json,raw.npz,npz}. (Notebook puzzle probe, 576 px: results/repro/probe_k24.*)
+- ALICE: env built (torch 2.14.1+cu130, ~/reasoning-fractals/env), code pushed, smoke job 5246129 submitted.
 
 ## Compute facts (measured)
 - One 24-step rollout = 21 L-level calls/step x 2 layers; ~0.615 TFLOP fp32 per rollout.

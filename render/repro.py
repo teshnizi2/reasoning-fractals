@@ -58,12 +58,18 @@ def aligned_indices(k: int, n: int) -> np.ndarray:
     return idx
 
 
-def best_shift_agreement(levels: np.ndarray, t: np.ndarray, max_shift: int = 40) -> tuple[int, float]:
-    """Best integer s so that level == t - s most often; returns (s, fraction of agreeing pixels)."""
+def best_shift_agreement(levels: np.ndarray, t: np.ndarray, max_shift: int = 40,
+                         clip_top: int | None = None) -> tuple[int, float]:
+    """Best integer s so that level == t - s most often; returns (s, fraction of agreeing pixels).
+
+    With ``clip_top`` the shifted times are clipped to [0, clip_top] first, as the asset's colormap
+    saturates (its lightest colour stands for every slow pixel).
+    """
     levels, t = np.asarray(levels).astype(np.int64), np.asarray(t).astype(np.int64)
     best = (0, -1.0)
     for s in range(-max_shift, max_shift + 1):
-        f = float((levels == t - s).mean())
+        shifted = t - s if clip_top is None else np.clip(t - s, 0, clip_top)
+        f = float((levels == shifted).mean())
         if f > best[1]:
             best = (s, f)
     return best
@@ -94,3 +100,15 @@ def variant_sample(a: np.ndarray, name: str) -> np.ndarray:
     ii = k - 1 - i if fy else i
     jj = k - 1 - j if fx else j
     return a[jj, ii] if swap else a[ii, jj]
+
+
+def neighbour_disagreement(img: np.ndarray, rows: np.ndarray, cols: np.ndarray) -> np.ndarray:
+    """For each pixel (row, col): how many of its (up to 8) neighbours carry a different level."""
+    h, w = img.shape
+    out = np.zeros(len(rows), dtype=np.int64)
+    for k, (r, c) in enumerate(zip(rows, cols)):
+        for dr in (-1, 0, 1):
+            for dc in (-1, 0, 1):
+                if (dr or dc) and 0 <= r + dr < h and 0 <= c + dc < w and img[r + dr, c + dc] != img[r, c]:
+                    out[k] += 1
+    return out

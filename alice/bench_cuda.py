@@ -36,7 +36,7 @@ from render import sudoku as S  # noqa: E402
 from render import tilerun as TR  # noqa: E402
 from render.engine import Engine  # noqa: E402
 
-PUZZLE = ".....6.....7.3.4..5..8.....9.8.7.3...1.....9...498.7....2....4387....2......2...."
+PUZZLE = "2.6..4.9..7....6..8.......27.9.3..2..8.4.2......7.95..3.79...4.......3.6.1...3..."  # the asset's puzzle
 OUT: Path
 RES: dict = {}
 
@@ -73,10 +73,10 @@ def main() -> None:
     sp = Path("data/asset_samples.npz")
     if sp.exists():
         z = np.load(sp)
-        xi, yi, levels = z["xi"], z["yi"], z["levels"]
+        xi, yi, levels, nbr = z["xi"], z["yi"], z["levels"], z["nbr_diff"]
     else:
         rng = np.random.default_rng(0)
-        xi, yi, levels = rng.integers(0, 1000, 4096), rng.integers(0, 1000, 4096), None
+        xi, yi, levels, nbr = rng.integers(0, 1000, 4096), rng.integers(0, 1000, 4096), None, None
     coords = np.stack([ax[xi], ax[yi]], axis=-1)
     RES["n_sample_pixels"] = int(len(coords))
 
@@ -103,8 +103,17 @@ def main() -> None:
         agree = dict(seconds=r["seconds"], frac_solved=float(r["solved"].mean()),
                      frac_censored=float(r["censored"].mean()), settle_hist=np.bincount(r["settle_nb"], minlength=25).tolist())
         if levels is not None:
-            shift, frac = R.best_shift_agreement(levels, r["settle_nb"])
-            agree.update(asset_best_shift=shift, asset_agreement=frac, asset_spearman=R.spearman(levels, r["settle_nb"]))
+            shift, frac = R.best_shift_agreement(levels, r["settle_nb"], clip_top=10)
+            clipped = np.clip(r["settle_nb"].astype(int) - shift, 0, 10)
+            interior = nbr == 0
+            agree.update(
+                asset_best_shift=shift, asset_agreement=frac, asset_spearman=R.spearman(levels, r["settle_nb"]),
+                asset_agreement_interior=float((levels == clipped)[interior].mean()),
+                asset_agreement_boundary=float((levels == clipped)[~interior].mean()),
+                frac_interior=float(interior.mean()),
+                agreement_by_level=[float((clipped[levels == k] == k).mean()) if (levels == k).any() else None
+                                    for k in range(11)],
+            )
         if prec == "fp32":
             base = r
         else:

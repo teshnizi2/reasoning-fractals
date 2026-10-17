@@ -106,3 +106,19 @@ def test_best_shift_agreement_accepts_uint8_fields_and_negative_shifts():
     levels = np.array([1, 2, 3, 4, 4, 5], dtype=np.uint8)  # t + 1, i.e. shift = -1
     shift, frac = R.best_shift_agreement(levels, t)
     assert shift == -1 and frac == 1.0
+
+
+def test_best_shift_agreement_can_clip_to_the_asset_top_level():
+    # the asset's lightest colour is a saturated level: every slow pixel (T >= 12) maps to level 10
+    t = np.array([2, 3, 12, 13, 18, 23])
+    levels = np.array([0, 1, 10, 10, 10, 10])
+    assert R.best_shift_agreement(levels, t)[1] < 1.0
+    shift, frac = R.best_shift_agreement(levels, t, clip_top=10)
+    assert shift == 2 and frac == 1.0
+
+
+def test_neighbour_disagreement_counts_differing_neighbours():
+    img = np.zeros((5, 5), dtype=np.uint8)
+    img[2, 2] = 1
+    d = R.neighbour_disagreement(img, np.array([2, 0, 1]), np.array([2, 0, 2]))
+    assert d.tolist() == [8, 0, 1]  # centre differs from all 8; corner has none; (1,2) differs from the centre only

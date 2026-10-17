@@ -29,9 +29,11 @@ def main() -> None:
     flat = rng.choice(n * n, size=a.n, replace=False)
     r, c = np.divmod(flat, n)
     xi, yi = R.variant_axes(a.variant, r, c, n)
+    nbr = R.neighbour_disagreement(levels, r, c)
     np.savez(ROOT / "data/asset_samples.npz", xi=xi.astype(np.int64), yi=yi.astype(np.int64),
-             levels=levels[r, c], rows=r, cols=c, variant=a.variant, n_asset=n)
-    print("saved", a.n, "samples; level histogram", np.bincount(levels[r, c], minlength=11).tolist())
+             levels=levels[r, c], rows=r, cols=c, nbr_diff=nbr, variant=a.variant, n_asset=n)
+    print("saved", a.n, "samples; level histogram", np.bincount(levels[r, c], minlength=11).tolist(),
+          "| interior (no differing neighbour):", float((nbr == 0).mean()))
 
 
 if __name__ == "__main__":
