@@ -41,6 +41,11 @@ def _smooth(a: float, b: float, x: float) -> float:
     return t * t * (3 - 2 * t)
 
 
+def _smooth_arr(a: float, b: float, x: np.ndarray) -> np.ndarray:
+    t = np.clip((x - a) / (b - a), 0.0, 1.0)
+    return t * t * (3 - 2 * t)
+
+
 def to_screen(px: float, py: float, cx: float, cy: float, zoom: float, size: tuple[int, int],
               view_width_units: float = 2.0) -> tuple[float, float]:
     """Continuous frame coordinates (x right, y down, pixel i spans [i, i+1)) of the plane point (px, py)."""
@@ -56,6 +61,7 @@ def shifted_center(px: float, py: float, zoom: float, size: tuple[int, int], vie
     return (px - offset[0] / scale, py + offset[1] / scale)
 
 
+FEATHER = 20.0  # samples over which a finer layer fades out towards the edge of its footprint
 BLOCKS_FROM, BLOCKS_TO = 3.0, 8.0  # on-screen px per sample between which smooth resampling turns into hard blocks
 
 
@@ -120,6 +126,9 @@ def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: t
         if hard > 0.0:
             blocks = np.asarray(src.transform((w, h), Image.AFFINE, params, resample=Image.NEAREST, fillcolor=(0, 0, 0)), dtype=np.float64)
             warped = warped * (1.0 - hard) + blocks * hard
-        mask = (inside.astype(np.float64) * alpha)[..., None]
+        mask = inside.astype(np.float64) * alpha
+        if i > 0:  # fade a finer layer out over its last FEATHER samples so its footprint never ends in a hard rectangle
+            mask = mask * _smooth_arr(0.0, FEATHER, np.minimum.reduce([sx, L.nx - sx, sy, L.ny - sy]))
+        mask = mask[..., None]
         out = out * (1 - mask) + warped * mask
     return np.clip(np.rint(out), 0, 255).astype(np.uint8)

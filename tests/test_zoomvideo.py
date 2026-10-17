@@ -121,3 +121,16 @@ def test_timeline_holds_moves_and_parks_the_camera():
     assert ts[:10] == [0.0] * 10 and ts[-15:] == [1.0] * 15
     mid = ts[10:30]
     assert mid[0] == 0.0 and abs(mid[-1] - 1.0) < 1e-12 and all(b >= a for a, b in zip(mid, mid[1:]))
+
+
+def test_finer_layers_fade_out_towards_their_footprint_edge_instead_of_ending_in_a_hard_rectangle():
+    base = ZV.Layer(center=(0.0, 0.0), half_width=1.0, img=np.full((64, 64, 3), (0, 0, 200), np.uint8))
+    fine = ZV.Layer(center=(0.0, 0.0), half_width=0.25, img=np.full((128, 128, 3), (200, 0, 0), np.uint8))
+    # zoom 3: the fine layer's footprint (half-width 0.25 = 1/4 of the plane) is 0.5 * 3 / 2 = 75% of the frame wide
+    f = ZV.render_frame([base, fine], 0.0, 0.0, 3.0, (200, 200), view_width_units=2.0)
+    row = f[100].astype(int)
+    assert row[100, 0] == 200 and row[100, 2] == 0           # centre: fine layer only
+    assert row[2, 2] == 200 and row[2, 0] == 0                # far outside the footprint: base only
+    steps = np.abs(np.diff(row[:, 0]))
+    assert steps.max() < 60, steps.max()                      # no hard edge: the change from red to blue is spread over many pixels
+    assert 5 < np.count_nonzero((row[:, 0] > 20) & (row[:, 0] < 180)) < 80  # but it is a ramp, not a global blend
