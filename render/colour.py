@@ -102,8 +102,8 @@ COLOURWAYS: dict[str, Colourway] = {
     # the series palette: page background -> slate -> ember -> amber #f59e0b -> cream; stuck answers go ice-cyan
     "series": _make(
         "series",
-        [(0.00, "#0e1117"), (0.12, "#151b2b"), (0.28, "#232a40"), (0.44, "#4a3a3c"), (0.58, "#8a5a22"),
-         (0.72, "#d98a0f"), (0.84, "#f59e0b"), (0.93, "#fcc95a"), (1.00, "#fff1c9")],
+        [(0.00, "#0e1117"), (0.10, "#131b2d"), (0.20, "#1c2a47"), (0.32, "#2c3d62"), (0.44, "#4b4863"),
+         (0.56, "#7d5530"), (0.70, "#d98a0f"), (0.82, "#f59e0b"), (0.92, "#fcc95a"), (1.00, "#fff1c9")],
         [(0.00, "#0d1a1f"), (0.30, "#0f4c5c"), (0.60, "#1fb8d1"), (1.00, "#d6f6ff")],
         (255, 244, 214),
     ),

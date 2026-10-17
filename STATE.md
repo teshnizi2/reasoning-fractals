@@ -70,6 +70,19 @@ Final report is <= 300 words and must include ALICE job IDs, GPU-hours used, wha
 - Jobs in flight: 5246208 (repro250 array 0-3, fp32, asset grid stride 4), 5246207 (stock loopscape path on the same
   pixels), 5246238 (puzzle scan).
 
+## Reproduction verdict (RUNS row 2, job 5246208)
+Asset puzzle + notebook slice (z_H = a*u + b*v, z_L = 0, plane seed 0, h = 1), fp32, on the asset's own 250x250 grid
+(every 4th pixel, orientation y-up): 64.4% of 62,500 pixels identical; **99.94% identical where the upstream image is
+locally flat (33% of pixels)**, 48.1% in the filaments; Spearman 0.889; basin entropy 1.416 vs 1.412, S_bb 1.557 vs
+1.552, boundary dimension 1.873 vs 1.872; level histogram within ~1%. Verdict: structure and statistics reproduced;
+pixel-exact only where outcomes are numerically stable (the filaments are float32-order sensitive, see stock check).
+Figure: results/repro/repro250_side_by_side.png.
+
+## ALICE capacity note
+Full A100s were saturated (dream-engine training + other users: scheduler start estimates 40-60 min apart), so
+production jobs after the first bursts request A100 **MIG slices** (`--gres=gpu:4g.40gb:1`, A100 silicon, gpu-short)
+instead of `gpu:a100:1`. Same architecture and fp32 semantics; slower per slice (~4/7 of an A100). Mentioned in the report.
+
 ## Compute facts (measured)
 - One 24-step rollout = 21 L-level calls/step x 2 layers; ~0.615 TFLOP fp32 per rollout.
 - Stock loopscape path: ~1 rollout/s on MPS (B=16..128), 0.53/s on CPU (10 cores). GPU is shared: fp32 matmul
