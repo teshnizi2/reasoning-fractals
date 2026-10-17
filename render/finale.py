@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw
 
 from . import inset as IN
 from . import zoomvideo as ZV
-from .overlay import draw_text, load_font
+from .overlay import load_font
 
 CARD_FADE = 0.7      # seconds for rings and cards to fade in
 REPLAY_DELAY = 0.5   # seconds between the cards being up and the first loop
@@ -20,9 +20,9 @@ AMBER = (245, 158, 11)
 WHITE = (232, 236, 245)
 
 # 1080x1350 frame: pair of blocks at pair_y (screen y of the pair's centre), two cards side by side below it
-PORTRAIT = dict(pair_y=420, card_size=396, card_y=780, gap=36)
+PORTRAIT = dict(pair_y=400, card_size=470, card_y=725, gap=30)
 # 1080x1080 centre crop of the same frame (crop top = 135): the pair sits 135 px higher, cards are smaller
-SQUARE = dict(pair_y=420 - 135 + 20, card_size=320, card_y=600, gap=36)
+SQUARE = dict(pair_y=400 - 135, card_size=380, card_y=555, gap=30)
 
 
 def scaled(layout: dict, k: float) -> dict:
@@ -63,9 +63,11 @@ def draw_finale(frame: np.ndarray, spec: dict, sec: float, view: tuple[float, fl
     for key, col in (("a", AMBER), ("b", WHITE)):
         s = spec[key]
         sx, sy = ZV.to_screen(s["x"], s["y"], cx, cy, zoom, (w, h), vw)
+        d.rectangle([sx - half - ring_w - 2, sy - half - ring_w - 2, sx + half + ring_w + 2, sy + half + ring_w + 2], outline=(14, 17, 23, int(al * 0.8)), width=ring_w + 4)
         d.rectangle([sx - half - ring_w, sy - half - ring_w, sx + half + ring_w, sy + half + ring_w], outline=(*col, al), width=ring_w)
         card_top = (x_cards[key] + size / 2, y_card - 8)
-        d.line([(sx, sy + half + ring_w), card_top], fill=(*col, int(al * 0.75)), width=2)
+        d.line([(sx, sy + half + ring_w), card_top], fill=(14, 17, 23, int(al * 0.85)), width=6)  # dark underlay: stays visible on busy colours
+        d.line([(sx, sy + half + ring_w), card_top], fill=(*col, int(al * 0.9)), width=3)
         f = load_font("mono", max(14, int(c * 0.8)))
         bb = d.textbbox((0, 0), s["label"], font=f)
         d.text((sx - (bb[2] - bb[0]) / 2 - bb[0], sy - half - ring_w - (bb[3] - bb[1]) - 12 - bb[1]), s["label"], font=f, fill=(*col, al))
@@ -75,8 +77,6 @@ def draw_finale(frame: np.ndarray, spec: dict, sec: float, view: tuple[float, fl
         s = spec[key]
         grid = spec["puzzle"] if loop == 0 else s["trace"][loop - 1]
         title = f"{s['label']} · settles in {s['settle']} loops"
-        out = IN.draw_sudoku(out, grid, spec["puzzle"], spec["solution"], (x_cards[key], y_card), size, loop, s["settle"], title=title, alpha=fade)
-    bottom = y_card + IN.HEADER + c * 9 + 10
-    out = draw_text(out, f"loop {loop}" if loop else "loop 0", (int(w / 2 - 3.2 * c), int(bottom + 14)), max(16, int(c * 0.8)), "mono",
-                    (190, 198, 214), alpha=fade)
+        out = IN.draw_sudoku(out, grid, spec["puzzle"], spec["solution"], (x_cards[key], y_card), size, loop, s["settle"], title=title, alpha=fade,
+                             loop_label=f"loop {loop}")
     return out

@@ -29,7 +29,7 @@ from render import zoomvideo as ZV  # noqa: E402
 BG = (14, 17, 23)
 AMBER = (245, 158, 11)
 MUTED = (136, 147, 171)
-PAIR_Y = 420  # screen y of the pair's centre in the 1080x1350 frame
+PAIR_Y = 400  # screen y of the pair's centre in the 1080x1350 frame (render/finale.py PORTRAIT)
 CREDIT = "EqR (Huang, Geng, Kolter) · loopscape (Lai, Bao, Quinn, Gilpin)"
 
 
