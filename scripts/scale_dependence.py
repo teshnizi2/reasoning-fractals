@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """How complex is the settle-time field at different pixel pitches?  (the paper's App. E question)
 
+Settle times are clipped to 2..12 (the upstream image's 11 levels) so every row uses the same labels.
 Basin entropy and boundary dimension (loopscape.metrics, 5x5 boxes, eps = 1..5 px) of: the upstream image at several
 strides, our 250x250 reproduction, the hero at several strides (if rendered), and the small zoom windows of the chase
 jobs.  Writes results/scale_dependence.json and results/figures/scale_dependence.png.  A boundary dimension that falls
@@ -43,15 +44,15 @@ def main():
     rp = np.load(ROOT / "results/repro/repro250_field.npz")["settle_nb"]
     rows.append(entry("ours, 250x250 (asset grid, fp32)", np.clip(rp.astype(int) - 2, 0, 10), 2.0 / 999 * 4, "results/repro/repro250_field.npz"))
     if a.hero:
-        h = np.load(ROOT / a.hero / "field.npz")["settle_nb"]
+        h = np.clip(np.load(ROOT / a.hero / "field.npz")["settle_nb"], 2, 12)  # the upstream image's 11 levels (top one saturated)
         for s in (1, 2, 4, 8):
-            rows.append(entry(f"hero 2048x2048, every {s}th pixel", h[::s, ::s], 2.0 / 2047 * s, "hero"))
+            rows.append(entry(f"hero 2048x2048, every {s}th pixel", h[::s, ::s], 2.0 / 2047 * s, "hero (settle time clipped to 2..12)"))
     for d in a.chase:
         d = Path(ROOT / d)
         meta = json.loads((d / "chase.json").read_text())
         for lv in meta["levels"]:
             z = np.load(d / f"level{lv['level']}.npz")
-            rows.append(entry(f"window x{lv['zoom']:g} (160x160, {d.name})", z["settle_nb"], 2 * lv["half_width"] / (lv["n"] - 1), f"{d.name}/level{lv['level']}"))
+            rows.append(entry(f"window x{lv['zoom']:g} (160x160, {d.name})", np.clip(z["settle_nb"], 2, 12), 2 * lv["half_width"] / (lv["n"] - 1), f"{d.name}/level{lv['level']} (settle time clipped to 2..12)"))
     rows.sort(key=lambda r: -r["pitch"])
     out = ROOT / a.out
     out.write_text(json.dumps(dict(script="scripts/scale_dependence.py", rows=rows), indent=1))

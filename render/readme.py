@@ -115,6 +115,10 @@ def load_numbers(root: Path) -> dict[str, Any]:
         for t, v in (g.get("frac_ge") or {}).items():
             N[f"hero.gap_ge{t}"] = v
         N["hero.max_gap"] = g.get("max_gap")
+        for stride, mm in (h.get("settle_time_metrics_clipped") or {}).items():
+            N.update({f"hero.c{stride}.sb": mm["basin_entropy"], f"hero.c{stride}.sbb": mm["boundary_basin_entropy"],
+                      f"hero.c{stride}.alpha": mm["uncertainty_exponent"], f"hero.c{stride}.d": mm["boundary_dimension"],
+                      f"hero.c{stride}.boxes": mm["boundary_box_fraction"], f"hero.c{stride}.shape": mm["shape"][0]})
         for stride, mm in (h.get("settle_time_metrics") or {}).items():
             N.update({f"hero.s{stride}.sb": mm["basin_entropy"], f"hero.s{stride}.sbb": mm["boundary_basin_entropy"],
                       f"hero.s{stride}.alpha": mm["uncertainty_exponent"], f"hero.s{stride}.d": mm["boundary_dimension"],
@@ -238,6 +242,9 @@ def tables_results(root: Path, N: dict[str, Any]) -> dict[str, str]:
             [[f"hero, every {st}th pixel" if st != "1" else "hero, every pixel", fmt(2.0 / (N[f"hero.s{st}.shape"] * int(st) - 1), "sci1"),
               fmt(N[f"hero.s{st}.boxes"], "pct0"), fmt(N[f"hero.s{st}.sb"], "f3"), fmt(N[f"hero.s{st}.sbb"], "f3"), fmt(N[f"hero.s{st}.alpha"], "f3"),
               fmt(N[f"hero.s{st}.d"], "f3")] for st in ("1", "2", "4") if f"hero.s{st}.sb" in N]
+            + ([[f"hero, every {st}th pixel, labels clipped to the upstream's 11 levels", fmt(2.0 / (N[f"hero.c{st}.shape"] * int(st) - 1), "sci1"),
+                 fmt(N[f"hero.c{st}.boxes"], "pct0"), fmt(N[f"hero.c{st}.sb"], "f3"), fmt(N[f"hero.c{st}.sbb"], "f3"), fmt(N[f"hero.c{st}.alpha"], "f3"),
+                 fmt(N[f"hero.c{st}.d"], "f3")] for st in ("2",) if f"hero.c{st}.sb" in N])
             + ([["upstream image, 1000 x 1000 (metrics computed by us from its 11 colour levels)", fmt(2.0 / (N["up.side"] - 1), "sci1"), fmt(N["up.boxes"], "pct0"),
                  fmt(N["up.sb"], "f3"), fmt(N["up.sbb"], "f3"), fmt(N["up.alpha"], "f3"), fmt(N["up.d"], "f3")]] if "up.sb" in N else []))
     ra = _read(root, "results/replay_agreement.json")

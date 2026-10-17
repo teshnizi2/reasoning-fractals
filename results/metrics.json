@@ -1,0 +1,355 @@
+{
+ "script": "scripts/compute_metrics.py",
+ "method": "basin entropy S_b and boundary entropy S_bb (Daza et al. 2016) over non-overlapping 5x5 boxes; uncertainty exponent alpha from the fraction of pixel pairs at separation 1..5 px with different labels, boundary dimension 2 - alpha (McDonald et al. 1985); labels = settle time (loops until the decoded grid stops changing), as in Lai et al. arXiv:2609.04963; implemented by loopscape.metrics",
+ "hero": {
+  "pixels": 4194304,
+  "frac_solved": 0.9991796016693115,
+  "frac_censored": 0.0011696815490722656,
+  "n_outcomes": 2402,
+  "n_wrong_outcomes": 2401,
+  "settle_hist": [
+   0,
+   0,
+   24972,
+   982917,
+   951345,
+   401678,
+   476993,
+   347032,
+   257236,
+   213958,
+   151069,
+   112425,
+   81754,
+   57846,
+   40890,
+   28823,
+   20028,
+   13969,
+   9731,
+   6712,
+   4562,
+   3261,
+   2240,
+   4863,
+   0
+  ],
+  "mean_settle": 5.901772975921631,
+  "max_settle": 23,
+  "name": "hero",
+  "shape": [
+   2048,
+   2048
+  ],
+  "precision": "fp32",
+  "gpu_seconds": 106939.88994765282,
+  "mean_loops_computed": 8.89892029762268,
+  "zoom": null,
+  "center": null,
+  "half_width": null,
+  "adjacent_gap": {
+   "n_pairs": 8384512,
+   "max_gap": 21,
+   "mean_gap": 1.578528362771739,
+   "frac_ge": {
+    "1": 0.44151943488183926,
+    "2": 0.323693615084575,
+    "5": 0.12266271429989008,
+    "10": 0.020700787356497313
+   }
+  },
+  "settle_time_metrics": {
+   "1": {
+    "shape": [
+     2048,
+     2048
+    ],
+    "n_labels": 22,
+    "basin_entropy": 1.086433790399484,
+    "boundary_basin_entropy": 1.5744447409432134,
+    "boundary_box_fraction": 0.6900425033327157,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.13650032252998012,
+    "boundary_dimension": 1.8634996774700199,
+    "uncertainty_r2": 0.9990621275110149,
+    "uncertainty_fractions": [
+     0.45307364838385844,
+     0.4951297251634488,
+     0.5239638072515721,
+     0.5463134597027659,
+     0.5643876048961026
+    ],
+    "box_size": 5
+   },
+   "2": {
+    "shape": [
+     1024,
+     1024
+    ],
+    "n_labels": 22,
+    "basin_entropy": 1.1981707798429617,
+    "boundary_basin_entropy": 1.5761498031971393,
+    "boundary_box_fraction": 0.7601883890811226,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.14384059842121366,
+    "boundary_dimension": 1.8561594015787863,
+    "uncertainty_r2": 0.9999616484515086,
+    "uncertainty_fractions": [
+     0.49521054820706556,
+     0.5463675005212787,
+     0.5795111940209153,
+     0.6043211120064464,
+     0.6240836730606004
+    ],
+    "box_size": 5
+   },
+   "4": {
+    "shape": [
+     512,
+     512
+    ],
+    "n_labels": 22,
+    "basin_entropy": 1.3249972011684383,
+    "boundary_basin_entropy": 1.583785717021649,
+    "boundary_box_fraction": 0.8366013071895425,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.14026741917365612,
+    "boundary_dimension": 1.8597325808263439,
+    "uncertainty_r2": 0.9996559895236402,
+    "uncertainty_fractions": [
+     0.5468921268744512,
+     0.6042141514139903,
+     0.639984683147036,
+     0.665440211517678,
+     0.684836237716135
+    ],
+    "box_size": 5
+   },
+   "8": {
+    "shape": [
+     256,
+     256
+    ],
+    "n_labels": 22,
+    "basin_entropy": 1.4609343764965306,
+    "boundary_basin_entropy": 1.6176629686111008,
+    "boundary_box_fraction": 0.903114186851211,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.12662558112847327,
+    "boundary_dimension": 1.8733744188715267,
+    "uncertainty_r2": 0.99676115358505,
+    "uncertainty_fractions": [
+     0.6038870342657611,
+     0.6653504708970203,
+     0.6997755810431987,
+     0.7228080864891888,
+     0.7397667711795815
+    ],
+    "box_size": 5
+   },
+   "10": {
+    "shape": [
+     205,
+     205
+    ],
+    "n_labels": 22,
+    "basin_entropy": 1.5022846261669183,
+    "boundary_basin_entropy": 1.6355831972711072,
+    "boundary_box_fraction": 0.9185008923259964,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.11856071512822176,
+    "boundary_dimension": 1.8814392848717783,
+    "uncertainty_r2": 0.9958617508116104,
+    "uncertainty_fractions": [
+     0.6254854019847548,
+     0.6855319714092534,
+     0.7181927652224682,
+     0.7413302943411024,
+     0.7558271604938271
+    ],
+    "box_size": 5
+   }
+  },
+  "settle_time_metrics_clipped": {
+   "1": {
+    "shape": [
+     2048,
+     2048
+    ],
+    "n_labels": 11,
+    "basin_entropy": 1.0241566350715559,
+    "boundary_basin_entropy": 1.4841935534770114,
+    "boundary_box_fraction": 0.6900425033327157,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.1404410869043801,
+    "boundary_dimension": 1.8595589130956198,
+    "uncertainty_r2": 0.999185501195594,
+    "uncertainty_fractions": [
+     0.44525572131825186,
+     0.48801693917284,
+     0.5172718404670864,
+     0.5398741733667717,
+     0.558165776552113
+    ],
+    "box_size": 5
+   },
+   "2": {
+    "shape": [
+     1024,
+     1024
+    ],
+    "n_labels": 11,
+    "basin_entropy": 1.1387630651082918,
+    "boundary_basin_entropy": 1.4980011290158892,
+    "boundary_box_fraction": 0.7601883890811226,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.14726189395588507,
+    "boundary_dimension": 1.8527381060441148,
+    "uncertainty_r2": 0.9999756671915837,
+    "uncertainty_fractions": [
+     0.4880744823146765,
+     0.5399395125422523,
+     0.5733728618330464,
+     0.5985596293311846,
+     0.618471508302603
+    ],
+    "box_size": 5
+   },
+   "4": {
+    "shape": [
+     512,
+     512
+    ],
+    "n_labels": 11,
+    "basin_entropy": 1.2688431676851983,
+    "boundary_basin_entropy": 1.5166640988737135,
+    "boundary_box_fraction": 0.8366013071895425,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.1434069088344126,
+    "boundary_dimension": 1.8565930911655875,
+    "uncertainty_r2": 0.9995944703691553,
+    "uncertainty_fractions": [
+     0.5402188031441235,
+     0.5983941521814206,
+     0.6345727925740202,
+     0.6602979774587,
+     0.6798984966117148
+    ],
+    "box_size": 5
+   },
+   "8": {
+    "shape": [
+     256,
+     256
+    ],
+    "n_labels": 11,
+    "basin_entropy": 1.407944198909318,
+    "boundary_basin_entropy": 1.5589880210145322,
+    "boundary_box_fraction": 0.903114186851211,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.12876781586416847,
+    "boundary_dimension": 1.8712321841358315,
+    "uncertainty_r2": 0.9967067374521607,
+    "uncertainty_fractions": [
+     0.5982310732512183,
+     0.6603018372703412,
+     0.694964939391351,
+     0.7182539682539683,
+     0.7353780145689431
+    ],
+    "box_size": 5
+   },
+   "10": {
+    "shape": [
+     205,
+     205
+    ],
+    "n_labels": 11,
+    "basin_entropy": 1.4526509966413976,
+    "boundary_basin_entropy": 1.5815455475091904,
+    "boundary_box_fraction": 0.9185008923259964,
+    "log2_criterion": true,
+    "uncertainty_exponent": 0.12000457627160245,
+    "boundary_dimension": 1.8799954237283976,
+    "uncertainty_r2": 0.9955471536034742,
+    "uncertainty_fractions": [
+     0.6203077808140371,
+     0.6811793682990438,
+     0.7134247208504634,
+     0.7368943460039703,
+     0.7514382716049383
+    ],
+    "box_size": 5
+   }
+  },
+  "outcome_metrics": {
+   "1": {
+    "shape": [
+     2048,
+     2048
+    ],
+    "n_labels": 2402,
+    "basin_entropy": 0.003446815590827579,
+    "boundary_basin_entropy": 0.17185894451541825,
+    "boundary_box_fraction": 0.020056073313765462,
+    "log2_criterion": false,
+    "uncertainty_exponent": -0.0006830806313965536,
+    "boundary_dimension": 2.0006830806313967,
+    "uncertainty_r2": 0.9586289102366271,
+    "uncertainty_fractions": [
+     0.001639672817005499,
+     0.001639263237668457,
+     0.0016386137223968168,
+     0.0016381422010012378,
+     0.0016379687130028753
+    ],
+    "box_size": 5
+   },
+   "2": {
+    "shape": [
+     1024,
+     1024
+    ],
+    "n_labels": 715,
+    "basin_entropy": 0.003344723727311253,
+    "boundary_basin_entropy": 0.17184447238985814,
+    "boundary_box_fraction": 0.019463667820069204,
+    "log2_criterion": false,
+    "uncertainty_exponent": -6.388370910740803e-05,
+    "boundary_dimension": 2.0000638837091076,
+    "uncertainty_r2": 0.006656770778430077,
+    "uncertainty_fractions": [
+     0.0015911514406558294,
+     0.0015894217728066602,
+     0.0015898407285632524,
+     0.0015912186792525229,
+     0.001590437584091205
+    ],
+    "box_size": 5
+   },
+   "4": {
+    "shape": [
+     512,
+     512
+    ],
+    "n_labels": 214,
+    "basin_entropy": 0.0036315293918131523,
+    "boundary_basin_entropy": 0.1701911342001082,
+    "boundary_box_fraction": 0.021337946943483274,
+    "log2_criterion": false,
+    "uncertainty_exponent": 0.0017415807352192268,
+    "boundary_dimension": 1.9982584192647808,
+    "uncertainty_r2": 0.2845329562933717,
+    "uncertainty_fractions": [
+     0.0017283497177443268,
+     0.001732473811442385,
+     0.0017375776666429346,
+     0.0017301605681642736,
+     0.0017343065580402335
+    ],
+    "box_size": 5
+   }
+  }
+ },
+ "keyframes": []
+}

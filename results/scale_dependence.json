@@ -47,6 +47,21 @@
    "uncertainty_r2": 0.9964073879642116
   },
   {
+   "label": "hero 2048x2048, every 8th pixel",
+   "source": "hero (settle time clipped to 2..12)",
+   "pitch": 0.007816316560820713,
+   "shape": [
+    256,
+    256
+   ],
+   "basin_entropy": 1.407944198909318,
+   "boundary_basin_entropy": 1.5589880210145322,
+   "boundary_box_fraction": 0.903114186851211,
+   "uncertainty_exponent": 0.12876781586416847,
+   "boundary_dimension": 1.8712321841358315,
+   "uncertainty_r2": 0.9967067374521607
+  },
+  {
    "label": "upstream image, every 2th pixel",
    "source": "upstream asset (levels)",
    "pitch": 0.004004004004004004,
@@ -60,6 +75,21 @@
    "uncertainty_exponent": 0.14315317731864347,
    "boundary_dimension": 1.8568468226813566,
    "uncertainty_r2": 0.9994064540297432
+  },
+  {
+   "label": "hero 2048x2048, every 4th pixel",
+   "source": "hero (settle time clipped to 2..12)",
+   "pitch": 0.0039081582804103565,
+   "shape": [
+    512,
+    512
+   ],
+   "basin_entropy": 1.2688431676851983,
+   "boundary_basin_entropy": 1.5166640988737135,
+   "boundary_box_fraction": 0.8366013071895425,
+   "uncertainty_exponent": 0.1434069088344126,
+   "boundary_dimension": 1.8565930911655875,
+   "uncertainty_r2": 0.9995944703691553
   },
   {
    "label": "upstream image, every 1th pixel",
@@ -77,19 +107,79 @@
    "uncertainty_r2": 0.9999542353816228
   },
   {
+   "label": "hero 2048x2048, every 2th pixel",
+   "source": "hero (settle time clipped to 2..12)",
+   "pitch": 0.0019540791402051783,
+   "shape": [
+    1024,
+    1024
+   ],
+   "basin_entropy": 1.1387630651082918,
+   "boundary_basin_entropy": 1.4980011290158892,
+   "boundary_box_fraction": 0.7601883890811226,
+   "uncertainty_exponent": 0.14726189395588507,
+   "boundary_dimension": 1.8527381060441148,
+   "uncertainty_r2": 0.9999756671915837
+  },
+  {
+   "label": "hero 2048x2048, every 1th pixel",
+   "source": "hero (settle time clipped to 2..12)",
+   "pitch": 0.0009770395701025891,
+   "shape": [
+    2048,
+    2048
+   ],
+   "basin_entropy": 1.0241566350715559,
+   "boundary_basin_entropy": 1.4841935534770114,
+   "boundary_box_fraction": 0.6900425033327157,
+   "uncertainty_exponent": 0.1404410869043801,
+   "boundary_dimension": 1.8595589130956198,
+   "uncertainty_r2": 0.999185501195594
+  },
+  {
    "label": "window x80 (160x160, chase2)",
-   "source": "chase2/level1",
+   "source": "chase2/level1 (settle time clipped to 2..12)",
    "pitch": 0.00015723270440251574,
    "shape": [
     160,
     160
    ],
-   "basin_entropy": 0.49442947718200925,
-   "boundary_basin_entropy": 1.122607061273564,
+   "basin_entropy": 0.4726937175946987,
+   "boundary_basin_entropy": 1.0732558022549257,
    "boundary_box_fraction": 0.4404296875,
-   "uncertainty_exponent": 0.07570336259548827,
-   "boundary_dimension": 1.9242966374045118,
-   "uncertainty_r2": 0.9974245172991143
+   "uncertainty_exponent": 0.07752154696059739,
+   "boundary_dimension": 1.9224784530394026,
+   "uncertainty_r2": 0.9984379351345205
+  },
+  {
+   "label": "window x640 (160x160, chase2)",
+   "source": "chase2/level2 (settle time clipped to 2..12)",
+   "pitch": 1.9654088050314468e-05,
+   "shape": [
+    160,
+    160
+   ],
+   "basin_entropy": 0.2818715245046447,
+   "boundary_basin_entropy": 0.5842842937100328,
+   "boundary_box_fraction": 0.482421875,
+   "uncertainty_exponent": 0.09859890885433092,
+   "boundary_dimension": 1.9014010911456691,
+   "uncertainty_r2": 0.9752532448954931
+  },
+  {
+   "label": "window x5120 (160x160, chase2)",
+   "source": "chase2/level3 (settle time clipped to 2..12)",
+   "pitch": 2.4567610062893085e-06,
+   "shape": [
+    160,
+    160
+   ],
+   "basin_entropy": 0.6341914924022838,
+   "boundary_basin_entropy": 0.8728657099730357,
+   "boundary_box_fraction": 0.7265625,
+   "uncertainty_exponent": 0.0021503529610252094,
+   "boundary_dimension": 1.9978496470389748,
+   "uncertainty_r2": 0.7986759898111468
   }
  ]
 }

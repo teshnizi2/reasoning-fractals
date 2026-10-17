@@ -34,6 +34,8 @@ def field_report(run: Path, strides: tuple[int, ...]) -> dict:
         zoom=spec.get("zoom"), center=spec.get("center"), half_width=spec.get("half_width"),
         adjacent_gap=M.adjacent_gap_stats(z["settle_nb"]),
         settle_time_metrics={str(s): M.label_metrics(z["settle_nb"][::s, ::s]) for s in strides if min(z["settle_nb"].shape) // s >= 20},
+        # the upstream image has 11 levels (settle time 2..12, the top one saturated): the same labels, for a like-for-like comparison
+        settle_time_metrics_clipped={str(s): M.label_metrics(np.clip(z["settle_nb"][::s, ::s], 2, 12)) for s in strides if min(z["settle_nb"].shape) // s >= 20},
     )
     # outcome labels (which grid each start ends on) when there is more than one outcome
     if rep["n_outcomes"] > 1:
