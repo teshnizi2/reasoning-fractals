@@ -19,8 +19,18 @@ def pct(x: float, nd: int = 1) -> str:
     return f"{100 * x:.{nd}f}%"
 
 
-def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None) -> dict:
+def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None, scale: dict | None = None) -> dict:
     hero = metrics["hero"]
+    thin_sentence = "(scale data not available.)"
+    if scale:
+        rows = sorted(scale["rows"], key=lambda r: -r["pitch"])
+        coarse = next((r for r in rows if r["label"].startswith("hero 2048x2048, every 1th")), None) or \
+            next((r for r in rows if r["label"].startswith("upstream image, every 1th")), rows[0])
+        wins = [r for r in rows if r["label"].startswith("window")]
+        if wins:
+            w = wins[0]
+            thin_sentence = (f"In 5×5-pixel boxes, {pct(coarse['boundary_box_fraction'], 0)} touch a boundary at the full map's pixel pitch "
+                             f"({coarse['pitch']:.0e}), but only {pct(w['boundary_box_fraction'], 0)} in a window magnified ×{1 / (w['pitch'] * (w['shape'][0] - 1) / 2):.0f} (pitch {w['pitch']:.0e}).")
     layers = pack["layers"]
     n_px = sum(l["nx"] * l["ny"] for l in layers)
     zoom_max = max(l["zoom"] for l in layers)
@@ -30,7 +40,7 @@ def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None) -> dict:
         "<b>One slice.</b> A random 2-D plane (seed 0) through the all-zero starting state of a 49,664-dimensional space. The starting thoughts here are tiny (distance from zero at most 1.4) next to EqR's usual random start (about 223).",
         f"<b>Almost every start ends right.</b> {pct(hero['frac_solved'])} of the {hero['pixels']:,} starts of the full map reach the true solution. What is fractal is <i>how long</i> it takes. The {n_unsolved:,} amber \"stuck\" pixels are starts still changing at loop 24, not settled wrong answers.",
         f"<b>float32 is touchy.</b> Two different float32 implementations agree on ~100% of pixels where the map is locally flat but only about half of the pixels in the filaments (ours vs loopscape's published image: {pct(repro['agreement'])} of 62,500 pixels identical). TF32 or bfloat16 give a different picture. Read single filament pixels as one realisation; the structure is the result.",
-        f"<b>Depth stops at ×{int(zoom_max):,}.</b> Below that, neighbouring starting thoughts differ by only a few float32 steps.",
+        f"<b>The complexity thins out when you zoom.</b> {thin_sentence} Zoom beyond ×{int(zoom_max):,} was not rendered: float32 arithmetic noise would dominate.",
         "<b>Settle time</b> is measured over 24 loops with the model's noise switched off, as in loopscape: the loop after which the decoded grid never changes again.",
     ]
     how = [
@@ -54,7 +64,9 @@ def main() -> None:
     repro = json.loads((ROOT / "results/repro/repro250_summary.json").read_text())
     gp = ROOT / "results/alice/gpu_hours.json"
     gpu = json.loads(gp.read_text()) if gp.exists() else None
-    man["meta"].update(build(man, metrics, repro, gpu))
+    sp = ROOT / "results/scale_dependence.json"
+    scale = json.loads(sp.read_text()) if sp.exists() else None
+    man["meta"].update(build(man, metrics, repro, gpu, scale))
     mp.write_text(json.dumps(man))
     print("wrote text into", mp)
 
