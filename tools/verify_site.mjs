@@ -64,6 +64,23 @@ try {
   check("loops is a number 0..24", /^\d+$/.test(panel.loops) && +panel.loops <= 24);
   await page.screenshot({ path: `${out}/inspector.png` });
 
+  // ---- featured starts: each chip selects a pixel with a 24-loop replay
+  const nChips = await page.evaluate(() => document.querySelectorAll("#tryRow .chip").length);
+  if (nChips > 0) {
+    for (let i = 0; i < nChips; i++) {
+      await page.evaluate((i) => document.querySelectorAll("#tryRow .chip")[i].click(), i);
+      await new Promise((r) => setTimeout(r, 900));
+      const st = await page.evaluate(() => ({ replay: !document.getElementById("iReplay").hidden, cells: document.querySelectorAll("#iGrid .cell").length,
+        label: document.querySelectorAll("#tryRow .chip")[0] && document.getElementById("iBadge").textContent, loops: document.getElementById("iLoops").textContent }));
+      check(`featured start ${i + 1}: inspector with replay controls and 81 cells`, st.replay && st.cells === 81, JSON.stringify(st));
+    }
+    await page.click("#btnPlay");
+    await new Promise((r) => setTimeout(r, 800));
+    const loopNo = await page.evaluate(() => document.getElementById("iLoopNo").textContent);
+    check("replay advances through the loops", /^loop \d+$/.test(loopNo), loopNo);
+    await page.screenshot({ path: `${out}/featured.png` });
+  } else check("featured starts present", false, "manifest.meta.featured is empty");
+
   // ---- explainer drawer
   await page.click("#btnExplain");
   const drawerOpen = await page.evaluate(() => !document.getElementById("drawer").hidden);
