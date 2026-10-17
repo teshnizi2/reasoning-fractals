@@ -192,7 +192,7 @@ Time to render, from those rates (`scripts/cost_estimate.py`; early exit compute
 |---|---|---|---|---|
 | 1000x1000 (the upstream asset's resolution): 1,000,000 px | 234.2 h | 12.0 h | 4.4 h | 8.3 h |
 | 2048x2048 hero: 4,194,304 px | 982.4 h | 50.3 h | 18.5 h | 35.0 h |
-| zoom: 10 keyframes of 540x675: 3,645,000 px | 853.7 h | 43.7 h | 16.1 h | 30.4 h |
+| zoom: 5 keyframes of 540x675: 1,822,500 px | 426.9 h | 21.8 h | 8.0 h | 15.2 h |
 
 The hero and keyframes actually cost [pending: hero.gpu_hours] and [pending: kf.gpu_hours] GPU-hours of tile time (summed over workers; full A100s and MIG slices mixed);
 everything in this repository, scans and checks included, used 1.4 A100-equivalent hours (10 jobs, `results/alice/gpu_hours.json`).

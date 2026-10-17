@@ -173,7 +173,7 @@ everything in this repository, scans and checks included, used {{gpu.a100_hours|
   and on {{replay.dust|pct0}} of speckle pixels. The reproduction of the upstream figure is statistical in the filaments for the same reason.
 * **float32 only.** TF32 and bfloat16 give different pictures ({{smoke.tf32_agree|pct1}} and {{smoke.bf16_agree|pct1}} pixel agreement with the upstream image).
 * **Slim fractal.** The structure thins out under magnification (section 3); nothing was rendered beyond ×{{kf.zoom_max|int}}.
-* **Early exit** retires a start after 3 loops on the solution: identical settle times for {{ee.settle_equal|pct2}} of 4,096 test pixels. Batch size matters (B=2048 is a
+* **Early exit** retires a start after 3 loops on the solution: identical settle times for {{ee.settle_equal|pct2}} of {{smoke.n|int}} test pixels. Batch size matters (B=2048 is a
   different cuBLAS kernel regime and agrees on only {{ee.b2048_equal|pct1}}), so production used the validated batch of 1,024.
 * **Metrics depend on the pixel pitch** (and on the labels: here settle time, as in the paper).
 * **The upstream repository has no licence**, so none of its code or images is redistributed; see Credits.
