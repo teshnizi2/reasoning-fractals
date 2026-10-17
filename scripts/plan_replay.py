@@ -34,8 +34,8 @@ def main() -> None:
     ap.add_argument("--keyframes", nargs="*", default=[])
     ap.add_argument("--out-dir", default="results/replay")
     ap.add_argument("--per-kind", type=int, default=12)
-    ap.add_argument("--finale-per-layer", type=int, default=40)
-    ap.add_argument("--nudged", type=int, default=3)
+    ap.add_argument("--finale-per-layer", type=int, default=60)
+    ap.add_argument("--nudged", type=int, default=5)
     ap.add_argument("--eps", type=float, default=1e-6)
     a = ap.parse_args()
     plan: list[dict] = []
