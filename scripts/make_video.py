@@ -58,6 +58,7 @@ def main() -> None:
     ap.add_argument("--captions", default=None, help="JSON list of {text,size,font,color,x,y,t_in,t_out}; {a_settle}/{b_settle} come from --pair")
     ap.add_argument("--no-counter", action="store_true")
     ap.add_argument("--no-credit", action="store_true")
+    ap.add_argument("--no-kicker", action="store_true")
     ap.add_argument("--square", action="store_true", help="also write the centre-cropped 1080x1080 cut")
     ap.add_argument("--crf", type=int, default=16)
     ap.add_argument("--stills", default=None, help="comma-separated seconds: write PNGs of those frames and stop")
@@ -106,6 +107,9 @@ def main() -> None:
             if al > 0:
                 frame = OV.draw_caption(frame, c["text"], (int(c["x"] * k), int(y * k)), int(c["size"] * k), c.get("font", "sans"),
                                         tuple(c.get("color", (232, 236, 245))), alpha=al)
+        if not a.no_kicker:
+            frame = OV.draw_text(frame, "●", (int(54 * k), int(30 * k)), int(20 * k), "mono", AMBER, shadow=False)
+            frame = OV.draw_text(frame, "LATENT ATLAS · EQR ON ONE SUDOKU", (int(86 * k), int(31 * k)), int(20 * k), "mono", (170, 180, 202), alpha=0.95)
         if not a.no_credit:
             frame = OV.draw_caption(frame, CREDIT, (int(54 * k), fh - int(66 * k)), int(21 * k), "mono", (170, 180, 202), alpha=1.0, bg_alpha=0.62)
         return frame
