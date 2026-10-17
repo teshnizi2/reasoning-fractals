@@ -24,7 +24,7 @@ adds a deep-zoom video and a click-a-pixel explorer, and measures how far the cl
   *how long* the model thinks, not in whether it solves this puzzle.
 * Neighbouring pixels differ a lot: 12.3% of neighbour pairs differ by 5 loops or more, the largest gap is
   21 loops.
-* Cost: 25.3 A100-hours on 101 cluster jobs for everything in this repository.
+* Cost: 31.6 A100-equivalent hours (49.1 GPU-slot hours; a MIG slice counts as 4/7 of an A100) over 174 cluster job records (array tasks counted one by one) for everything in this repository.
 
 ## What is in the box
 
@@ -50,6 +50,15 @@ Click or tap any pixel to see the Sudoku that starting thought led to: the 9x9 g
 The "What am I looking at?" drawer explains the picture and repeats the limits below; on a phone the inspector is a bottom sheet.
 
 <img src="media/explorer-phone.png" alt="the explorer on a phone" width="320">
+
+## The video
+
+`media/zoom-1080x1350.mp4` (4:5 LinkedIn feed) and `media/zoom-1080x1080.mp4`: 20 s, H.264, yuv420p, 30 fps, no audio. The camera starts on the whole map and swings to the vortex
+at the top right, then dives through the 5 keyframe layers (the layers end at ×128; the zoom counter is the magnification of the whole map). In the last seconds the picture is the
+deepest layer magnified into single pixels, each block one starting thought. The finale rings two neighbouring starts, 2.9×10^-5 apart in the plane, and replays
+their Sudoku loop by loop beside each other: A settles in 5 loops, B in 21. B sits in the speckle, so a footnote on screen gives what 1e-6 nudges did to it (6 to 21 loops);
+the slow/fast order held in 5 of 6 runs. The traces are the cluster engine's own (`results/video/pair.json`, RUNS rows 12 and 14).
+Rebuild with `scripts/finish.sh 6` (about ten minutes of CPU); the files are not in git (50-65 MB each at CRF 16).
 
 ## How the picture is made
 
@@ -127,7 +136,7 @@ Why not 100%? The filaments are numerically touchy. The authors' *own* code (loo
 run on the same A100 agrees with their image on 64.7% (smooth regions 99.9%, filaments
 47.7%), and our fast engine agrees with that stock solver on 63.7%: two valid float32 stacks agree
 with each other exactly as much as with the upstream image. The upstream image is not committed here (the repository has
-no licence); the side-by-side figure is regenerated locally by `scripts/repro_report.py` when `vendor/loopscape` is present.
+no licence); the side-by-side figure is regenerated locally by `scripts/repro_report.py` (it needs `vendor/loopscape` and the cluster pull `data/cluster/repro250`; our own render of that grid is `results/repro/repro250_field.npz`).
 
 ### 2. The hero: what the map looks like
 
@@ -182,12 +191,12 @@ the chase windows were chosen for their boundary richness.
 | upstream image, every pixel | 2.0×10^-3 | 1000x1000 | 76% | 1.14 | 1.852 |
 | hero 2048x2048, every 2nd pixel | 2.0×10^-3 | 1024x1024 | 76% | 1.14 | 1.853 |
 | hero 2048x2048, every pixel | 9.8×10^-4 | 2048x2048 | 69% | 1.02 | 1.860 |
-| keyframe x8 (540x675, centred on the zoom target) | 4.6×10^-4 | 675x540 | 75% | 1.07 | 1.890 |
-| keyframe x16 (540x675, centred on the zoom target) | 2.3×10^-4 | 675x540 | 70% | 0.96 | 1.938 |
+| keyframe x8 (540x675, centred on the zoom target) | 4.6×10^-4 | 540x675 | 75% | 1.07 | 1.890 |
+| keyframe x16 (540x675, centred on the zoom target) | 2.3×10^-4 | 540x675 | 70% | 0.96 | 1.938 |
 | window x80 (160x160, chase2) | 1.6×10^-4 | 160x160 | 44% | 0.47 | 1.922 |
-| keyframe x32 (540x675, centred on the zoom target) | 1.2×10^-4 | 675x540 | 71% | 0.83 | 1.932 |
-| keyframe x64 (540x675, centred on the zoom target) | 5.8×10^-5 | 675x540 | 45% | 0.46 | 1.927 |
-| keyframe x128 (540x675, centred on the zoom target) | 2.9×10^-5 | 675x540 | 31% | 0.30 | 1.934 |
+| keyframe x32 (540x675, centred on the zoom target) | 1.2×10^-4 | 540x675 | 71% | 0.83 | 1.932 |
+| keyframe x64 (540x675, centred on the zoom target) | 5.8×10^-5 | 540x675 | 45% | 0.46 | 1.927 |
+| keyframe x128 (540x675, centred on the zoom target) | 2.9×10^-5 | 540x675 | 31% | 0.30 | 1.934 |
 | window x640 (160x160, chase2) | 2.0×10^-5 | 160x160 | 48% | 0.28 | 1.901 |
 | window x5120 (160x160, chase2) | 2.5×10^-6 | 160x160 | 73% | 0.63 | 1.998 |
 
@@ -269,7 +278,7 @@ Time to render, from those rates (`scripts/cost_estimate.py`; early exit compute
 | zoom: 5 keyframes of 540x675: 1,822,500 px | 426.9 h | 21.8 h | 8.0 h | 15.2 h |
 
 The hero and keyframes actually cost 29.7 and 15.1 GPU-hours of tile time (summed over workers; full A100s and MIG slices mixed);
-everything in this repository, scans and checks included, used 25.3 A100-equivalent hours (101 jobs, `results/alice/gpu_hours.json`).
+everything in this repository, scans and checks included, used 31.6 A100-equivalent hours (174 jobs, `results/alice/gpu_hours.json`).
 
 ## Honest limits
 
