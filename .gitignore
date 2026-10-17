@@ -9,3 +9,7 @@ site/data-mock/
 data/cluster/
 site/data-preview/
 tools/node_modules/
+# derived from the upstream (unlicensed) image: kept locally for the comparison, never committed
+data/asset_samples.npz
+results/repro/probe_*.npz
+results/repro/*_side_by_side.png
