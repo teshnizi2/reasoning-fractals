@@ -25,20 +25,28 @@ def run_pixels(
     precision: str = "float32",
     progress: Callable[[int, int, float], None] | None = None,
     keep_traces: bool = False,
+    early_m: int | None = None,
 ) -> dict:
     """Roll out ``engine`` from z_H = a*u + b*v (z_L = 0) for every coordinate pair.
 
     Returns a dict of per-pixel arrays (see ``outcomes.Outcomes``), plus ``seconds`` (wall time of the
-    rollouts) and, if ``keep_traces``, the decoded traces (N, T, 81) int8.
+    rollouts) and, if ``keep_traces``, the decoded traces (N, T, 81) int8.  With ``early_m`` the engine's
+    early-exit rollout retires pixels that sit on the true solution for that many loops; ``retired_at`` (N,)
+    then reports how many loops each pixel was actually computed for.
     """
     u, v = plane
     n = len(coords)
     parts: dict[str, list] = {k: [] for k in _FIELDS}
     traces_all: list[np.ndarray] = []
+    retired_all: list[np.ndarray] = []
     t0 = time.time()
     for s in range(0, n, batch):
         z = SL.latents(coords[s : s + batch], u, v, precision=precision)
-        tr = engine.rollout(z)
+        if early_m:
+            tr, retired = engine.rollout_early(z, solution=solution, m=early_m)
+            retired_all.append(retired)
+        else:
+            tr = engine.rollout(z)
         res = O.analyze(tr, puzzle, solution)
         for k in _FIELDS:
             parts[k].append(getattr(res, k))
@@ -48,6 +56,8 @@ def run_pixels(
             progress(min(s + batch, n), n, time.time() - t0)
     out = {k: np.concatenate(parts[k]) for k in _FIELDS}
     out["seconds"] = time.time() - t0
+    if early_m:
+        out["retired_at"] = np.concatenate(retired_all)
     if keep_traces:
         out["traces"] = np.concatenate(traces_all)
     return out

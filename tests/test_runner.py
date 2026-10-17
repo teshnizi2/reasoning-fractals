@@ -59,3 +59,26 @@ def test_run_pixels_reports_progress_and_supports_float64_latents():
     res = RU.run_pixels(eng, coords, stub_plane(), PUZZLE, SOL, batch=1, precision="float64",
                         progress=lambda done, total, dt: seen.append((done, total)))
     assert seen == [(1, 2), (2, 2)] and res["settle_nb"].tolist() == [1, 2]
+
+
+class StubEarlyEngine(StubEngine):
+    """Adds rollout_early: identical traces, plus a retirement loop count per pixel."""
+
+    def __init__(self):
+        super().__init__()
+        self.early_calls = 0
+
+    def rollout_early(self, z_h, z_l=None, solution=None, m=3, tokens=None):
+        self.early_calls += 1
+        tr = self.rollout(z_h, z_l)
+        return tr, np.full(len(z_h), 4, dtype=np.int64)
+
+
+def test_run_pixels_uses_the_early_exit_rollout_when_asked_and_reports_loops():
+    eng = StubEarlyEngine()
+    coords = np.array([[1, 0], [2, 0], [3, 1]], dtype=np.float32)
+    res = RU.run_pixels(eng, coords, stub_plane(), PUZZLE, SOL, batch=2, early_m=3)
+    assert eng.early_calls == 2 and res["settle_nb"].tolist() == [1, 2, 3]
+    assert res["retired_at"].tolist() == [4, 4, 4]
+    plain = RU.run_pixels(StubEarlyEngine(), coords, stub_plane(), PUZZLE, SOL, batch=2)
+    assert "retired_at" not in plain

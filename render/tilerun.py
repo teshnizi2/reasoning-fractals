@@ -111,6 +111,7 @@ def run_tiles(engine, spec: dict, out_dir, plane, solution: np.ndarray, worker: 
         res = RU.run_pixels(
             engine, pixel_coords(spec, t), plane, spec["puzzle"], solution,
             batch=spec.get("batch", 512), precision=_latent_precision(spec),
+            early_m=(spec.get("early_exit") or {}).get("m"),
         )
         shp = (t.h, t.w)
         flags = (res["solved"].astype(np.uint8) | (res["valid"].astype(np.uint8) << 1)
@@ -122,7 +123,8 @@ def run_tiles(engine, spec: dict, out_dir, plane, solution: np.ndarray, worker: 
                      n_wrong=res["n_wrong"].reshape(shp), n_changes=res["n_changes"].reshape(shp),
                      n_distinct=res["n_distinct"].reshape(shp), flags=flags.reshape(shp),
                      gidx=inv.astype(np.uint32).reshape(shp), ugrids=ug, ucounts=cnt,
-                     seconds=np.float64(res["seconds"]), n_px=np.int64(t.h * t.w))
+                     seconds=np.float64(res["seconds"]), n_px=np.int64(t.h * t.w),
+                     loops_mean=np.float64(res["retired_at"].mean() if "retired_at" in res else spec.get("steps", 24)))
             os.replace(tmp, path)
         finally:
             if tmp.exists():
@@ -146,7 +148,7 @@ def merge(spec: dict, out_dir, solution: np.ndarray) -> dict:
     dt = dict(settle_nb=np.uint8, settle_last=np.uint8, n_wrong=np.uint8, n_changes=np.uint8,
               n_distinct=np.uint8, flags=np.uint8)
     full = {k: np.zeros((ny, nx), dtype=v) for k, v in dt.items()}
-    gidx_tiles, ug_tiles, uc_tiles, seconds, px = [], [], [], 0.0, 0
+    gidx_tiles, ug_tiles, uc_tiles, seconds, px, loops_sum = [], [], [], 0.0, 0, 0.0
     for t in tiles:
         z = np.load(out / "tiles" / _tile_name(t))
         sl = (slice(t.r0, t.r0 + t.h), slice(t.c0, t.c0 + t.w))
@@ -157,6 +159,7 @@ def merge(spec: dict, out_dir, solution: np.ndarray) -> dict:
         uc_tiles.append(z["ucounts"])
         seconds += float(z["seconds"])
         px += int(z["n_px"])
+        loops_sum += float(z["loops_mean"]) * int(z["n_px"]) if "loops_mean" in z.files else spec.get("steps", 24) * int(z["n_px"])
     d = O.build_dictionary(ug_tiles, uc_tiles, solution)
     gid = np.zeros((ny, nx), dtype=np.uint32)
     for t, g, idmap in zip(tiles, gidx_tiles, d.id_maps):
@@ -165,7 +168,7 @@ def merge(spec: dict, out_dir, solution: np.ndarray) -> dict:
     full["dictionary"] = O.dictionary_records(d, spec["puzzle"])
     full["dict_grids"], full["dict_counts"] = d.grids, d.counts
     full["meta"] = dict(name=spec.get("name"), ny=ny, nx=nx, pixels=px, gpu_seconds=seconds,
-                        precision=spec.get("precision"), spec=spec)
+                        precision=spec.get("precision"), mean_loops_computed=loops_sum / max(px, 1), spec=spec)
     return full
 
 

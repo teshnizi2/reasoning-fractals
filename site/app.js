@@ -221,7 +221,8 @@ function select(p) {
   renderInspector();
   $("inspector").hidden = false;
   document.body.classList.add("sheet-open");
-  $("inspector").classList.remove("peek");
+  $("inspector").classList.toggle("peek", S.W < 760 && !S.sheetOpened); // phones: start as a peek, the handle expands it
+  S.sheetOpened = true;
 }
 
 function renderInspector() {
