@@ -175,3 +175,14 @@ def test_clip_hides_finer_layers_outside_the_given_rectangle():
     assert f[50, 60, 0] > 150 and f[50, 60, 2] < 60             # inside the clip and the fine layer: red
     f2 = ZV.render_frame([base, fine], 0.9, 0.0, 4.0, (200, 100), view_width_units=2.0, background=(9, 9, 9))
     assert f2[50, 150, 0] > 150                                  # without the clip the fine layer shows past the edge
+
+
+def test_in_the_block_regime_a_finer_layer_ends_in_a_hard_edge_not_a_translucent_ghost():
+    base = ZV.Layer(center=(0.0, 0.0), half_width=1.0, img=np.full((4, 4, 3), (0, 0, 200), np.uint8))
+    fine = ZV.Layer(center=(0.0, 0.0), half_width=0.25, img=np.full((8, 8, 3), (200, 0, 0), np.uint8))  # 8 samples over 0.5 units
+    size = (400, 100)
+    scale = 40.0 / (0.5 / 7)           # 40 screen px per fine sample: deep in the block regime
+    zoom = scale * 2.0 / size[0]       # zoom 1 shows 2.0 plane units across the frame
+    f = ZV.render_frame([base, fine], 0.0, 0.0, zoom, size, view_width_units=2.0, background=(9, 9, 9))
+    row = f[50, :, 0].astype(int)
+    assert np.abs(np.diff(row)).max() > 150  # one step from the fine layer's red to the coarse layer's blue, no intermediate blend

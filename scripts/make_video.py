@@ -94,6 +94,9 @@ def main() -> None:
     t_arrive = a.hold + move
     if pair:
         pair = dict(pair, t_in=t_arrive + 0.5)
+        # one loop per step so that the whole replay (up to loops_shown) ends ~1.3 s before the video does
+        t0 = pair["t_in"] + FI.CARD_FADE + FI.REPLAY_DELAY
+        pair["loop_seconds"] = float(min(0.30, max(0.14, (a.seconds - t0 - 1.3) / pair["loops_shown"])))
     caps = json.loads((ROOT / a.captions).read_text()) if a.captions else []
     fmt = {"a_settle": pair["a"]["settle"] if pair else "", "b_settle": pair["b"]["settle"] if pair else ""}
     if pair and pair.get("verified", {}).get("a_range"):  # the less stable pixel of the pair, with the loop counts its nudged re-runs gave

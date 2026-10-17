@@ -143,8 +143,11 @@ def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: t
             blocks = np.asarray(src.transform((w, h), Image.AFFINE, params, resample=Image.NEAREST, fillcolor=(0, 0, 0)), dtype=np.float64)
             warped = warped * (1.0 - hard) + blocks * hard
         mask = inside.astype(np.float64) * alpha
-        if i > 0:  # fade a finer layer out over its last FEATHER samples so its footprint never ends in a hard rectangle
-            mask = mask * _smooth_arr(0.0, FEATHER, np.minimum.reduce([sx, L.nx - sx, sy, L.ny - sy]))
+        if i > 0:  # fade a finer layer out over its last FEATHER samples so its footprint never ends in a hard rectangle;
+            # once pixels are drawn as blocks the fade would only show a translucent ghost of the coarser blocks: end it hard
+            feather = FEATHER * (1.0 - _smooth(BLOCKS_FROM, BLOCKS_TO, pitch_px))
+            if feather >= 0.5:
+                mask = mask * _smooth_arr(0.0, feather, np.minimum.reduce([sx, L.nx - sx, sy, L.ny - sy]))
         mask = mask[..., None]
         out = out * (1 - mask) + warped * mask
     return np.clip(np.rint(out), 0, 255).astype(np.uint8)
