@@ -51,6 +51,15 @@ The "What am I looking at?" drawer explains the picture and repeats the limits b
 
 <img src="media/explorer-phone.png" alt="the explorer on a phone" width="320">
 
+## The video
+
+`media/zoom-1080x1350.mp4` (4:5 LinkedIn feed) and `media/zoom-1080x1080.mp4`: 20 s, H.264, yuv420p, 30 fps, no audio. The camera starts on the whole map and swings to the vortex
+at the top right, then dives through the {{kf.n|int}} keyframe layers (the layers end at ×{{kf.zoom_max|int}}; the zoom counter is the magnification of the whole map). In the last seconds the picture is the
+deepest layer magnified into single pixels, each block one starting thought. The finale rings two neighbouring starts, {{pair.pitch|sci1}} apart in the plane, and replays
+their Sudoku loop by loop beside each other: A settles in {{pair.a}} loops, B in {{pair.b}}. B sits in the speckle, so a footnote on screen gives what 1e-6 nudges did to it ({{pair.b_lo}} to {{pair.b_hi}} loops);
+the slow/fast order held in {{pair.keeping}} of {{pair.runs}} runs. The traces are the cluster engine's own (`results/video/pair.json`, RUNS rows 12 and 14).
+Rebuild with `scripts/finish.sh 6` (about ten minutes of CPU); the files are not in git (50-65 MB each at CRF 16).
+
 ## How the picture is made
 
 ![how it works](docs/how-it-works.svg)
@@ -118,7 +127,7 @@ Why not 100%? The filaments are numerically touchy. The authors' *own* code (loo
 run on the same A100 agrees with their image on {{stock.fp32_agree|pct1}} (smooth regions {{stock.fp32_interior|pct1}}, filaments
 {{stock.fp32_boundary|pct1}}), and our fast engine agrees with that stock solver on {{stock.vs_ours|pct1}}: two valid float32 stacks agree
 with each other exactly as much as with the upstream image. The upstream image is not committed here (the repository has
-no licence); the side-by-side figure is regenerated locally by `scripts/repro_report.py` when `vendor/loopscape` is present.
+no licence); the side-by-side figure is regenerated locally by `scripts/repro_report.py` (it needs `vendor/loopscape` and the cluster pull `data/cluster/repro250`; our own render of that grid is `results/repro/repro250_field.npz`).
 
 ### 2. The hero: what the map looks like
 

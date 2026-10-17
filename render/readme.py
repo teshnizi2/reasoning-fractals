@@ -137,6 +137,12 @@ def load_numbers(root: Path) -> dict[str, Any]:
                 z = m_.group(1)
                 N.update({f"scale.kf{z}.boxes": r["boundary_box_fraction"], f"scale.kf{z}.sb": r["basin_entropy"], f"scale.kf{z}.d": r["boundary_dimension"],
                           f"scale.kf{z}.pitch": r["pitch"]})
+    pr = _read(root, "results/video/pair.json")
+    if pr:
+        v = pr["verified"]
+        N.update({"pair.a": pr["a"]["settle"], "pair.b": pr["b"]["settle"], "pair.a_lo": v["a_range"][0], "pair.a_hi": v["a_range"][1],
+                  "pair.b_lo": v["b_range"][0], "pair.b_hi": v["b_range"][1], "pair.pitch": pr["pitch"], "pair.runs": v["runs"],
+                  "pair.keeping": v["runs_keeping_order"], "pair.layer": pr["layer"], "pair.eps": v["eps"]})
     gh = _read(root, "results/alice/gpu_hours.json")
     if gh:
         N.update({"gpu.jobs": gh["total"]["jobs"], "gpu.a100_hours": gh["total"]["a100_hours"], "gpu.raw_hours": gh["total"]["gpu_hours_raw"]})
