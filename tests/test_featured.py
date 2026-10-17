@@ -47,3 +47,12 @@ def test_wrong_candidates_prefer_settled_wrong_endings_then_unsettled_ones():
 def test_to_display_flips_rows_so_that_row_zero_is_the_top():
     assert F.to_display(0, 7, ny=100) == (99, 7)
     assert F.to_display(99, 7, ny=100) == (0, 7)
+
+
+def test_slow_candidates_skip_pixels_at_the_loop_cap_where_a_replay_wobbles_by_a_loop():
+    s, f = field()
+    s[7, 7] = 23  # still-changing-at-the-cap territory
+    s[8, 8] = 22
+    cands = F.slow(s, f, k=3)
+    assert (7, 7) not in cands and (8, 8) not in cands and cands[0] == (5, 5)
+    assert F.slow(s, f, k=1, max_settle=24)[0] == (7, 7)

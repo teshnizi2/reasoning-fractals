@@ -55,12 +55,14 @@ def main() -> None:
         r = by_id.get(p["id"])
         if r is None:
             continue
+        if p["kind"].startswith("rough"):
+            continue
         k = kinds.setdefault(f"{p['layer'] if p['layer'] == 'hero' else 'keyframes'}:{p['kind']}", dict(items=0, reproduced=0, nudge_stable=0))
         k["items"] += 1
         k["reproduced"] += int(r["equal"])
         k["nudge_stable"] += int(all(v == r["settle"] for v in r["nudged"]))
     summary = dict(script="scripts/apply_replay.py", engine=rep["meta"]["engine"], nudged=rep["meta"]["nudged"], eps=rep["meta"]["eps"],
-                   items=len(res), reproduced=int(sum(r["equal"] for r in res)), by_kind=kinds,
+                   items=len(res), reproduced=int(sum(r["equal"] for r in res)), by_kind=kinds, roughness=RA.roughness_summary(plan, res),
                    finale=None if best is None else {k: best[k] for k in ("layer", "gap", "pitch", "verified")})
     out = ROOT / a.summary
     out.parent.mkdir(parents=True, exist_ok=True)

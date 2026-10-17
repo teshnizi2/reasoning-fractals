@@ -95,3 +95,19 @@ def pick_finale(plan: list[dict], results: list[dict], pitches: dict[str, float]
                               b_range=[min([tb] + rb["nudged"]), max([tb] + rb["nudged"])], nudged_runs=len(ra["nudged"])),
             ))
     return best[1] if best else None
+
+
+def roughness_summary(plan: list[dict], results: list[dict]) -> dict[str, dict]:
+    """Per roughness stratum (kinds ``rough*``): pixels replayed, how many the plain replay reproduced, how many were unchanged
+    by every nudged re-run, and the mean (over pixels) of the largest settle-time change a nudge caused."""
+    by_id = {r["id"]: r for r in results}
+    acc: dict[str, list] = defaultdict(list)
+    for p in plan:
+        if p["kind"].startswith("rough") and p["id"] in by_id:
+            acc[p["kind"]].append(by_id[p["id"]])
+    out = {}
+    for kind, rs in sorted(acc.items()):
+        out[kind] = dict(n=len(rs), reproduced=sum(int(r["equal"]) for r in rs),
+                         nudge_stable=sum(int(all(v == r["settle"] for v in r["nudged"])) for r in rs),
+                         mean_max_change=sum(max(abs(v - r["settle"]) for v in r["nudged"]) for r in rs) / len(rs))
+    return out

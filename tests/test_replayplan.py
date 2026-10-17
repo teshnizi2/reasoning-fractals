@@ -11,7 +11,7 @@ def hero_like(n=64):
     f = np.ones((n, n), np.uint8)
     s[10, 10] = 2          # the fastest common value would be 3..7; a lone 2 is not "common"
     s[30, 30], s[30, 31] = 3, 13  # a neighbouring pair with a big gap
-    s[40, 40] = 23         # slowest solved pixel
+    s[40, 40] = 19         # slowest solved pixel below the cap
     s[50, 50] = 20         # a wrong, settled grid
     f[50, 50] = 0
     return s, f
@@ -20,11 +20,11 @@ def hero_like(n=64):
 def test_plan_has_stored_values_coordinates_and_roles_for_every_item():
     s, f = hero_like()
     spec = dict(mode="notebook", n=64, tile=64)
-    plan = RPL.plan_layer("hero", spec, s, f, kinds=("fast", "slow", "wrong", "pair"), per_kind=3, pair_min_gap=6, pair_max_gap=15, margin=2)
+    plan = RPL.plan_layer("hero", spec, s, f, kinds=("fast", "slow", "wrong", "pair"), per_kind=10, pair_min_gap=6, pair_max_gap=15, margin=2)
     kinds = {p["kind"] for p in plan}
     assert kinds == {"fast", "slow", "wrong", "pair"}
     slow = next(p for p in plan if p["kind"] == "slow")
-    assert (slow["row"], slow["col"]) == (40, 40) and slow["stored"] == dict(settle=23, flags=1)
+    assert (slow["row"], slow["col"]) == (40, 40) and slow["stored"] == dict(settle=19, flags=1)
     pair = [p for p in plan if p["kind"] == "pair"]
     assert {p["role"] for p in pair} == {"a", "b"}
     a = next(p for p in pair if p["role"] == "a" and (p["row"], p["col"]) == (30, 30))
@@ -53,3 +53,25 @@ def test_replay_input_json_round_trips_the_coordinates_exactly():
     assert doc["nudged"] == 3 and doc["eps"] == 1e-6 and len(doc["items"]) == len(plan)
     assert [it["id"] for it in doc["items"]] == [p["id"] for p in plan]
     assert set(doc["items"][0]) == {"id", "x", "y", "prec", "stored"}
+
+
+def test_roughness_strata_sample_solved_pixels_by_how_different_their_neighbours_are():
+    rng = np.random.default_rng(0)
+    s = np.full((60, 60), 4, np.uint8)
+    s[:, 30:] = 5                                  # a border: roughness 1 along columns 29/30
+    s[rng.random((60, 60)) < 0.08] = 7              # mild speckle: roughness 2-4
+    s[rng.random((60, 60)) < 0.03] = 12             # strong speckle: roughness >= 5
+    f = np.ones((60, 60), np.uint8)
+    spec = dict(mode="notebook", n=60, tile=60)
+    plan = RPL.plan_roughness("hero", spec, s, f, per_bin=15, seed=3)
+    kinds = sorted({p["kind"] for p in plan})
+    assert kinds == ["rough0", "rough1", "rough2", "rough5"]
+    from collections import Counter
+    assert all(c <= 15 for c in Counter(p["kind"] for p in plan).values())
+    pad = np.pad(s.astype(int), 1, mode="edge")
+    for p in plan:
+        r, c = p["row"], p["col"]
+        rough = max(abs(int(s[r, c]) - pad[r + 1 + dy, c + 1 + dx]) for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)))
+        lo = int(p["kind"][5:])
+        assert (rough == 0) if lo == 0 else (rough == 1) if lo == 1 else (2 <= rough <= 4) if lo == 2 else rough >= 5
+    assert len({p["id"] for p in plan}) == len(plan)

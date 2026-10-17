@@ -35,12 +35,14 @@ def main() -> None:
     ap.add_argument("--out-dir", default="results/replay")
     ap.add_argument("--per-kind", type=int, default=12)
     ap.add_argument("--finale-per-layer", type=int, default=60)
+    ap.add_argument("--rough-per-bin", type=int, default=150)
     ap.add_argument("--nudged", type=int, default=5)
     ap.add_argument("--eps", type=float, default=1e-6)
     a = ap.parse_args()
     plan: list[dict] = []
     spec, s, f = load(ROOT / a.hero)
     plan += RPL.plan_layer("hero", spec, s, f, kinds=("fast", "slow", "wrong", "pair"), per_kind=a.per_kind, pair_min_gap=4, pair_max_gap=15, margin=4)
+    plan += RPL.plan_roughness("hero", spec, s, f, per_bin=a.rough_per_bin)  # reproducibility vs local roughness, same engine
     for k in sorted(a.keyframes):
         run = ROOT / k
         spec, s, f = load(run)

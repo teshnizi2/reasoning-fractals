@@ -40,3 +40,26 @@ def plan_layer(layer: str, spec: dict, settle: np.ndarray, flags: np.ndarray, ki
 def replay_input(puzzle: str, plan: list[dict], nudged: int = 3, eps: float = 1e-6, seed: int = 0) -> dict:
     return dict(puzzle=puzzle, nudged=nudged, eps=eps, seed=seed,
                 items=[dict(id=p["id"], x=p["x"], y=p["y"], prec=p["prec"], stored=p["stored"]) for p in plan])
+
+
+ROUGHNESS_BINS = ((0, 0), (1, 1), (2, 4), (5, 99))
+
+
+def plan_roughness(layer: str, spec: dict, settle: np.ndarray, flags: np.ndarray, per_bin: int = 100, seed: int = 5) -> list[dict]:
+    """Random solved, settled pixels stratified by roughness (largest settle-time difference to the 4 neighbours):
+    kinds ``rough0``, ``rough1``, ``rough2`` (2-4) and ``rough5`` (5+).  Used to measure how reproducible a pixel is."""
+    s = np.asarray(settle).astype(np.int64)
+    ok = ((np.asarray(flags) & 1) > 0) & ((np.asarray(flags) & 4) == 0)
+    pad = np.pad(s, 1, mode="edge")
+    ny, nx = s.shape
+    rough = np.max([np.abs(s - pad[1 + dy : 1 + dy + ny, 1 + dx : 1 + dx + nx]) for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0))], axis=0)
+    rng = np.random.default_rng(seed)
+    out: list[dict] = []
+    for lo, hi in ROUGHNESS_BINS:
+        cand = np.argwhere(ok & (rough >= lo) & (rough <= hi))
+        if len(cand) == 0:
+            continue
+        pick = cand[rng.choice(len(cand), size=min(per_bin, len(cand)), replace=False)]
+        for g, (r, c) in enumerate(pick):
+            out.append(_item(f"rough{lo}", layer, spec, settle, flags, int(r), int(c), "single", g))
+    return out

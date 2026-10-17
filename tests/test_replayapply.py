@@ -71,3 +71,15 @@ def test_finale_pick_requires_monotone_traces_and_returns_none_when_nothing_qual
     a2, b2 = finale_items("kf07", 1, 3, 10)
     assert RA.pick_finale([a2, b2], [result(a2, nudged=[3, 3, 9]), result(b2, nudged=[10, 10, 5])], pitches={"kf07": 3e-5},
                           solution=SOL, min_robust_gap=3) is None  # a nudge moves them to 9 vs 5: the ordering is lost
+
+
+def test_roughness_summary_counts_reproduction_and_nudge_stability_per_stratum():
+    p = [item("hero", "rough0", 0, "single", 1, 1, 4), item("hero", "rough0", 1, "single", 1, 2, 4), item("hero", "rough5", 0, "single", 5, 5, 9),
+         item("hero", "rough5", 1, "single", 5, 6, 10), item("hero", "pair", 0, "a", 7, 7, 3)]
+    r = [result(p[0], nudged=[4, 4, 4]), result(p[1], nudged=[4, 5, 4]), result(p[2], equal=False, settle=11, nudged=[7, 12, 9]),
+         result(p[3], nudged=[10, 10, 10]), result(p[4])]
+    s = RA.roughness_summary(p, r)
+    assert set(s) == {"rough0", "rough5"}
+    assert s["rough0"] == dict(n=2, reproduced=2, nudge_stable=1, mean_max_change=0.5)
+    assert s["rough5"]["n"] == 2 and s["rough5"]["reproduced"] == 1 and s["rough5"]["nudge_stable"] == 1
+    assert abs(s["rough5"]["mean_max_change"] - (4.0 + 0.0) / 2) < 1e-9  # max |nudged - plain| per item: 11 vs 7, 12, 9 -> 4; 10 vs 10, 10, 10 -> 0

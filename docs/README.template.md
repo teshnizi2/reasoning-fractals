@@ -124,14 +124,24 @@ next to a flat domain.
 
 ### 4. How far can a single pixel be trusted?
 
-Random pixels of the chase windows and of the hero were re-run on a second float32 implementation (MLX on an Apple M4; the renders are torch on
-A100s) and compared with the stored settle times ({{replay.n_per_field|int}} pixels per field, {{replay.n_fields|int}} fields, `scripts/replay_agreement.py`).
-In flat regions the second implementation gives the same number. In the speckled "dust" it mostly does not, and the slow dust pixels
-essentially never do. The *statistics* of the dust (histograms, basin entropy, boundary dimension) are stable; individual dust pixels
-are one realisation of float32 rounding. Nudging a start by a relative 1e-6 (a few dozen float32 ulps) moves such pixels by several loops
-(`results/replay/summary.json`).
+Two checks, both on random pixels of the hero (and of the chase windows), stratified by how rough the stored field is around the pixel
+(the largest settle-time difference to its 4 neighbours).
+
+*Same engine, rounding-sized nudges* (`alice/replay.py`, `results/replay/summary.json`): each pixel is re-run on the A100 in full (no early exit),
+and {{nudge.runs|int}} more times with the starting thought multiplied by `1 + 1e-6 * N(0, 1)`, a few dozen float32 ulps.
+A plain re-run reproduces the stored settle time for {{plain.all|pct1}} of the {{plain.n|int}} pixels, so what the explorer and the video show is
+what the stored pixel says. The nudged runs show how fragile a pixel is:
+
+{{table:replay_same}}
+
+*A second float32 implementation* (MLX on an Apple M4 against the stored A100 values, {{replay.n_per_field|int}} pixels per field,
+{{replay.n_fields|int}} fields, `scripts/replay_agreement.py`):
 
 {{table:replay}}
+
+In flat regions every implementation gives the same number. In the speckled "dust" a different implementation, or a nudge below the
+noise of a float32 matmul, changes the number, and slow dust pixels essentially never reproduce across implementations. The *statistics* of the
+dust (histograms, basin entropy, boundary dimension) are stable; an individual dust pixel is one realisation of float32 rounding.
 
 ### 5. Native-scale starts: when does EqR really fail?
 
@@ -170,7 +180,7 @@ everything in this repository, scans and checks included, used {{gpu.a100_hours|
 * **Almost every start ends right.** {{hero.frac_solved|pct2}} of the hero's starts reach the true solution; the {{hero.n_unsolved|int}} others are mostly starts still
   changing at loop 24. The fractal is in the settle time.
 * **Pixel-exact only where the map is smooth.** See section 4: a second float32 implementation agrees on {{replay.flat|pct0}} of pixels with flat surroundings
-  and on {{replay.dust|pct0}} of speckle pixels. The reproduction of the upstream figure is statistical in the filaments for the same reason.
+  and on {{replay.dust|pct0}} of speckle pixels; a 1e-6 nudge leaves {{nudge.flat|pct0}} of flat-region pixels and {{nudge.dust|pct0}} of speckle pixels unchanged. The reproduction of the upstream figure is statistical in the filaments for the same reason.
 * **float32 only.** TF32 and bfloat16 give different pictures ({{smoke.tf32_agree|pct1}} and {{smoke.bf16_agree|pct1}} pixel agreement with the upstream image).
 * **Slim fractal.** The structure thins out under magnification (section 3); nothing was rendered beyond ×{{kf.zoom_max|int}}.
 * **Early exit** retires a start after 3 loops on the solution: identical settle times for {{ee.settle_equal|pct2}} of {{smoke.n|int}} test pixels. Batch size matters (B=2048 is a

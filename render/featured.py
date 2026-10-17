@@ -32,10 +32,10 @@ def fast(settle: np.ndarray, flags: np.ndarray, k: int = 5) -> list[tuple[int, i
     return [tuple(int(v) for v in np.unravel_index(i, s.shape)) for i in idx if score.ravel()[i] >= 0]
 
 
-def slow(settle: np.ndarray, flags: np.ndarray, k: int = 5) -> list[tuple[int, int]]:
-    """Solved, settled pixels with the longest settle times."""
+def slow(settle: np.ndarray, flags: np.ndarray, k: int = 5, max_settle: int = 20) -> list[tuple[int, int]]:
+    """Solved, settled pixels with the longest settle times below ``max_settle`` (at the 24-loop cap a replay wobbles by a loop)."""
     s = np.asarray(settle).astype(np.int64)
-    ok = ((np.asarray(flags) & 1) > 0) & ((np.asarray(flags) & 4) == 0)
+    ok = ((np.asarray(flags) & 1) > 0) & ((np.asarray(flags) & 4) == 0) & (s <= max_settle)
     score = np.where(ok, s, -1)
     idx = np.argsort(score.ravel(), kind="stable")[::-1][:k]
     return [tuple(int(v) for v in np.unravel_index(i, s.shape)) for i in idx if score.ravel()[i] >= 0]

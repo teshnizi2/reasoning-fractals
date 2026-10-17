@@ -137,6 +137,21 @@ def load_numbers(root: Path) -> dict[str, Any]:
                   "long.changing": lr["still_wrong_and_changing"], "long.frozen": lr["still_wrong_and_frozen"], "long.median_first": lr["first_solved_percentiles"]["50"]})
         if sc.get("oscan"):
             N.update({f"oscan.{k}": v for k, v in sc["oscan"].items() if isinstance(v, (int, float))})
+    rs = _read(root, "results/replay/summary.json")
+    if rs and rs.get("roughness"):
+        g = rs["roughness"]
+        N["nudge.eps"] = rs["eps"]
+        N["nudge.runs"] = rs["nudged"]
+        for name, kinds in (("flat", ["rough0"]), ("edge", ["rough1"]), ("dust", ["rough2", "rough5"])):
+            ks = [k for k in kinds if k in g]
+            n = sum(g[k]["n"] for k in ks)
+            if n:
+                N[f"nudge.{name}_n"] = n
+                N[f"plain.{name}"] = sum(g[k]["reproduced"] for k in ks) / n
+                N[f"nudge.{name}"] = sum(g[k]["nudge_stable"] for k in ks) / n
+                N[f"nudge.{name}_change"] = sum(g[k]["mean_max_change"] * g[k]["n"] for k in ks) / n
+        N["plain.all"] = sum(v["reproduced"] for v in g.values()) / sum(v["n"] for v in g.values())
+        N["plain.n"] = sum(v["n"] for v in g.values())
     ra = _read(root, "results/replay_agreement.json")
     if ra:
         tot: dict[str, list[int]] = {}
@@ -236,6 +251,14 @@ def tables_results(root: Path, N: dict[str, Any]) -> dict[str, str]:
         rows = [[names[k], fmt(v[0], "int"), fmt(v[1] / v[0], "pct0") if v[0] else "-", f"{v[3]} of {v[2]}" if v[2] else "-"] for k, v in
                 ((k, tot[k]) for k in names if k in tot)]
         T["replay"] = md_table(["pixel's surroundings (stored field)", "pixels checked", "same settle time on a second float32 stack", "...of those stored as >= 8 loops"], rows)
+    rs = _read(root, "results/replay/summary.json")
+    if rs and rs.get("roughness"):
+        g = rs["roughness"]
+        names = {"rough0": "all 4 neighbours equal (flat)", "rough1": "a neighbour differs by 1 loop", "rough2": "a neighbour differs by 2-4 loops", "rough5": "a neighbour differs by 5 or more"}
+        rows = [[names[k], fmt(v["n"], "int"), fmt(v["reproduced"] / v["n"], "pct1"), fmt(v["nudge_stable"] / v["n"], "pct0"), fmt(v["mean_max_change"], "f1")]
+                for k, v in ((k, g[k]) for k in names if k in g)]
+        T["replay_same"] = md_table(["pixel's surroundings (stored field)", "pixels re-run", "plain re-run reproduces the stored settle time",
+                                     f"unchanged by all {rs['nudged']} nudged re-runs (relative {rs['eps']:g})", "mean largest change from a nudge (loops)"], rows)
     sc = _read(root, "results/scans.json")
     if sc:
         ps, lr = sc["pscan"], sc["longrun"]
