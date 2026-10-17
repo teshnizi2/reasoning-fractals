@@ -24,7 +24,7 @@ adds a deep-zoom video and a click-a-pixel explorer, and measures how far the cl
   *how long* the model thinks, not in whether it solves this puzzle.
 * Neighbouring pixels differ a lot: {{hero.gap_ge5|pct1}} of neighbour pairs differ by 5 loops or more, the largest gap is
   {{hero.max_gap|int}} loops.
-* Cost: {{gpu.a100_hours|f1}} A100-hours on {{gpu.jobs|int}} cluster jobs for everything in this repository.
+* Cost: {{gpu.a100_hours|f1}} A100-equivalent hours ({{gpu.raw_hours|f1}} GPU-slot hours; a MIG slice counts as 4/7 of an A100) over {{gpu.jobs|int}} cluster job records (array tasks counted one by one) for everything in this repository.
 
 ## What is in the box
 
