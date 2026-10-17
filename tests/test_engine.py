@@ -38,15 +38,28 @@ def ref_run(solver, z_H, steps=24):
     return tr, r.extra["z_H_history"].numpy(), r.extra["z_L_history"].numpy()
 
 
+BACKENDS = {
+    "mlx": dict(backend="mlx"),
+    "torchfn-cpu": dict(backend="torchfn", device="cpu"),
+}
+
+
+@pytest.fixture(scope="module", params=list(BACKENDS))
+def engine(request):
+    from render.engine import Engine
+
+    return Engine(PUZZLE, **BACKENDS[request.param])
+
+
 @pytest.fixture(scope="module")
-def engine():
+def mlx_engine():
     from render.engine import Engine
 
     return Engine(PUZZLE, backend="mlx")
 
 
 def test_engine_loads_and_reports_backend(engine):
-    assert engine.backend == "mlx" and engine.steps == 24
+    assert engine.backend in ("mlx", "torchfn") and engine.steps == 24
 
 
 def test_one_step_matches_reference_latents(engine, ref_solver):
@@ -93,10 +106,43 @@ def test_rollout_row_does_not_depend_on_batch_neighbours_for_stable_latents(engi
     assert (full[2, -1] == single[0, -1]).all()
 
 
-def test_torch_backend_agrees_with_mlx_backend(engine):
+def test_torch_backend_agrees_with_mlx_backend(mlx_engine):
     from render.engine import Engine
 
     e2 = Engine(PUZZLE, backend="torch")
     rng = np.random.default_rng(4)
     z = rng.standard_normal((2, 97, 512)).astype(np.float32)
-    assert (e2.rollout(z) == engine.rollout(z)).mean() > 0.999
+    assert (e2.rollout(z) == mlx_engine.rollout(z)).mean() > 0.999
+
+
+def test_unknown_precision_is_rejected():
+    from render.engine import Engine
+
+    with pytest.raises(ValueError):
+        Engine(PUZZLE, backend="torchfn", device="cpu", precision="fp8")
+
+
+def test_tf32_request_is_harmless_on_cpu_and_changes_nothing():
+    from render.engine import Engine
+
+    e = Engine(PUZZLE, backend="torchfn", device="cpu", precision="tf32")
+    z = np.random.default_rng(5).standard_normal((2, 97, 512)).astype(np.float32)
+    assert e.rollout(z).shape == (2, 24, 81)
+
+
+@pytest.fixture(scope="module")
+def torchfn_engine():
+    from render.engine import Engine
+
+    return Engine(PUZZLE, backend="torchfn", device="cpu")
+
+
+def test_rollout_ex_returns_traces_and_latent_residuals(torchfn_engine):
+    e = torchfn_engine
+    z = np.random.default_rng(6).standard_normal((2, 97, 512)).astype(np.float32)
+    traces, resid = e.rollout_ex(z)
+    np.testing.assert_array_equal(traces, e.rollout(z))
+    assert resid.shape == (2, 24) and resid.dtype == np.float32
+    zh1, _ = e.step(z, np.zeros_like(z))
+    np.testing.assert_allclose(resid[:, 0], np.abs(zh1 - z).max(axis=(1, 2)), rtol=1e-4)
+    assert (resid[:, -1] < resid[:, 0]).all()  # a converging trajectory moves less at the end

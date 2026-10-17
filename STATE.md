@@ -36,6 +36,16 @@ Final report is <= 300 words and must include ALICE job IDs, GPU-hours used, wha
   is the candidate (its rating and the asset hash 7d68927f389fbdaa are NOT confirmed; md5/sha1/sha256 of
   the puzzle string do not match the hash).
 
+## Reproduction findings so far (17 Oct, local, MLX engine)
+- The notebook's EqR puzzle is Sudoku-Extreme test puzzle rating **162** (source puzzles4_forum_hardest_1905),
+  NOT the asset's rating-47 puzzle. Probe (notebook puzzle, plane seed 0, h=1, z_L=0, K=24 grid on the asset's
+  grid, 576 px): 100% solved, 1 distinct final grid, settle_nb 1..11 (mean ~3.4), best pixel agreement with the
+  asset only 21% (chance ~17%) => as expected, different puzzle.
+- Asset puzzle IDENTIFIED: `blake2s(question, digest_size=8).hexdigest()` == 7d68927f389fbdaa for
+  `2.6..4.9..7....6..8.......27.9.3..2..8.4.2......7.95..3.79...4.......3.6.1...3...` (rating 47, 422,786-row
+  test.csv from HF sapientinc/sudoku-extreme, saved in data/raw/sudoku-extreme/).
+- NEXT: probe this puzzle under the notebook parametrisation; if still no match, scan z0/h variants.
+
 ## Compute facts (measured)
 - One 24-step rollout = 21 L-level calls/step x 2 layers; ~0.615 TFLOP fp32 per rollout.
 - Stock loopscape path: ~1 rollout/s on MPS (B=16..128), 0.53/s on CPU (10 cores). GPU is shared: fp32 matmul

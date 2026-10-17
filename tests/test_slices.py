@@ -113,3 +113,24 @@ def test_distinct_latent_count_detects_precision_collapse():
     w2 = SL.Window(center=(0.3, 0.3), half_width=1e-3, n=4)
     z2 = SL.latents(w2.coords(), u, v, precision="float64")
     assert SL.n_distinct_latents(z2) == 16
+
+
+def test_plane_file_round_trip_is_bitwise(tmp_path):
+    p = tmp_path / "plane.npz"
+    SL.save_plane(p, seed=0)
+    u, v = SL.load_plane(p)
+    ru, rv = SL.plane((97, 512), seed=0)
+    np.testing.assert_array_equal(u, ru)
+    np.testing.assert_array_equal(v, rv)
+    assert u.dtype == np.float32
+
+
+def test_get_plane_prefers_the_file_over_recomputing(tmp_path):
+    p = tmp_path / "plane.npz"
+    u0 = np.zeros((97, 512), dtype=np.float32)
+    u0[0, 0] = 1
+    np.savez(p, u=u0, v=u0 * 2, seed=np.int64(123))
+    u, v = SL.get_plane(seed=0, path=p)
+    assert u[0, 0] == 1 and v[0, 0] == 2  # file contents, not seed 0's random plane
+    u2, _ = SL.get_plane(seed=0, path=tmp_path / "nope.npz")
+    np.testing.assert_array_equal(u2, SL.plane((97, 512), seed=0)[0])

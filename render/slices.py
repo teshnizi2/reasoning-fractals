@@ -22,6 +22,26 @@ def plane(shape=SHAPE, seed: int = 0) -> tuple[np.ndarray, np.ndarray]:
     return q[:, 0].reshape(shape).numpy().copy(), q[:, 1].reshape(shape).numpy().copy()
 
 
+def save_plane(path, seed: int = 0, shape=SHAPE) -> None:
+    """Freeze a plane to a file so every machine (Mac, cluster) uses bit-identical (u, v)."""
+    u, v = plane(shape, seed)
+    np.savez(path, u=u, v=v, seed=np.int64(seed))
+
+
+def load_plane(path) -> tuple[np.ndarray, np.ndarray]:
+    with np.load(path) as z:
+        return z["u"].astype(np.float32), z["v"].astype(np.float32)
+
+
+def get_plane(seed: int = 0, path=None, shape=SHAPE) -> tuple[np.ndarray, np.ndarray]:
+    """The frozen plane file if it exists, else the notebook construction for ``seed``."""
+    from pathlib import Path
+
+    if path is not None and Path(path).exists():
+        return load_plane(path)
+    return plane(shape, seed)
+
+
 def axis(n: int) -> np.ndarray:
     """The notebook's pixel axis: float32 ``linspace(-1, 1, n)``."""
     return torch.linspace(-1, 1, n).numpy()
