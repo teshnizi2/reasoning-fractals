@@ -18,6 +18,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from render import overlay as OV  # noqa: E402
 from render import zoomvideo as ZV  # noqa: E402
 
 
@@ -42,6 +43,8 @@ def main() -> None:
     ap.add_argument("--view-width", type=float, default=1.6, help="plane units across the frame at zoom 1")
     ap.add_argument("--end-px", type=float, default=2.0, help="screen px per sample of the deepest layer at the end")
     ap.add_argument("--hold", type=float, default=1.5, help="seconds to hold on the first and last frame")
+    ap.add_argument("--captions", default=None, help="JSON list of {text,size,font,color,x,y,t_in,t_out} (seconds, px at 1080 wide)")
+    ap.add_argument("--no-counter", action="store_true", help="omit the zoom counter")
     ap.add_argument("--square", action="store_true")
     ap.add_argument("--crf", type=int, default=16)
     a = ap.parse_args()
@@ -67,6 +70,8 @@ def main() -> None:
 
     p1 = encoder(out, (w, h))
     p2 = encoder(out.with_name(out.stem.replace(f"{w}x{h}", "1080x1080") + ".mp4"), (w, w)) if a.square else None
+    caps = json.loads(Path(a.captions).read_text()) if a.captions else []
+    sc = w / 1080.0  # caption geometry is specified for 1080-wide frames
     cache: dict[float, np.ndarray] = {}
     for i, t in enumerate(ts):
         if t not in cache or t not in (0.0, 1.0):
@@ -74,6 +79,16 @@ def main() -> None:
             cx, cy, z = cam.at(t)
             cache[t] = ZV.render_frame(layers, cx, cy, z, (w, h), view_width_units=a.view_width)
         f = cache[t]
+        sec = i / a.fps
+        if not a.no_counter:
+            z = cam.at(t)[2]
+            f = OV.draw_text(f, OV.zoom_label(z), (int(54 * sc), h - int(112 * sc)), int(38 * sc), "mono", (245, 158, 11))
+            f = OV.draw_text(f, "zoom", (int(56 * sc), h - int(146 * sc)), int(20 * sc), "mono", (190, 198, 214), alpha=0.85)
+        for c in caps:
+            al = OV.caption_alpha(sec, c["t_in"], c["t_out"])
+            if al > 0:
+                f = OV.draw_text(f, c["text"], (int(c["x"] * sc), int(c["y"] * sc)), int(c["size"] * sc), c.get("font", "sans"),
+                                 tuple(c.get("color", (232, 236, 245))), alpha=al)
         p1.stdin.write(f.tobytes())
         if p2:
             top = (h - w) // 2
