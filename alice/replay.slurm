@@ -10,4 +10,4 @@
 set -euo pipefail
 cd "$HOME/reasoning-fractals"
 export PYTHONPATH="$PWD/code" RF_WEIGHTS_NPZ="$PWD/data/eqr_sudoku_weights.npz" PYTHONUNBUFFERED=1
-env/bin/python alice/replay.py --inp data/replay_in.json --out out/replay
+env/bin/python alice/replay.py --inp "${INP:-data/replay_in.json}" --out "${OUT:-out/replay}"
