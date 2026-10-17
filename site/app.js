@@ -190,6 +190,7 @@ function updateReadout(clientX, clientY) {
   $("rZoom").textContent = "×" + (S.view.scale / S.fit).toFixed(S.view.scale / S.fit < 10 ? 2 : 0);
   if (clientX == null) return;
   const [a, b] = toPlane(clientX, clientY);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) { $("rA").textContent = "—"; $("rB").textContent = "—"; return; }
   const d = Math.max(3, Math.ceil(-Math.log10(1 / S.view.scale)) + 1);
   $("rA").textContent = sgn(a, d); $("rB").textContent = sgn(b, d);
   const L = sharpest(a, b);
