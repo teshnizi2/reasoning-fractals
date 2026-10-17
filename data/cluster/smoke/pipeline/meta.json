@@ -1,0 +1,25 @@
+{
+ "name": "smoke",
+ "n": 64,
+ "pixels": 4096,
+ "gpu_seconds": 68.31941652297974,
+ "precision": "tf32",
+ "spec": {
+  "name": "smoke",
+  "puzzle": "2.6..4.9..7....6..8.......27.9.3..2..8.4.2......7.95..3.79...4.......3.6.1...3...",
+  "mode": "window",
+  "center": [
+   0.0,
+   0.0
+  ],
+  "half_width": 1.0,
+  "n": 64,
+  "tile": 32,
+  "batch": 1024,
+  "precision": "tf32",
+  "latent_precision": "float64",
+  "steps": 24,
+  "plane_seed": 0,
+  "plane_file": "data/plane_seed0.npz"
+ }
+}

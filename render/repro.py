@@ -112,3 +112,20 @@ def neighbour_disagreement(img: np.ndarray, rows: np.ndarray, cols: np.ndarray) 
                 if (dr or dc) and 0 <= r + dr < h and 0 <= c + dc < w and img[r + dr, c + dc] != img[r, c]:
                     out[k] += 1
     return out
+
+
+def asset_pixel_for(name: str, xi: np.ndarray, yi: np.ndarray, n: int) -> tuple[np.ndarray, np.ndarray]:
+    """Inverse of ``variant_axes``: the asset pixel (row, col) holding plane-axis indices (xi, yi)."""
+    swap, fx, fy = _VARIANT_FLAGS[name]
+    xi, yi = np.asarray(xi), np.asarray(yi)
+    x0 = n - 1 - xi if fx else xi
+    y0 = n - 1 - yi if fy else yi
+    return (x0, y0) if swap else (y0, x0)
+
+
+def align_asset(levels: np.ndarray, stride: int, k: int, variant: str) -> np.ndarray:
+    """Asset levels at our k x k stride grid (plane indices stride*j, stride*i), as an image in our frame."""
+    n = levels.shape[0]
+    j, i = np.meshgrid(np.arange(k), np.arange(k))
+    r, c = asset_pixel_for(variant, stride * j, stride * i, n)
+    return levels[r, c]

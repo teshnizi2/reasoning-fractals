@@ -177,3 +177,46 @@ def test_write_field_files_are_loadable(tmp_path):
     assert set(["settle_nb", "settle_last", "n_wrong", "n_changes", "n_distinct", "flags", "gid"]) <= set(z.files)
     d = json.load(open(tmp_path / "dictionary.json"))
     assert d[0]["id"] == 0 and d[0]["grid"] == SOLUTION
+
+
+def rect_spec(**kw):
+    # pitch 1.0 in both axes: x = 0..7 across 8 columns, y = 0..9 down 10 rows
+    spec = make_spec(nx=8, ny=10, center=[3.5, 4.5], half_width=3.5, tile=4)
+    spec.pop("n")
+    spec.update(kw)
+    return spec
+
+
+def test_dims_and_plan_for_rectangular_images_cover_every_pixel_once():
+    spec = rect_spec()
+    assert TR.spec_dims(spec) == (10, 8) and TR.spec_dims(make_spec()) == (8, 8)
+    tiles = TR.plan_tiles(10, 4, nx=8)
+    cover = np.zeros((10, 8), dtype=int)
+    for t in tiles:
+        cover[t.r0 : t.r0 + t.h, t.c0 : t.c0 + t.w] += 1
+    assert (cover == 1).all() and len(tiles) == 6
+
+
+def test_rectangular_window_keeps_square_pixels():
+    spec = rect_spec()
+    full = np.concatenate([TR.pixel_coords(spec, t) for t in TR.plan_tiles(10, 4, nx=8)])
+    xs, ys = np.unique(np.round(full[:, 0], 9)), np.unique(np.round(full[:, 1], 9))
+    assert xs.tolist() == list(range(8)) and ys.tolist() == list(range(10))
+
+
+def test_rectangular_render_merges_to_ny_by_nx_arrays(tmp_path):
+    spec = rect_spec()
+    TR.run_tiles(StubEngine(), spec, tmp_path, plane=stub_plane(), solution=SOL)
+    f = TR.merge(spec, tmp_path, solution=SOL)
+    j, i = np.meshgrid(np.arange(8), np.arange(10))
+    assert f["settle_nb"].shape == (10, 8)
+    np.testing.assert_array_equal(f["settle_nb"], np.minimum(j, 5))
+    np.testing.assert_array_equal(f["n_wrong"], i)
+
+
+def test_merge_exposes_dictionary_arrays_for_cross_layer_unification(tmp_path):
+    spec, _, _ = run_all(tmp_path)
+    f = TR.merge(spec, tmp_path, solution=SOL)
+    assert f["dict_grids"].dtype == np.int8 and f["dict_grids"].shape == (8, 81)
+    assert (f["dict_grids"][0] == SOL).all() and f["dict_counts"].sum() == 64
+    assert len(f["dictionary"]) == len(f["dict_grids"])

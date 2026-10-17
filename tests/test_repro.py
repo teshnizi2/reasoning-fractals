@@ -122,3 +122,23 @@ def test_neighbour_disagreement_counts_differing_neighbours():
     img[2, 2] = 1
     d = R.neighbour_disagreement(img, np.array([2, 0, 1]), np.array([2, 0, 2]))
     assert d.tolist() == [8, 0, 1]  # centre differs from all 8; corner has none; (1,2) differs from the centre only
+
+
+def test_asset_pixel_for_inverts_variant_axes_for_every_orientation():
+    n = 37
+    rng = np.random.default_rng(1)
+    xi, yi = rng.integers(0, n, 50), rng.integers(0, n, 50)
+    for name in R.VARIANTS:
+        r, c = R.asset_pixel_for(name, xi, yi, n)
+        x2, y2 = R.variant_axes(name, r, c, n)
+        np.testing.assert_array_equal(x2, xi, err_msg=name)
+        np.testing.assert_array_equal(y2, yi, err_msg=name)
+
+
+def test_align_asset_samples_the_asset_at_a_stride_grid_in_the_identified_orientation():
+    n, stride = 20, 4
+    img = np.arange(n * n, dtype=np.int64).reshape(n, n)
+    got = R.align_asset(img, stride=stride, k=5, variant="xy_fy")
+    # our (row i, col j) is plane index (x = stride*j, y = stride*i); xy_fy: asset row = n-1-y, asset col = x
+    assert got.shape == (5, 5)
+    assert got[0, 0] == img[n - 1, 0] and got[1, 2] == img[n - 1 - stride, 2 * stride]

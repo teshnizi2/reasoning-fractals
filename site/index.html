@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thought basins</title>
+<meta name="description" content="The same Sudoku, millions of different first thoughts. Each pixel is one starting thought of a recurrent reasoning model; colour is how long it took to settle on an answer. The map is a fractal.">
+<meta name="theme-color" content="#0e1117">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="stage" aria-label="Map of a reasoning model's starting thoughts, coloured by how long each took to settle" role="img"></canvas>
+
+<div class="hud" id="hud">
+  <header class="masthead">
+    <p class="kicker"><span class="dot"></span>latent atlas · EqR on one Sudoku</p>
+    <h1>Thought basins</h1>
+    <p class="sub" id="sub">Each pixel is one starting thought for the same Sudoku. Colour is how long the model took to settle on its answer.</p>
+    <div class="row">
+      <button class="chip" id="btnExplain" aria-controls="drawer" aria-expanded="false">What am I looking at?</button>
+      <button class="chip ghost" id="btnTour" title="Fly down into the fractal (T)">Fly in</button>
+    </div>
+  </header>
+
+  <div class="readout" id="readout" aria-live="off">
+    <div class="r-zoom"><span class="lbl">zoom</span><b id="rZoom">×1</b></div>
+    <div class="r-pos"><span class="lbl">a</span><b id="rA">+0.0000</b><span class="lbl">b</span><b id="rB">+0.0000</b></div>
+    <div class="r-lvl"><span class="lbl">sharpest data here</span><b id="rLayer">—</b></div>
+  </div>
+
+  <div class="legend" id="legend" aria-hidden="true">
+    <div class="bar" id="legendBar"></div>
+    <div class="ticks"><span id="lgLo">2</span><span class="mid">loops to settle</span><span id="lgHi">12+</span></div>
+    <div class="stuck" id="legendStuck"><i></i><span>ended on a wrong answer</span></div>
+  </div>
+
+  <nav class="controls" aria-label="View controls">
+    <button class="btn" id="btnIn" aria-label="Zoom in">+</button>
+    <button class="btn" id="btnOut" aria-label="Zoom out">−</button>
+    <button class="btn" id="btnHome" aria-label="Reset view" title="Reset (0)">⌂</button>
+    <button class="btn wide" id="btnWay" aria-label="Switch colourway" title="Colourway (C)"><i class="sw"></i><span id="wayName">indigo</span></button>
+    <button class="btn wide" id="btnAbout" aria-controls="drawer" aria-expanded="false" title="About (?)">About</button>
+  </nav>
+
+  <aside class="inspector" id="inspector" aria-label="Pixel inspector" hidden>
+    <button class="grab" id="btnSheet" aria-label="Expand or collapse the inspector"></button>
+    <div class="ins-head">
+      <div class="ins-title"><span class="lbl">starting thought</span>
+        <code id="iCoords">a=+0.0000 b=+0.0000</code>
+      </div>
+      <button class="x" id="btnClose" aria-label="Close inspector">×</button>
+    </div>
+
+    <div class="verdict">
+      <span class="swatch" id="iSwatch"></span>
+      <span class="badge" id="iBadge">SOLVED</span>
+      <div class="loops"><b id="iLoops">5</b><span> loops to settle</span></div>
+    </div>
+    <div class="ticks24" id="iTicks" aria-hidden="true"></div>
+
+    <div class="grid-wrap">
+      <div class="sudoku" id="iGrid" role="img" aria-label="The 9 by 9 grid the model ended on"></div>
+      <div class="grid-key"><span class="k given">given</span><span class="k ok">model</span><span class="k bad">wrong</span></div>
+    </div>
+    <p class="note" id="iNote"></p>
+
+    <div class="nbr">
+      <canvas id="iPatch" width="98" height="98" aria-label="Neighbouring starting thoughts, coloured by settle time"></canvas>
+      <div class="nbr-text">
+        <span class="lbl">the 7×7 thoughts around this one</span>
+        <span class="lbl pitch" id="iPitch">pitch 1e-3</span>
+        <p class="tiny" id="iNbrNote"></p>
+      </div>
+    </div>
+  </aside>
+
+  <footer class="credit">
+    <span>Model &amp; method: <a href="https://arxiv.org/abs/2609.04963" target="_blank" rel="noopener">Lai, Bao, Quinn &amp; Gilpin, <i>Fractal basins trap latent reasoning</i></a> and <a href="https://github.com/GilpinLab/loopscape" target="_blank" rel="noopener">loopscape</a> · <a href="https://arxiv.org/abs/2605.21488" target="_blank" rel="noopener">EqR (Huang, Geng, Kolter)</a> · puzzles: Sudoku-Extreme (Wang et al., HRM)</span>
+  </footer>
+</div>
+
+<section class="drawer" id="drawer" aria-labelledby="dTitle" hidden>
+  <div class="drawer-in">
+    <button class="x" id="btnDrawerClose" aria-label="Close">×</button>
+    <h2 id="dTitle">What am I looking at?</h2>
+    <div class="cols">
+      <article>
+        <h3>The picture</h3>
+        <p>A small recurrent model (<b>EqR</b>) solves Sudoku by <i>iterating</i>: it keeps a hidden state, the <b>latent</b>, and updates it for 24 loops, reading a candidate grid off the latent after every loop. Normally the state starts as random noise.</p>
+        <p>Here the Sudoku is fixed and only the <b>initial latent</b> changes. Two directions in the 49,664-dimensional latent space span a flat sheet; every pixel is one point on that sheet, i.e. one starting thought.</p>
+        <p>Colour is <b>how many loops the decoded grid kept changing</b> before it settled. Dark indigo: settled almost at once. Mint: still revising late.</p>
+      </article>
+      <article>
+        <h3>Basins, and why they are fractal</h3>
+        <p>All starts that end in the same answer form a <b>basin</b>. Where two basins meet, the model's route depends on which side of a saddle it started, so the boundary is where a tiny nudge changes the story.</p>
+        <p>Zoom in and the boundary never smooths out: new filaments keep appearing at every scale. That is a <b>fractal basin boundary</b>, and it means <b>sensitivity</b>: a one-pixel change of the first thought can add or remove many loops of thinking.</p>
+        <p>Click any pixel to read the Sudoku the model had on its table when it stopped.</p>
+      </article>
+      <article id="limits">
+        <h3>Honest limits</h3>
+        <ul id="limitsList"></ul>
+      </article>
+      <article>
+        <h3>How it was made</h3>
+        <ul id="howList"></ul>
+        <h3 class="sp">Credits</h3>
+        <p class="small"><b>loopscape</b> and the paper <a href="https://arxiv.org/abs/2609.04963" target="_blank" rel="noopener">arXiv:2609.04963</a> (Lai, Bao, Quinn, Gilpin; the repo has no licence, so nothing of it is copied here). <b>EqR</b>, Huang, Geng &amp; Kolter, <a href="https://arxiv.org/abs/2605.21488" target="_blank" rel="noopener">arXiv:2605.21488</a>, Apache-2.0 code and weights from locuslab. <b>Puzzles</b> from Sudoku-Extreme (<a href="https://huggingface.co/datasets/sapientinc/sudoku-extreme" target="_blank" rel="noopener">sapientinc</a>). Computed on an Apple M4 and the ALICE cluster (Leiden University).</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<noscript><p class="noscript">This explorer needs JavaScript (a canvas and a few binary files).</p></noscript>
+<script type="module" src="app.js"></script>
+</body>
+</html>

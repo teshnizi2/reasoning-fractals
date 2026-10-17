@@ -239,6 +239,39 @@ class _TorchFnBackend:
     def rollout(self, z_h, z_l, steps):
         return self.rollout_ex(z_h, z_l, steps)[0]
 
+    def rollout_early(self, z_h, z_l, steps, solution, m=3):
+        """Like ``rollout`` but retires a pixel once its decoded grid equals ``solution`` for ``m`` loops in a row.
+
+        Retired pixels leave the batch (their remaining loops are the solution, filled in); everything else runs
+        all ``steps`` loops.  Returns traces (B, steps, 81) int8 and ``retired_at`` (B,): the loop count at
+        which each pixel retired, ``steps`` if it never did.
+        """
+        torch = self.torch
+        with torch.inference_mode():
+            zh, zl = self._to_dev(z_h), self._to_dev(z_l)
+            b = zh.shape[1]
+            sol = torch.as_tensor(np.asarray(solution), device=self.dev).to(torch.int8)
+            out = torch.zeros((b, steps, 81), dtype=torch.int8, device=self.dev)
+            retired = torch.full((b,), steps, dtype=torch.int64, device=self.dev)
+            active = torch.arange(b, device=self.dev)
+            run = torch.zeros(b, dtype=torch.int64, device=self.dev)
+            for s in range(steps):
+                zh, zl = self._step(zh, zl)
+                cells = ((zh[REG:] @ self.lm_head).float().argmax(-1) - 1).to(torch.int8).T  # (A, 81)
+                out[active, s] = cells
+                run = torch.where((cells == sol).all(dim=1), run + 1, torch.zeros_like(run))
+                done = run >= m
+                if bool(done.any()):
+                    retired[active[done]] = s + 1
+                    if s + 1 < steps:
+                        out[active[done], s + 1 :] = cells[done][:, None, :]
+                    keep = ~done
+                    if not bool(keep.any()):
+                        break
+                    zh, zl = zh[:, keep].contiguous(), zl[:, keep].contiguous()
+                    active, run = active[keep], run[keep]
+            return out.cpu().numpy(), retired.cpu().numpy()
+
     def rollout_ex(self, z_h, z_l, steps):
         """Traces (B, steps, 81) int8 and per-loop residual max|z_H(s) - z_H(s-1)| (B, steps) float32."""
         torch = self.torch
@@ -281,6 +314,15 @@ class Engine:
         z_h = np.ascontiguousarray(z_h, dtype=np.float32)
         z_l = np.zeros_like(z_h) if z_l is None else np.ascontiguousarray(z_l, dtype=np.float32)
         return self._b.rollout_ex(z_h, z_l, self.steps)
+
+    def rollout_early(self, z_h: np.ndarray, z_l: np.ndarray | None = None, solution: np.ndarray | None = None,
+                      m: int = 3):
+        """Rollout that retires pixels sitting on ``solution`` for ``m`` loops (torchfn backend only)."""
+        if not hasattr(self._b, "rollout_early"):
+            raise NotImplementedError(f"backend {self.backend!r} has no early-exit rollout")
+        z_h = np.ascontiguousarray(z_h, dtype=np.float32)
+        z_l = np.zeros_like(z_h) if z_l is None else np.ascontiguousarray(z_l, dtype=np.float32)
+        return self._b.rollout_early(z_h, z_l, self.steps, solution, m)
 
     def rollout(self, z_h: np.ndarray, z_l: np.ndarray | None = None) -> np.ndarray:
         """Decoded grids after each loop: int8 (B, steps, 81). ``z_l`` defaults to zeros (notebook setting)."""

@@ -39,11 +39,18 @@ class Tile:
     w: int
 
 
-def plan_tiles(n: int, tile: int) -> list[Tile]:
+def spec_dims(spec: dict) -> tuple[int, int]:
+    """(rows, cols) of the image: ``ny``/``nx`` if given, else ``n`` x ``n``."""
+    return (spec["ny"], spec["nx"]) if "nx" in spec else (spec["n"], spec["n"])
+
+
+def plan_tiles(n: int, tile: int, nx: int | None = None) -> list[Tile]:
+    """Row-major tiles covering an ``n`` (rows) x ``nx`` (cols, default ``n``) image exactly once."""
+    nx = n if nx is None else nx
     tiles, k = [], 0
     for ti, r0 in enumerate(range(0, n, tile)):
-        for tj, c0 in enumerate(range(0, n, tile)):
-            tiles.append(Tile(k, ti, tj, r0, c0, min(tile, n - r0), min(tile, n - c0)))
+        for tj, c0 in enumerate(range(0, nx, tile)):
+            tiles.append(Tile(k, ti, tj, r0, c0, min(tile, n - r0), min(tile, nx - c0)))
             k += 1
     return tiles
 
@@ -56,10 +63,13 @@ def pixel_coords(spec: dict, t: Tile) -> np.ndarray:
     """(h*w, 2) plane coordinates (x, y) of a tile's pixels, row-major with x fastest."""
     rr, cc = np.meshgrid(np.arange(t.r0, t.r0 + t.h), np.arange(t.c0, t.c0 + t.w), indexing="ij")
     if spec["mode"] == "window":
-        ax = np.linspace(-1.0, 1.0, spec["n"], dtype=np.float64)
+        ny, nx = spec_dims(spec)
+        ax_x = np.linspace(-1.0, 1.0, nx, dtype=np.float64)
+        ax_y = np.linspace(-1.0, 1.0, ny, dtype=np.float64)
         cx, cy = spec["center"]
         hw = spec["half_width"]
-        x, y = cx + hw * ax[cc], cy + hw * ax[rr]
+        hh = hw * (ny - 1) / (nx - 1) if nx > 1 else hw  # square pixels
+        x, y = cx + hw * ax_x[cc], cy + hh * ax_y[rr]
         return np.stack([x.ravel(), y.ravel()], axis=-1)
     if spec["mode"] == "asset":
         ax = SL.axis(spec["n_asset"])
@@ -83,7 +93,8 @@ def run_tiles(engine, spec: dict, out_dir, plane, solution: np.ndarray, worker: 
     spec_path = out / "spec.json"
     if not spec_path.exists():
         spec_path.write_text(json.dumps(spec, indent=1))
-    mine = tiles_for_worker(plan_tiles(spec["n"], spec["tile"]), worker, workers)
+    ny, nx = spec_dims(spec)
+    mine = tiles_for_worker(plan_tiles(ny, spec["tile"], nx), worker, workers)
     stats = dict(tiles_total=len(mine), tiles_done=0, tiles_skipped=0, seconds=0.0, rollouts=0,
                  stopped_for_budget=False)
     t0 = clock()
@@ -127,14 +138,14 @@ def run_tiles(engine, spec: dict, out_dir, plane, solution: np.ndarray, worker: 
 
 def merge(spec: dict, out_dir, solution: np.ndarray) -> dict:
     out = Path(out_dir)
-    tiles = plan_tiles(spec["n"], spec["tile"])
+    ny, nx = spec_dims(spec)
+    tiles = plan_tiles(ny, spec["tile"], nx)
     missing = [t.index for t in tiles if not (out / "tiles" / _tile_name(t)).exists()]
     if missing:
         raise FileNotFoundError(f"missing tiles: {missing[:20]}{'...' if len(missing) > 20 else ''} ({len(missing)})")
-    n = spec["n"]
     dt = dict(settle_nb=np.uint8, settle_last=np.uint8, n_wrong=np.uint8, n_changes=np.uint8,
               n_distinct=np.uint8, flags=np.uint8)
-    full = {k: np.zeros((n, n), dtype=v) for k, v in dt.items()}
+    full = {k: np.zeros((ny, nx), dtype=v) for k, v in dt.items()}
     gidx_tiles, ug_tiles, uc_tiles, seconds, px = [], [], [], 0.0, 0
     for t in tiles:
         z = np.load(out / "tiles" / _tile_name(t))
@@ -147,12 +158,13 @@ def merge(spec: dict, out_dir, solution: np.ndarray) -> dict:
         seconds += float(z["seconds"])
         px += int(z["n_px"])
     d = O.build_dictionary(ug_tiles, uc_tiles, solution)
-    gid = np.zeros((n, n), dtype=np.uint32)
+    gid = np.zeros((ny, nx), dtype=np.uint32)
     for t, g, idmap in zip(tiles, gidx_tiles, d.id_maps):
         gid[t.r0 : t.r0 + t.h, t.c0 : t.c0 + t.w] = idmap[g]
     full["gid"] = gid
     full["dictionary"] = O.dictionary_records(d, spec["puzzle"])
-    full["meta"] = dict(name=spec.get("name"), n=n, pixels=px, gpu_seconds=seconds,
+    full["dict_grids"], full["dict_counts"] = d.grids, d.counts
+    full["meta"] = dict(name=spec.get("name"), ny=ny, nx=nx, pixels=px, gpu_seconds=seconds,
                         precision=spec.get("precision"), spec=spec)
     return full
 

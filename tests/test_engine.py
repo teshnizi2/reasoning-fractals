@@ -146,3 +146,37 @@ def test_rollout_ex_returns_traces_and_latent_residuals(torchfn_engine):
     zh1, _ = e.step(z, np.zeros_like(z))
     np.testing.assert_allclose(resid[:, 0], np.abs(zh1 - z).max(axis=(1, 2)), rtol=1e-4)
     assert (resid[:, -1] < resid[:, 0]).all()  # a converging trajectory moves less at the end
+
+
+def _solution():
+    from render import sudoku as S
+
+    return np.array([int(c) for c in S.solve(PUZZLE)], dtype=np.int8)
+
+
+def test_rollout_early_matches_the_full_rollout_and_saves_loops(torchfn_engine):
+    e = torchfn_engine
+    z = np.random.default_rng(7).standard_normal((4, 97, 512)).astype(np.float32)
+    full = e.rollout(z)
+    traces, retired_at = e.rollout_early(z, solution=_solution(), m=3)
+    np.testing.assert_array_equal(traces, full)
+    assert retired_at.shape == (4,) and (retired_at < 24).all()  # all four solve and stay solved
+    # after retirement the trace is the solution repeated
+    sol = _solution()
+    for k in range(4):
+        assert (traces[k, retired_at[k] - 1 :] == sol).all()
+
+
+def test_rollout_early_never_retires_a_pixel_that_is_not_on_the_solution(torchfn_engine):
+    e = torchfn_engine
+    z = np.random.default_rng(8).standard_normal((2, 97, 512)).astype(np.float32)
+    wrong = _solution().copy()
+    wrong[0] = (wrong[0] % 9) + 1  # a "solution" the model will never produce
+    traces, retired_at = e.rollout_early(z, solution=wrong, m=3)
+    assert (retired_at == 24).all()
+    np.testing.assert_array_equal(traces, e.rollout(z))
+
+
+def test_rollout_early_is_exposed_on_the_engine_for_torchfn_only(mlx_engine):
+    with pytest.raises(NotImplementedError):
+        mlx_engine.rollout_early(np.zeros((1, 97, 512), dtype=np.float32), solution=_solution())
