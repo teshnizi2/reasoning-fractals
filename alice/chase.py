@@ -33,6 +33,7 @@ def main():
     ap.add_argument("--n", type=int, default=160)
     ap.add_argument("--puzzle", default=P.ASSET.question)
     ap.add_argument("--early-m", type=int, default=3)
+    ap.add_argument("--anchor-weight", type=float, default=0.9, help="how strongly a pick is pulled towards the window centre")
     a = ap.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -50,7 +51,7 @@ def main():
         settle = res["settle_nb"].reshape(a.n, a.n)
         flags = (res["solved"].astype(np.uint8) | (res["valid"].astype(np.uint8) << 1) | (res["censored"].astype(np.uint8) << 2)).reshape(a.n, a.n)
         win = max(8, int(round(a.n / a.zoom)))
-        row, col, score = CH.pick_centre(settle, win=win, step=max(2, win // 6))
+        row, col, score = CH.pick_centre(settle, win=win, step=max(2, win // 6), anchor=(a.n / 2, a.n / 2), anchor_weight=a.anchor_weight)
         nx_, ny_ = CH.pixel_to_plane(row, col, (cx, cy), hw, a.n)
         sc = CH.window_scores(settle, win=win, step=max(2, win // 6))
         entry = dict(level=lvl, center=[cx, cy], half_width=hw, zoom=1.0 / hw, n=a.n, seconds=res["seconds"],

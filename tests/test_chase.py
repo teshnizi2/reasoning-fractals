@@ -40,3 +40,32 @@ def test_plane_coordinates_of_a_picked_pixel_use_square_pixel_windows():
     assert abs(x - 0.6) < 1e-12 and abs(y - (-0.25)) < 1e-12
     x, y = CH.pixel_to_plane(0, 0, center=(0.5, -0.25), half_width=0.1, n=101)
     assert abs(x - 0.4) < 1e-12 and abs(y - (-0.25 - 0.1)) < 1e-12  # row 0 is y_min in the field arrays
+
+
+def ripples(a, b, n=160):
+    yy, xx = np.mgrid[0:n, 0:n]
+    return (3 + 4 * (np.sin(xx / a + np.sin(yy / b)) > 0) + 2 * (np.sin(yy / 5.0) > 0.2)).astype(np.uint8)
+
+
+def test_scores_do_not_saturate_so_better_windows_win_instead_of_the_first_in_raster_order():
+    # two rich patches: A (raster-first) is plain ripples, B has more levels and a boundary density nearer the optimum
+    f = np.full((160, 160), 3, dtype=np.uint8)
+    f[10:42, 10:42] = ripples(7.0, 11.0)[10:42, 10:42]
+    yy, xx = np.mgrid[0:160, 0:160]
+    richer = (2 + (xx // 3 + yy // 5) % 11).astype(np.uint8)
+    rich_patch = np.where((np.sin(xx / 5.0 + np.sin(yy / 4.0)) > 0), richer, 3).astype(np.uint8)
+    f[100:132, 100:132] = rich_patch[100:132, 100:132]
+    sc = CH.window_scores(f, win=32, step=4)["score"]
+    a = sc[(10 // 4), (10 // 4)]
+    b = sc[(100 // 4), (100 // 4)]
+    assert a != b and max(a, b) < 1.0 + 1e-9
+    r, c, _ = CH.pick_centre(f, win=32, step=4)
+    assert (r, c) != (26, 26) or a >= b  # the pick is whichever truly scores higher, never "first in raster order"
+
+
+def test_pick_prefers_windows_near_the_requested_anchor_when_scores_are_close():
+    f = ripples(6.0, 9.0)  # structure everywhere
+    r1, c1, _ = CH.pick_centre(f, win=32, step=4, anchor=(40, 40), anchor_weight=0.6)
+    r2, c2, _ = CH.pick_centre(f, win=32, step=4, anchor=(120, 120), anchor_weight=0.6)
+    assert abs(r1 - 40) + abs(c1 - 40) < abs(r2 - 40) + abs(c2 - 40)
+    assert abs(r2 - 120) + abs(c2 - 120) < abs(r1 - 120) + abs(c1 - 120)
