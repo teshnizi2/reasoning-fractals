@@ -25,6 +25,8 @@ see the commands in `RUNS.md` row for that job).
 | `eechk.slurm` + `earlyexit_check.py` | early exit vs full rollouts vs batch-size changes (same pixels) | ~10 min |
 | `pscan.slurm` + `puzzle_scan.py` | multistability scan: 5565 puzzles x 16 native random starts | ~30 min |
 | `chase.slurm` + `chase.py` | zoom chase: small windows, richest sub-window each level, to choose the keyframe centre | ~30 min |
+| `extras.slurm` | the two follow-ups of the puzzle scan in one allocation: `longrun_check.py` (are unsolved native starts stuck or slow?) and `outcome_scan.py` (outcome maps of slices around native-scale base points) | ~30 min |
+| `replay.slurm` + `replay.py` | re-run chosen pixels on the render engine (plain run vs the stored values, plus rounding-sized nudges): traces for the explorer's featured starts and the video's finale pair | ~5 min |
 | `render.slurm` | tiled, resumable window/asset-grid renders (hero, keyframes, reproduction grid) from a spec | see below |
 
 ## Tiled renders (`render.slurm`)
@@ -64,3 +66,16 @@ to ~9 (`RUNS.md`).
   for the rest, with one shared `WORKERS=48` so the tile assignment never overlaps. (`--gres` on the command line
   overrides the `#SBATCH` line in the script.)
 * Comma-separated values cannot go through `--export` (use `CX=..,CY=..`, not `C0=x,y`).
+
+## Replay (`replay.slurm`)
+
+`scripts/plan_replay.py` picks the pixels (featured starts of the hero, neighbouring pairs of the keyframes) and writes
+`results/replay/replay_in.json`; copy it to `~/reasoning-fractals/data/`, `sbatch alice/replay.slurm`, then
+`alice/sync.sh pull replay` and `scripts/apply_replay.py`. The job runs the same torch/CUDA fp32 engine as the tiles
+(a second float32 stack, MLX on the Mac, does *not* reproduce speckle pixels, see README section 4), reports whether the
+plain replay equals the stored settle time and how far 1e-6 relative nudges of the latent move it.
+
+## What cost what (17 Oct)
+
+`RUNS.md` has one row per experiment; `results/alice/gpu_hours.json` (from `sacct`) has the exact GPU time of every job.
+MIG slices are counted as 4/7 (`4g.40gb`) or 3/7 (`3g.40gb`) of an A100.

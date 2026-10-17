@@ -62,7 +62,7 @@ def shifted_center(px: float, py: float, zoom: float, size: tuple[int, int], vie
 
 
 FEATHER = 20.0  # samples over which a finer layer fades out towards the edge of its footprint
-BLOCKS_FROM, BLOCKS_TO = 3.0, 8.0  # on-screen px per sample between which smooth resampling turns into hard blocks
+BLOCKS_FROM, BLOCKS_TO = 4.0, 10.0  # on-screen px per sample between which smooth resampling turns into hard blocks
 
 
 def layer_alpha(prev_pitch_px: float) -> float:
