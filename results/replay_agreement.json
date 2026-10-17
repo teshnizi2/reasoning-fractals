@@ -1,0 +1,173 @@
+{
+ "script": "scripts/replay_agreement.py",
+ "engine": "MLX float32, Apple M4 (local) vs torch fp32 on A100 (stored)",
+ "n_per_field": 160,
+ "seed": 0,
+ "bins": "roughness = max |settle difference| to the 4 neighbours in the stored field",
+ "fields": [
+  {
+   "name": "chase window x80",
+   "shape": [
+    160,
+    160
+   ],
+   "n": 160,
+   "seconds": 130.80306100845337,
+   "equal": 125,
+   "frac_equal": 0.78125,
+   "by_roughness": [
+    {
+     "roughness": "0",
+     "n": 112,
+     "equal": 110,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "1",
+     "n": 21,
+     "equal": 10,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "2-4",
+     "n": 13,
+     "equal": 3,
+     "n_slow": 4,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "5-+",
+     "n": 14,
+     "equal": 2,
+     "n_slow": 5,
+     "slow_equal": 0
+    }
+   ]
+  },
+  {
+   "name": "chase window x640",
+   "shape": [
+    160,
+    160
+   ],
+   "n": 160,
+   "seconds": 125.20672416687012,
+   "equal": 136,
+   "frac_equal": 0.85,
+   "by_roughness": [
+    {
+     "roughness": "0",
+     "n": 103,
+     "equal": 103,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "1",
+     "n": 45,
+     "equal": 30,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "2-4",
+     "n": 5,
+     "equal": 2,
+     "n_slow": 2,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "5-+",
+     "n": 7,
+     "equal": 1,
+     "n_slow": 2,
+     "slow_equal": 0
+    }
+   ]
+  },
+  {
+   "name": "chase window x5120",
+   "shape": [
+    160,
+    160
+   ],
+   "n": 160,
+   "seconds": 145.93960213661194,
+   "equal": 99,
+   "frac_equal": 0.61875,
+   "by_roughness": [
+    {
+     "roughness": "0",
+     "n": 85,
+     "equal": 76,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "1",
+     "n": 14,
+     "equal": 9,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "2-4",
+     "n": 31,
+     "equal": 7,
+     "n_slow": 12,
+     "slow_equal": 1
+    },
+    {
+     "roughness": "5-+",
+     "n": 30,
+     "equal": 7,
+     "n_slow": 14,
+     "slow_equal": 0
+    }
+   ]
+  },
+  {
+   "name": "hero",
+   "shape": [
+    2048,
+    2048
+   ],
+   "n": 160,
+   "seconds": 146.68141078948975,
+   "equal": 95,
+   "frac_equal": 0.59375,
+   "by_roughness": [
+    {
+     "roughness": "0",
+     "n": 57,
+     "equal": 57,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "1",
+     "n": 10,
+     "equal": 10,
+     "n_slow": 0,
+     "slow_equal": 0
+    },
+    {
+     "roughness": "2-4",
+     "n": 40,
+     "equal": 11,
+     "n_slow": 23,
+     "slow_equal": 1
+    },
+    {
+     "roughness": "5-+",
+     "n": 53,
+     "equal": 17,
+     "n_slow": 26,
+     "slow_equal": 1
+    }
+   ]
+  }
+ ]
+}

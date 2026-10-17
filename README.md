@@ -199,10 +199,15 @@ what the stored pixel says (the exception is the very slowest pixels: only 6 of 
 | a neighbour differs by 2-4 loops | 150 | 100.0% | 17% | 4.2 |
 | a neighbour differs by 5 or more | 150 | 100.0% | 19% | 4.6 |
 
-*A second float32 implementation* (MLX on an Apple M4 against the stored A100 values, [pending: replay.n_per_field] pixels per field,
-[pending: replay.n_fields] fields, `scripts/replay_agreement.py`):
+*A second float32 implementation* (MLX on an Apple M4 against the stored A100 values, 160 pixels per field,
+4 fields, `scripts/replay_agreement.py`):
 
-*[pending: table:replay]*
+| pixel's surroundings (stored field) | pixels checked | same settle time on a second float32 stack | ...of those stored as >= 8 loops |
+|---|---|---|---|
+| all 4 neighbours equal (flat) | 357 | 97% | - |
+| a neighbour differs by 1 loop | 90 | 66% | - |
+| a neighbour differs by 2-4 loops | 89 | 26% | 2 of 41 |
+| a neighbour differs by 5 or more | 104 | 26% | 1 of 47 |
 
 In flat regions every implementation gives the same number. In the speckled "dust" a different implementation, or a nudge below the
 noise of a float32 matmul, changes the number, and slow dust pixels essentially never reproduce across implementations. The *statistics* of the
@@ -264,8 +269,8 @@ everything in this repository, scans and checks included, used 25.3 A100-equival
   664 of 5,565 puzzles, but this puzzle was solved from all 16 of its native starts.
 * **Almost every start ends right.** 99.92% of the hero's starts reach the true solution; the 3,441 others are mostly starts still
   changing at loop 24. The fractal is in the settle time.
-* **Pixel-exact only where the map is smooth.** See section 4: a second float32 implementation agrees on [pending: replay.flat] of pixels with flat surroundings
-  and on [pending: replay.dust] of speckle pixels; a 1e-6 nudge leaves 97% of flat-region pixels and 18% of speckle pixels unchanged. The reproduction of the upstream figure is statistical in the filaments for the same reason.
+* **Pixel-exact only where the map is smooth.** See section 4: a second float32 implementation agrees on 97% of pixels with flat surroundings
+  and on 26% of speckle pixels; a 1e-6 nudge leaves 97% of flat-region pixels and 18% of speckle pixels unchanged. The reproduction of the upstream figure is statistical in the filaments for the same reason.
 * **float32 only.** TF32 and bfloat16 give different pictures (21.9% and 13.6% pixel agreement with the upstream image).
 * **Slim fractal.** The structure thins out under magnification (section 3); nothing was rendered beyond ×[pending: kf.zoom_max].
 * **Early exit** retires a start after 3 loops on the solution: identical settle times for 99.93% of 4,096 test pixels. Batch size matters (B=2048 is a

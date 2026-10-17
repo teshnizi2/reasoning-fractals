@@ -16,3 +16,4 @@ results/repro/*_side_by_side.png
 site/data-big/
 site/data-proto/
 site/data-heroonly/
+data/local/
