@@ -216,7 +216,7 @@ def tables(root: Path, N: dict[str, Any]) -> dict[str, str]:
     if sd:
         rows = []
         for r in sd["rows"]:
-            rows.append([r["label"], fmt(r["pitch"], "sci1"), "x".join(str(v) for v in r["shape"]), fmt(r["boundary_box_fraction"], "pct0"),
+            rows.append([r["label"], fmt(r["pitch"], "sci1"), "x".join(str(v) for v in r["shape"][::-1]), fmt(r["boundary_box_fraction"], "pct0"),
                          fmt(r["basin_entropy"], "f2"), fmt(r["boundary_dimension"], "f3")])
         T["scale"] = md_table(["field", "pixel pitch (plane units)", "pixels", "5x5 boxes touching a boundary", "S_b", "boundary dim."], rows)
     ce = _read(root, "results/cost_estimate.json")

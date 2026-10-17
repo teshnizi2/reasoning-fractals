@@ -20,7 +20,8 @@ def pct(x: float, nd: int = 1) -> str:
     return f"{100 * x:.{nd}f}%"
 
 
-def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None, scale: dict | None = None) -> dict:
+def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None, scale: dict | None = None, nums: dict | None = None) -> dict:
+    nums = nums or {}
     hero = metrics["hero"]
     thin_sentence = "(scale data not available.)"
     deepest = None
@@ -29,11 +30,13 @@ def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None, scale: dict 
         coarse = next((r for r in rows if r["label"].startswith("hero 2048x2048, every pixel")), None) or \
             next((r for r in rows if r["label"].startswith("upstream image, every pixel")), rows[0])
         wins = [r for r in rows if r["label"].startswith("window")]
+        kfs = [r for r in rows if r["label"].startswith("keyframe")]
         deepest = max((1 / (r["pitch"] * (r["shape"][0] - 1) / 2) for r in wins), default=None)
-        if wins:
-            w = wins[0]
+        fine = min(kfs, key=lambda r: r["pitch"]) if kfs else (wins[0] if wins else None)  # unbiased keyframes first, else the first chase window
+        if fine:
+            zoom_fine = 1 / (fine["pitch"] * (fine["shape"][1] - 1) / 2)
             thin_sentence = (f"In 5×5-pixel boxes, {pct(coarse['boundary_box_fraction'], 0)} touch a boundary at the full map's pixel pitch "
-                             f"({coarse['pitch']:.0e}), but only {pct(w['boundary_box_fraction'], 0)} in a window magnified ×{1 / (w['pitch'] * (w['shape'][0] - 1) / 2):.0f} (pitch {w['pitch']:.0e}).")
+                             f"({coarse['pitch']:.0e}), but only {pct(fine['boundary_box_fraction'], 0)} in the layer magnified ×{zoom_fine:.0f} (pitch {fine['pitch']:.0e}).")
     layers = pack["layers"]
     n_px = sum(l["nx"] * l["ny"] for l in layers)
     zoom_max = max(l["zoom"] for l in layers)
@@ -41,9 +44,15 @@ def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None, scale: dict 
     n_cens = min(n_unsolved, int(round(hero["frac_censored"] * hero["pixels"])))
     limits = [
         "<b>One puzzle, one model.</b> EqR's released Sudoku checkpoint on a rating-47 puzzle, the one behind loopscape's own figure. Other puzzles give other maps.",
-        "<b>One slice.</b> A random 2-D plane (seed 0) through the all-zero starting state of a 49,664-dimensional space. The starting thoughts here are tiny (distance from zero at most 1.4) next to EqR's usual random start (about 223).",
+        "<b>One slice.</b> A random 2-D plane (seed 0) through the all-zero starting state of a 49,664-dimensional space. The starting thoughts here are tiny "
+        + (f"(distance from zero at most {nums['pscan.plane_norm']:.2f}) next to EqR's usual random start (about {nums['pscan.native_norm']:.0f})." if "pscan.plane_norm" in nums and nums.get("pscan.native_norm")
+           else "next to EqR's usual random start."),
         f"<b>Almost every start ends right.</b> {pct(hero['frac_solved'])} of the {hero['pixels']:,} starts of the full map reach the true solution. What is fractal is <i>how long</i> it takes. The {n_unsolved:,} pixels that do not end on the solution are drawn in amber: {n_cens:,} are starts still changing at loop 24 (UNSETTLED), {n_unsolved - n_cens:,} settled on a wrong grid (STUCK).",
-        f"<b>float32 is touchy.</b> Two different float32 implementations agree on ~100% of pixels where the map is locally flat but only about half of the pixels in the filaments (ours vs loopscape's published image: {pct(repro['agreement'])} of 62,500 pixels identical). TF32 or bfloat16 give a different picture. Read single filament pixels as one realisation; the structure is the result.",
+        "<b>float32 is touchy.</b> "
+        + (f"Re-run on a second float32 implementation, {pct(nums['replay.flat'], 0)} of the pixels with flat surroundings keep their settle time but only {pct(nums['replay.dust'], 0)} of the speckle pixels do. "
+           if "replay.flat" in nums and "replay.dust" in nums else "Two different float32 implementations agree where the map is locally flat but far less in the speckle. ")
+        + (f"On the same GPU, a nudge of 1e-6 to a start leaves {pct(nums['nudge.flat'], 0)} of flat-region pixels unchanged and {pct(nums['nudge.dust'], 0)} of speckle pixels. " if "nudge.flat" in nums and "nudge.dust" in nums else "")
+        + f"(Ours vs loopscape's published image: {pct(repro['agreement'])} of {repro['n_pixels']:,} pixels identical.) TF32 or bfloat16 give a different picture. Read single speckle pixels as one realisation; the structure is the result.",
         f"<b>The complexity thins out when you zoom.</b> {thin_sentence} Zoom beyond ×{int(zoom_max):,} was not rendered: " + (f"a trial window at ×{deepest:,.0f} held only speckle next to a flat domain." if deepest else "the map is speckle there."),
         "<b>Settle time</b> is measured over 24 loops with the model's noise switched off, as in loopscape: the loop after which the decoded grid never changes again.",
     ]
@@ -70,11 +79,11 @@ def main() -> None:
     gpu = json.loads(gp.read_text()) if gp.exists() else None
     sp = ROOT / "results/scale_dependence.json"
     scale = json.loads(sp.read_text()) if sp.exists() else None
-    man["meta"].update(build(man, metrics, repro, gpu, scale))
     sys.path.insert(0, str(ROOT))
     from render import readme as RM
 
     N = RM.load_numbers(ROOT)
+    man["meta"].update(build(man, metrics, repro, gpu, scale, N))
     if all(k in N for k in ("replay.flat", "replay.edge", "replay.dust")):  # shown in the inspector: how often a second float32 stack agrees
         man["meta"]["reproduce"] = dict(flat=N["replay.flat"], edge=N["replay.edge"], dust=N["replay.dust"])
     mp.write_text(json.dumps(man))
