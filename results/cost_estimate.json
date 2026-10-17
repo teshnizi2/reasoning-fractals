@@ -1,0 +1,94 @@
+{
+ "script": "scripts/cost_estimate.py",
+ "loops_per_rollout": 24,
+ "early_exit_mean_loops": 8.84033203125,
+ "rates": {
+  "m4_mlx_fp32": {
+   "rollouts_per_s": 1.186005415246417,
+   "source": "results/throughput_m4.json (best batch)"
+  },
+  "m4_mps_torch_fp32": {
+   "rollouts_per_s": 1.0413578605321545,
+   "source": "results/throughput_m4.json"
+  },
+  "a100_fp32_eager": {
+   "rollouts_per_s": 23.184421150878247,
+   "source": "smoke job 5246129, B=1024"
+  },
+  "a100_mig4g_fp32_full": {
+   "rollouts_per_s": 12.255066014830387,
+   "source": "job 5246309 (A100 MIG 4g.40gb)"
+  }
+ },
+ "estimates": {
+  "1000x1000 (the upstream asset's resolution)": {
+   "pixels": 1000000,
+   "hours": {
+    "m4_mlx_fp32": {
+     "hours": 234.21290847990244
+    },
+    "m4_mps_torch_fp32": {
+     "hours": 266.7457444800271
+    },
+    "a100_fp32_eager": {
+     "hours": 11.98122549491624
+    },
+    "a100_fp32_eager_early_exit": {
+     "hours": 4.413250479847382
+    },
+    "a100_mig4g_fp32_full": {
+     "hours": 22.66636323636501
+    },
+    "a100_mig4g_fp32_full_early_exit": {
+     "hours": 8.349090706266043
+    }
+   }
+  },
+  "2048x2048 hero": {
+   "pixels": 4194304,
+   "hours": {
+    "m4_mlx_fp32": {
+     "hours": 982.3601388888887
+    },
+    "m4_mps_torch_fp32": {
+     "hours": 1118.8127430555555
+    },
+    "a100_fp32_eager": {
+     "hours": 50.252902018229165
+    },
+    "a100_fp32_eager_early_exit": {
+     "hours": 18.510514140625794
+    },
+    "a100_mig4g_fp32_full": {
+     "hours": 95.06961798773871
+    },
+    "a100_mig4g_fp32_full_early_exit": {
+     "hours": 35.01862454565449
+    }
+   }
+  },
+  "zoom: 10 keyframes of 540x675": {
+   "pixels": 3645000,
+   "hours": {
+    "m4_mlx_fp32": {
+     "hours": 853.7060514092444
+    },
+    "m4_mps_torch_fp32": {
+     "hours": 972.2882386296988
+    },
+    "a100_fp32_eager": {
+     "hours": 43.671566928969696
+    },
+    "a100_fp32_eager_early_exit": {
+     "hours": 16.08629799904371
+    },
+    "a100_mig4g_fp32_full": {
+     "hours": 82.61889399655047
+    },
+    "a100_mig4g_fp32_full_early_exit": {
+     "hours": 30.43243562433973
+    }
+   }
+  }
+ }
+}
