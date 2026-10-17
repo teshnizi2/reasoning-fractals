@@ -26,7 +26,7 @@ def main() -> None:
     ap.add_argument("--keyframes", action="store_true")
     ap.add_argument("--cx", type=float)
     ap.add_argument("--cy", type=float)
-    ap.add_argument("--k-min", type=int, default=2)
+    ap.add_argument("--k-min", type=int, default=3)
     ap.add_argument("--k-max", type=int, default=12)
     ap.add_argument("--nx", type=int, default=540)
     ap.add_argument("--ny", type=int, default=675)
