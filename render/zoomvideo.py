@@ -35,6 +35,24 @@ def _smooth(a: float, b: float, x: float) -> float:
     return t * t * (3 - 2 * t)
 
 
+def to_screen(px: float, py: float, cx: float, cy: float, zoom: float, size: tuple[int, int],
+              view_width_units: float = 2.0) -> tuple[float, float]:
+    """Continuous frame coordinates (x right, y down, pixel i spans [i, i+1)) of the plane point (px, py)."""
+    w, h = size
+    scale = w / (view_width_units / zoom)
+    return (w / 2 + (px - cx) * scale, h / 2 - (py - cy) * scale)
+
+
+def shifted_center(px: float, py: float, zoom: float, size: tuple[int, int], view_width_units: float,
+                   offset: tuple[float, float]) -> tuple[float, float]:
+    """Camera centre that shows the plane point (px, py) at ``offset`` screen pixels from the frame centre (y down)."""
+    scale = size[0] / (view_width_units / zoom)
+    return (px - offset[0] / scale, py + offset[1] / scale)
+
+
+BLOCKS_FROM, BLOCKS_TO = 3.0, 8.0  # on-screen px per sample between which smooth resampling turns into hard blocks
+
+
 def layer_alpha(prev_pitch_px: float) -> float:
     """Opacity of a layer given the on-screen pitch (px per sample) of the next-coarser layer."""
     return _smooth(1.0, 2.3, prev_pitch_px)
@@ -82,13 +100,19 @@ def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: t
         if not inside.any():
             continue
         src = Image.fromarray(L.img)
-        # affine map output (x, y) -> input (a x + b y + c, d x + e y + f) covers pure scale + translate
+        # PIL maps output pixel (x, y) to input (a (x + .5) + c, a (y + .5) + f) in pixel-edge coordinates, where sample
+        # k's centre is k + .5 (nearest takes the floor; bicubic subtracts .5 itself): c = c' + .5 with c' the sample
+        # coordinate of the frame's left edge (pure scale + translate, so the 6 affine numbers are enough)
         a = 1.0 / (L.pitch * scale)
-        c0 = ((cx - (w / 2) / scale) - (L.center[0] - L.half_width)) / L.pitch + 0.5 + 0.5 * a
+        c_edge = ((cx - (w / 2) / scale) - (L.center[0] - L.half_width)) / L.pitch
         top = L.center[1] + L.half_width * (L.ny - 1) / (L.nx - 1)
-        f0 = (top - (cy + (h / 2) / scale)) / L.pitch + 0.5 + 0.5 * a
-        warped = np.asarray(src.transform((w, h), Image.AFFINE, (a, 0, c0 - 0.5, 0, a, f0 - 0.5), resample=resample,
-                                          fillcolor=(0, 0, 0)), dtype=np.float64)
+        f_edge = (top - (cy + (h / 2) / scale)) / L.pitch
+        params = (a, 0, c_edge + 0.5, 0, a, f_edge + 0.5)
+        warped = np.asarray(src.transform((w, h), Image.AFFINE, params, resample=resample, fillcolor=(0, 0, 0)), dtype=np.float64)
+        hard = _smooth(BLOCKS_FROM, BLOCKS_TO, pitch_px)  # big pixels become hard-edged blocks ("one pixel = one thought")
+        if hard > 0.0:
+            blocks = np.asarray(src.transform((w, h), Image.AFFINE, params, resample=Image.NEAREST, fillcolor=(0, 0, 0)), dtype=np.float64)
+            warped = warped * (1.0 - hard) + blocks * hard
         mask = (inside.astype(np.float64) * alpha)[..., None]
         out = out * (1 - mask) + warped * mask
     return np.clip(np.rint(out), 0, 255).astype(np.uint8)
