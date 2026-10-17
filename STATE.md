@@ -129,6 +129,13 @@ instead of `gpu:a100:1`. Same architecture and fp32 semantics; slower per slice 
 - Series-palette colourway retuned (slate domains, amber/gold dust, `render/colour.py`); the indigo-teal-mint
   colourway is closer to the upstream look. Choice of the better one is made on the full-res hero.
 
+## Finding: the fractal is scale dependent (17 Oct 15:50, chase windows of the asset slice, loopscape colours)
+Zoom 10 (window around the top-right "eye"): boundary-pixel fraction 0.72, 21 settle levels. Zoom 80 (core edge):
+0.34, 20 levels; a big flat domain on one side, salt-and-pepper dust on the other, no new coherent filaments.
+This looks like a "slim fractal" (paper App. E): complexity strongest near the 1e-3 pitch of the hero and thinning
+when zoomed. Zoom 640 and 5120 windows come from job 5246357; keyframes (k >= 7) are held back until they show
+whether anything coherent survives. Fallback video: hero-only zoom to ~x64 (one pixel = one thought), no extra cost.
+
 ## Next steps
 1. Re-run engine tests (background, log) and fix; commit.
 2. Reproduction: sparse pixel check + aligned low-res grid + metrics vs the asset -> `results/repro/`.
