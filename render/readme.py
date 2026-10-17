@@ -22,7 +22,7 @@ def fmt(value: Any, spec: str | None) -> str:
     if spec.startswith("pct"):
         return f"{100 * v:.{int(spec[3:])}f}%"
     if spec.startswith("f"):
-        return f"{v:.{int(spec[1:])}f}"
+        return f"{v:.{int(spec[1:])}f}"  # f0 .. f3
     if spec == "int":
         return f"{int(round(v)):,}"
     if spec == "sci1":
@@ -137,7 +137,7 @@ def load_numbers(root: Path) -> dict[str, Any]:
         ps, lr = sc["pscan"], sc["longrun"]
         N.update({"pscan.puzzles": ps["n_puzzles"], "pscan.k": ps["k"], "pscan.starts": ps["n_puzzles"] * ps["k"], "pscan.frac_solved": ps["frac_solved"],
                   "pscan.always": ps["always_solved"], "pscan.never": ps["never_solved"], "pscan.partial": ps["partial"], "pscan.multistable": ps["multistable"],
-                  "pscan.asset_frac": ps["asset"]["frac_solved"], "long.n": lr["n"], "long.loops": lr["loops"], "long.frac_solved": lr["frac_solved_by_end"],
+                  "pscan.asset_frac": ps["asset"]["frac_solved"], "pscan.native_norm": ps.get("native_norm"), "pscan.plane_norm": ps.get("plane_corner_norm"), "long.n": lr["n"], "long.loops": lr["loops"], "long.frac_solved": lr["frac_solved_by_end"],
                   "long.changing": lr["still_wrong_and_changing"], "long.frozen": lr["still_wrong_and_frozen"], "long.median_first": lr["first_solved_percentiles"]["50"]})
         if sc.get("oscan"):
             N.update({f"oscan.{k}": v for k, v in sc["oscan"].items() if isinstance(v, (int, float))})
@@ -155,6 +155,9 @@ def load_numbers(root: Path) -> dict[str, Any]:
                 N[f"nudge.{name}"] = sum(g[k]["nudge_stable"] for k in ks) / n
                 N[f"nudge.{name}_change"] = sum(g[k]["mean_max_change"] * g[k]["n"] for k in ks) / n
         N["plain.all"] = sum(v["reproduced"] for v in g.values()) / sum(v["n"] for v in g.values())
+        bk = rs.get("by_kind", {})
+        if "hero:slow" in bk:
+            N["plain.slow_n"], N["plain.slow_ok"] = bk["hero:slow"]["items"], bk["hero:slow"]["reproduced"]
         N["plain.n"] = sum(v["n"] for v in g.values())
     ra = _read(root, "results/replay_agreement.json")
     if ra:

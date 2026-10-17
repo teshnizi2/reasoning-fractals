@@ -53,7 +53,9 @@
    "frac_solved": 1.0,
    "mean_settle": 4.125
   },
-  "note": "starts are EqR's own initialisation (truncated normal), not the notebook's near-zero plane"
+  "note": "starts are EqR's own initialisation (truncated normal), not the notebook's near-zero plane",
+  "native_norm": 222.97242813110353,
+  "plane_corner_norm": 1.4142135412666423
  },
  "longrun": {
   "job": "5246477",

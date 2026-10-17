@@ -35,6 +35,16 @@ def main() -> None:
         asset=dict(rating=asset["rating"], frac_solved=asset["frac_solved"], mean_settle=asset["mean_settle"]),
         note="starts are EqR's own initialisation (truncated normal), not the notebook's near-zero plane",
     )
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from render import init as I
+    from render import slices as SL
+
+    rng = np.random.default_rng(0)
+    norms = [float(np.linalg.norm(I.trunc_normal((97, 512), 1.0, rng))) for _ in range(20)]
+    u, v = SL.load_plane(ROOT / "data/plane_seed0.npz")
+    out["pscan"]["native_norm"] = float(np.mean(norms))  # EqR's own start: z_H truncated normal, 97 x 512 numbers
+    out["pscan"]["plane_corner_norm"] = float(np.linalg.norm((u + v).astype(np.float64)))  # the hero's farthest start, (a, b) = (1, 1)
     lr = json.loads((ROOT / "data/cluster/longrun/longrun.json").read_text())
     out["longrun"] = dict(job="5246477", **lr["summary"],
                           note="same latents as the scan, but a different batch composition than the scan run: native-scale outcomes are "

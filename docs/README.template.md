@@ -148,7 +148,7 @@ Two checks, both on random pixels of the hero (and of the chase windows), strati
 *Same engine, rounding-sized nudges* (`alice/replay.py`, `results/replay/summary.json`): each pixel is re-run on the A100 in full (no early exit),
 and {{nudge.runs|int}} more times with the starting thought multiplied by `1 + 1e-6 * N(0, 1)`, a few dozen float32 ulps.
 A plain re-run reproduces the stored settle time for {{plain.all|pct1}} of the {{plain.n|int}} pixels, so what the explorer and the video show is
-what the stored pixel says. The nudged runs show how fragile a pixel is:
+what the stored pixel says (the exception is the very slowest pixels: only {{plain.slow_ok|int}} of the {{plain.slow_n|int}} slowest candidates reproduce, because a pixel that is still changing in the last loops of a run also depends on how the GPU batch around it was composed; the explorer only features pixels that did reproduce). The nudged runs show how fragile a pixel is:
 
 {{table:replay_same}}
 
@@ -163,7 +163,7 @@ dust (histograms, basin entropy, boundary dimension) are stable; an individual d
 
 ### 5. Native-scale starts: when does EqR really fail?
 
-The hero slice stays within distance 1.4 of the all-zero state, while EqR's own random initialisation has norm about 223. At that scale the picture changes:
+The hero slice stays within distance {{pscan.plane_norm|f2}} of the all-zero state, while EqR's own random initialisation has norm about {{pscan.native_norm|f0}}. At that scale the picture changes:
 
 {{table:scans}}
 
