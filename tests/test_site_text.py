@@ -7,7 +7,7 @@ ST = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ST)
 
 PACK = {"layers": [dict(nx=2048, ny=2048, zoom=1.0), dict(nx=540, ny=675, zoom=64.0), dict(nx=540, ny=675, zoom=512.0)]}
-METRICS = {"hero": dict(frac_solved=0.99912, pixels=4194304, shape=[2048, 2048])}
+METRICS = {"hero": dict(frac_solved=0.99912, frac_censored=0.00083, pixels=4194304, shape=[2048, 2048])}
 REPRO = dict(agreement=0.64424, metrics_ours=dict(basin_entropy=1.4164, boundary_dimension=1.8727),
              metrics_asset_same_pixels=dict(basin_entropy=1.4122, boundary_dimension=1.8722))
 GPU = {"total": {"a100_hours": 41.6}}
@@ -29,5 +29,12 @@ def test_gpu_hours_sentence_is_omitted_without_accounting():
 
 
 def test_unsolved_count_is_derived_not_assumed():
-    t = ST.build(PACK, dict(hero=dict(frac_solved=1.0, pixels=1000, shape=[10, 100])), REPRO, None)
-    assert "The 0 amber" in " ".join(t["limits"])
+    t = ST.build(PACK, dict(hero=dict(frac_solved=1.0, frac_censored=0.0, pixels=1000, shape=[10, 100])), REPRO, None)
+    assert "The 0 pixels that do not end on the solution" in " ".join(t["limits"])
+
+
+def test_unsettled_and_stuck_counts_add_up_to_the_unsolved_pixels():
+    t = ST.build(PACK, METRICS, REPRO, None)
+    joined = " ".join(t["limits"])
+    # 4,194,304 * (1 - 0.99912) = 3,691 unsolved; 0.00083 of the pixels (3,481) are still changing at loop 24
+    assert "3,691 pixels that do not end on the solution" in joined and "3,481 are starts still changing" in joined and "210 settled on a wrong grid" in joined
