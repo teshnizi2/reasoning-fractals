@@ -41,3 +41,23 @@ def test_ranking_prefers_a_bigger_gap_then_the_centre():
     assert c[0][2] == 14 or c[0][:2] == (20, 30)
     order = [x[:2] for x in c]
     assert order.index((30, 24)) < order.index((12, 12))
+
+
+def test_max_gap_is_applied_before_the_top_k_cut():
+    s, f = field()
+    s[30, 24], s[30, 25] = 4, 20  # gap 16: too big
+    s[20, 30], s[20, 31] = 4, 12  # gap 8
+    c = PP.candidates(s, f, min_gap=6, margin=8, k=1, max_gap=10)
+    assert c == [(20, 30, 8)]
+
+
+def test_clean_steps_need_flat_neighbourhoods_on_both_sides():
+    s = np.full((60, 48), 4, np.uint8)
+    f = np.ones((60, 48), np.uint8)
+    s[:, 25:] = 7  # a straight vertical border between two flat domains: gap 3 everywhere along it
+    s[40, 10], s[40, 11] = 4, 12  # an isolated speckle pair inside the flat domain: big gap, but not a clean step
+    s[41, 10] = 9
+    clean = PP.candidates(s, f, min_gap=3, margin=8, k=100, clean=True)
+    assert clean and all(c == 24 for _, c, _ in clean) and all(g == 3 for _, _, g in clean)
+    loose = PP.candidates(s, f, min_gap=3, margin=8, k=100, clean=False)
+    assert any(r == 40 and c == 10 for r, c, _ in loose)

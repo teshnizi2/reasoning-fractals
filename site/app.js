@@ -285,11 +285,17 @@ function renderInspector() {
   else if (solved) note = `Ended on the true solution, with <b>0</b> wrong cells. <b>${fmt(a ? a.count : 0)}</b> of the ${fmt(tot)} starts computed (all layers) end this way.`;
   else if (p.gid === HOLE) note = `Ended on a wrong grid (one of the rarer ones, not stored individually).`;
   else note = `Ended on a wrong grid: <b>${n}</b> cell${n === 1 ? " is" : "s are"} not the true digit (amber, true digit small). <b>${fmt(a.count)}</b> of the ${fmt(tot)} starts computed (all layers) end exactly this way.`;
+  if (feat && feat.note) note += " " + feat.note;
   $("iNote").innerHTML = note;
   $("iPitch").textContent = "Δ " + L.pitch.toExponential(1) + " per pixel";
   drawPatch();
   const right = L.at(p.col + 1, p.row);
-  $("iNbrNote").textContent = right ? `The pixel next door (Δ = ${L.pitch.toExponential(1)} of latent) settles in ${right.settle} loops (${right.flags & 1 ? "solved" : "stuck"}). Click a tile to jump there.` : "";
+  const rough = Math.max(0, ...[[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => { const d = L.at(p.col + dx, p.row + dy); return d ? Math.abs(d.settle - p.settle) : 0; }));
+  const rep = S.man.meta.reproduce || null, pc = (v) => Math.round(100 * v) + "%";
+  const trust = rough === 0 ? `All four neighbours settle in the same number of loops: a flat region${rep ? `, where another float32 implementation agreed on ${pc(rep.flat)} of the pixels we checked` : ""}.`
+    : rough === 1 ? `A neighbour differs by 1 loop: near a border${rep ? `; another float32 implementation agreed on ${pc(rep.edge)} of such pixels` : ""}.`
+    : `A neighbour differs by ${rough} loops: speckled region. The exact number here depends on float32 rounding${rep ? ` (another implementation agreed on only ${pc(rep.dust)} of such pixels)` : ""}; the statistics of the speckle are stable, single pixels are not.`;
+  $("iNbrNote").textContent = (right ? `The pixel next door (Δ = ${L.pitch.toExponential(1)} of latent) settles in ${right.settle} loops (${right.flags & 1 ? "solved" : "stuck"}). Click a tile to jump there. ` : "") + trust;
 }
 
 function drawPatch() {

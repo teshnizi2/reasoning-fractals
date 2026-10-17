@@ -76,6 +76,13 @@ def latents(coords: np.ndarray, u: np.ndarray, v: np.ndarray, precision: str = "
     raise ValueError(f"unknown precision {precision!r}")
 
 
+def perturb(z: np.ndarray, eps: float, rng: np.random.Generator) -> np.ndarray:
+    """``z * (1 + eps * N(0, 1))`` elementwise, float32: a relative nudge (eps = 1e-6 is a few dozen float32 ulps)
+    used to ask whether an outcome survives rounding-sized changes of the starting thought."""
+    z = np.asarray(z, dtype=np.float32)
+    return (z * (1.0 + eps * rng.standard_normal(z.shape).astype(np.float32))).astype(np.float32)
+
+
 def n_distinct_latents(z: np.ndarray) -> int:
     """How many different latents survive float32 rounding (detects zoom-depth collapse)."""
     flat = np.ascontiguousarray(z.reshape(z.shape[0], -1))

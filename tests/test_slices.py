@@ -134,3 +134,16 @@ def test_get_plane_prefers_the_file_over_recomputing(tmp_path):
     assert u[0, 0] == 1 and v[0, 0] == 2  # file contents, not seed 0's random plane
     u2, _ = SL.get_plane(seed=0, path=tmp_path / "nope.npz")
     np.testing.assert_array_equal(u2, SL.plane((97, 512), seed=0)[0])
+
+
+def test_perturb_is_a_small_relative_deterministic_nudge():
+    u, v = SL.plane((97, 512), seed=0)
+    z = SL.latents(np.array([[0.3, -0.2], [0.31, -0.2]], dtype=np.float64), u, v, precision="float64")
+    p1 = SL.perturb(z, 1e-6, np.random.default_rng(5))
+    p2 = SL.perturb(z, 1e-6, np.random.default_rng(5))
+    assert p1.shape == z.shape and p1.dtype == np.float32
+    np.testing.assert_array_equal(p1, p2)
+    rel = (p1.astype(np.float64) - z) / np.where(z == 0, 1.0, z)
+    assert 0.8e-6 < np.sqrt((rel ** 2).mean()) < 1.2e-6  # rms relative size = eps
+    assert not np.array_equal(p1, SL.perturb(z, 1e-6, np.random.default_rng(6)))
+    assert SL.perturb(np.zeros((2, 3), np.float32), 1e-6, np.random.default_rng(0)).sum() == 0  # zeros stay zero
