@@ -13,3 +13,4 @@ tools/node_modules/
 data/asset_samples.npz
 results/repro/probe_*.npz
 results/repro/*_side_by_side.png
+site/data-big/

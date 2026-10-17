@@ -2,7 +2,7 @@
 """Assemble the explorer's data pack (site/data) from the merged hero and keyframe renders.
 
     .venv/bin/python scripts/build_pack.py --hero data/cluster/hero --keyframes data/cluster/kf03 data/cluster/kf04 ... --out site/data
-    .venv/bin/python scripts/build_featured.py --run data/cluster/hero --pack site/data     # replayed featured starts
+    # featured starts + video pair come from the cluster replay: scripts/plan_replay.py -> alice/replay.slurm -> scripts/apply_replay.py
     .venv/bin/python scripts/site_text.py --pack site/data                                  # copy with numbers from results/
 
 Every folder needs its finished tiles (``python -m render.tilerun merge`` is run here if field.npz is missing).

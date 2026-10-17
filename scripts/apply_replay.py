@@ -27,6 +27,7 @@ def main() -> None:
     ap.add_argument("--pack", default="site/data")
     ap.add_argument("--keyframes", nargs="*", default=[])
     ap.add_argument("--pair-out", default="results/video/pair.json")
+    ap.add_argument("--summary", default="results/replay/summary.json")
     ap.add_argument("--min-robust-gap", type=int, default=3)
     ap.add_argument("--loop-seconds", type=float, default=0.28)
     a = ap.parse_args()
@@ -61,7 +62,8 @@ def main() -> None:
     summary = dict(script="scripts/apply_replay.py", engine=rep["meta"]["engine"], nudged=rep["meta"]["nudged"], eps=rep["meta"]["eps"],
                    items=len(res), reproduced=int(sum(r["equal"] for r in res)), by_kind=kinds,
                    finale=None if best is None else {k: best[k] for k in ("layer", "gap", "pitch", "verified")})
-    out = ROOT / "results/replay/summary.json"
+    out = ROOT / a.summary
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1))
     if best is None:
