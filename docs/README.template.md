@@ -37,6 +37,18 @@ adds a deep-zoom video and a click-a-pixel explorer, and measures how far the cl
 | `RUNS.md` | one row per ALICE experiment (job ids, config, metric, verdict, GPU-hours) |
 | `tests/` | `pytest` suite (the engine tests need the EqR weights under `data/raw`) |
 
+## The explorer
+
+![the explorer on a desktop](media/explorer-desktop.png)
+
+`site/` is a static page (no build step): the hero as a zoomable canvas with {{kf.n|int}} nested zoom layers up to ×{{kf.zoom_max|int}}.
+Click or tap any pixel to see the Sudoku that starting thought led to: the 9x9 grid, the givens, the cells that differ from the true solution
+(amber, true digit small), a `SOLVED` / `UNSETTLED` / `STUCK` badge, and how many loops it needed. A few featured starts replay their thinking loop by loop
+(traces from the cluster's own engine). The inspector also says whether the pixel sits in a flat region or in the rounding-sensitive speckle.
+The "What am I looking at?" drawer explains the picture and repeats the limits below; on a phone the inspector is a bottom sheet.
+
+<img src="media/explorer-phone.png" alt="the explorer on a phone" width="320">
+
 ## How the picture is made
 
 ![how it works](docs/how-it-works.svg)
