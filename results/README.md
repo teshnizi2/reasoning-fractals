@@ -17,3 +17,7 @@ script that wrote it and the `../RUNS.md` row (ALICE jobs) or local run behind i
 | `quickstart.json` | the loopscape README quickstart (64 random latents, CPU) | `scripts/quickstart.py` | local |
 | `metrics.json` | settle-time metrics of the hero and keyframes | `scripts/compute_metrics.py` | hero / keyframe jobs |
 | `scale_dependence.json`, `figures/scale_dependence.png` | basin entropy / boundary dimension versus pixel pitch (upstream image, ours, hero, zoom windows) | `scripts/scale_dependence.py` | derived |
+| `scans.json`, `figures/oscan_sheet.png` | native-scale scans: 5565 puzzles x 16 EqR-style starts (RUNS 5), long-run check of unsolved starts (RUNS 7), outcome maps around native-scale base points (RUNS 8, cancelled at 15 of 32 windows) | `scripts/summarize_scans.py`, `scripts/view_oscan.py` | RUNS 5, 7, 8 |
+| `replay_agreement.json` | how well a second float32 stack (MLX on the Mac) reproduces stored settle times, by local roughness | `scripts/replay_agreement.py` | local |
+| `replay/summary.json`, `replay/plan.json`, `replay/replay_in.json` | cluster replay of featured starts and finale pairs on the render engine: plain replay vs stored values, 1e-6 nudges | `scripts/plan_replay.py`, `alice/replay.py`, `scripts/apply_replay.py` | RUNS (replay) |
+| `video/pair.json` | the two neighbouring starts shown in the video finale, with their loop-by-loop replays | `scripts/apply_replay.py` | RUNS (replay) |
