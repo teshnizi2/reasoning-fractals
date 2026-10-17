@@ -122,8 +122,9 @@ everything ends on the true solution, so the picture is a map of *how long* the 
 
 {{table:hero}}
 
-The last row is the upstream image analysed with the same code (`loopscape.metrics`, 5x5 boxes, eps = 1..5 px); our map at the
-same pixel pitch (every 2nd pixel of the hero) lands close to it. All metrics depend on the pixel pitch, so each row says which one.
+The last two rows are the like-for-like comparison: the hero with its settle times clipped to the upstream image's 11 levels and sampled at the same pixel
+pitch, against the upstream image analysed with the same code (`loopscape.metrics`, 5x5 boxes, eps = 1..5 px). They agree to about two decimals in every
+metric. All metrics depend on the pixel pitch and on the labels, so each row says which.
 
 ### 3. Zoom: the fractal is "slim"
 

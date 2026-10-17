@@ -26,8 +26,8 @@ def build(pack: dict, metrics: dict, repro: dict, gpu: dict | None, scale: dict 
     deepest = None
     if scale:
         rows = sorted(scale["rows"], key=lambda r: -r["pitch"])
-        coarse = next((r for r in rows if r["label"].startswith("hero 2048x2048, every 1th")), None) or \
-            next((r for r in rows if r["label"].startswith("upstream image, every 1th")), rows[0])
+        coarse = next((r for r in rows if r["label"].startswith("hero 2048x2048, every pixel")), None) or \
+            next((r for r in rows if r["label"].startswith("upstream image, every pixel")), rows[0])
         wins = [r for r in rows if r["label"].startswith("window")]
         deepest = max((1 / (r["pitch"] * (r["shape"][0] - 1) / 2) for r in wins), default=None)
         if wins:

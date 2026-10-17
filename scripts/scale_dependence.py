@@ -23,6 +23,10 @@ from render import repro as R  # noqa: E402
 ASSET = ROOT / "vendor/loopscape/assets/basins_1000_0_eqr_sudoku_plane_rating47_7d68927f389fbdaa_rating47.png"
 
 
+def R_ord(n):
+    return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+
+
 def entry(label, field, pitch, source):
     m = M.label_metrics(field)
     return dict(label=label, source=source, pitch=pitch, shape=list(field.shape), basin_entropy=m["basin_entropy"],
@@ -40,13 +44,13 @@ def main():
     rows = []
     levels, _ = R.load_asset_levels(ASSET)
     for s in (1, 2, 4, 8):
-        rows.append(entry(f"upstream image, every {s}th pixel", levels[::s, ::s], 2.0 / 999 * s, "upstream asset (levels)"))
+        rows.append(entry(f"upstream image, every {R_ord(s)} pixel" if s > 1 else "upstream image, every pixel", levels[::s, ::s], 2.0 / 999 * s, "upstream asset (levels)"))
     rp = np.load(ROOT / "results/repro/repro250_field.npz")["settle_nb"]
     rows.append(entry("ours, 250x250 (asset grid, fp32)", np.clip(rp.astype(int) - 2, 0, 10), 2.0 / 999 * 4, "results/repro/repro250_field.npz"))
     if a.hero:
         h = np.clip(np.load(ROOT / a.hero / "field.npz")["settle_nb"], 2, 12)  # the upstream image's 11 levels (top one saturated)
         for s in (1, 2, 4, 8):
-            rows.append(entry(f"hero 2048x2048, every {s}th pixel", h[::s, ::s], 2.0 / 2047 * s, "hero (settle time clipped to 2..12)"))
+            rows.append(entry(f"hero 2048x2048, every {R_ord(s)} pixel" if s > 1 else "hero 2048x2048, every pixel", h[::s, ::s], 2.0 / 2047 * s, "hero (settle time clipped to 2..12)"))
     for d in a.chase:
         d = Path(ROOT / d)
         meta = json.loads((d / "chase.json").read_text())

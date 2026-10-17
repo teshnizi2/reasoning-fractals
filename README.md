@@ -9,7 +9,7 @@ needed before its answer stopped changing. The map of starting points is a fract
 thought can change how long the model thinks by many loops.
 
 This project reproduces the central figure of **GilpinLab/loopscape** (Lai, Bao, Quinn, Gilpin, *Fractal basins trap
-latent reasoning*, arXiv:2609.04963), renders it at [pending: hero.side] x [pending: hero.side] pixels on the ALICE GPU cluster,
+latent reasoning*, arXiv:2609.04963), renders it at 2,048 x 2,048 pixels on the ALICE GPU cluster,
 adds a deep-zoom video and a click-a-pixel explorer, and measures how far the claims reach.
 
 **In numbers**
@@ -18,17 +18,17 @@ adds a deep-zoom video and a click-a-pixel explorer, and measures how far the cl
   the picture is smooth, 48.1% inside the filaments. The statistics match (boundary dimension
   1.873 vs 1.872). The filament pixels are rounding-sensitive; the authors' own code agrees with their
   image no better than ours does (64.7%).
-* The hero has [pending: hero.pixels] starting thoughts. [pending: hero.frac_solved] of them end on the true solution: the fractal is in
+* The hero has 4,194,304 starting thoughts. 99.92% of them end on the true solution: the fractal is in
   *how long* the model thinks, not in whether it solves this puzzle.
-* Neighbouring pixels differ a lot: [pending: hero.gap_ge5] of neighbour pairs differ by 5 loops or more, the largest gap is
-  [pending: hero.max_gap] loops.
-* Cost: 1.4 A100-hours on 10 cluster jobs for everything in this repository.
+* Neighbouring pixels differ a lot: 12.3% of neighbour pairs differ by 5 loops or more, the largest gap is
+  21 loops.
+* Cost: 25.3 A100-hours on 101 cluster jobs for everything in this repository.
 
 ## What is in the box
 
 | path | what |
 |---|---|
-| `media/hero.png` (+ `hero-1080x1350.png`, `hero-1080x1080.png`) | the hero image, [pending: hero.side]² native |
+| `media/hero.png` (+ `hero-1080x1350.png`, `hero-1080x1080.png`) | the hero image, 2,048² native |
 | `media/zoom-1080x1350.mp4`, `media/zoom-1080x1080.mp4` | deep-zoom video, 20 s, H.264, no audio |
 | `site/` | the explorer: a static page (canvas, ES modules, no build). `python3 -m http.server` from `site/` |
 | `render/` | the pipeline (tested): engine, slices, outcomes, tiled renders, colourways, pack builder, zoom compositor |
@@ -41,7 +41,7 @@ adds a deep-zoom video and a click-a-pixel explorer, and measures how far the cl
 
 ![the explorer on a desktop](media/explorer-desktop.png)
 
-`site/` is a static page (no build step): the hero as a zoomable canvas with [pending: kf.n] nested zoom layers up to ×[pending: kf.zoom_max].
+`site/` is a static page (no build step): the hero as a zoomable canvas with 0 nested zoom layers up to ×[pending: kf.zoom_max].
 Click or tap any pixel to see the Sudoku that starting thought led to: the 9x9 grid, the givens, the cells that differ from the true solution
 (amber, true digit small), a `SOLVED` / `UNSETTLED` / `STUCK` badge, and how many loops it needed. A few featured starts replay their thinking loop by loop
 (traces from the cluster's own engine). The inspector also says whether the pixel sits in a flat region or in the rounding-sensitive speckle.
@@ -126,10 +126,30 @@ no licence); the side-by-side figure is regenerated locally by `scripts/repro_re
 
 ### 2. The hero: what the map looks like
 
-The full plane `[-1, 1]^2` at [pending: hero.side] x [pending: hero.side] (`media/hero.png`, `alice/specs/hero.json`, jobs in `RUNS.md`). Colour is settle time; nearly
+The full plane `[-1, 1]^2` at 2,048 x 2,048 (`media/hero.png`, `alice/specs/hero.json`, jobs in `RUNS.md`). Colour is settle time; nearly
 everything ends on the true solution, so the picture is a map of *how long* the model thinks.
 
-*[pending: table:hero]*
+| hero (full plane) |  |
+|---|---|
+| starting thoughts (pixels) | 4,194,304 (2048 x 2048 over [-1, 1]^2) |
+| end on the true solution | 99.92% (4,190,863) |
+| still changing at loop 24 | 0.12% |
+| distinct final grids (wrong ones) | 2,402 (2,401) |
+| settle time, mean / max (loops) | 5.90 / 23 |
+| loops computed per pixel (early exit) | 8.9 |
+| neighbour pairs differing by >= 1 loop | 44.2% |
+| neighbour pairs differing by >= 2 loops | 32.4% |
+| neighbour pairs differing by >= 5 loops | 12.3% |
+| neighbour pairs differing by >= 10 loops | 2.1% |
+| largest neighbour gap (loops) | 21 |
+
+| settle-time labels, 5x5 boxes | pixel pitch | boxes touching a boundary | S_b | S_bb | alpha | boundary dim. 2 - alpha |
+|---|---|---|---|---|---|---|
+| hero, every pixel | 9.8×10^-4 | 69% | 1.086 | 1.574 | 0.137 | 1.863 |
+| hero, every 2nd pixel | 2.0×10^-3 | 76% | 1.198 | 1.576 | 0.144 | 1.856 |
+| hero, every 4th pixel | 3.9×10^-3 | 84% | 1.325 | 1.584 | 0.140 | 1.860 |
+| hero, every 2nd pixel, labels clipped to the upstream's 11 levels | 2.0×10^-3 | 76% | 1.139 | 1.498 | 0.147 | 1.853 |
+| upstream image, 1000 x 1000 (metrics computed by us from its 11 colour levels) | 2.0×10^-3 | 76% | 1.141 | 1.496 | 0.148 | 1.852 |
 
 The last row is the upstream image analysed with the same code (`loopscape.metrics`, 5x5 boxes, eps = 1..5 px); our map at the
 same pixel pitch (every 2nd pixel of the hero) lands close to it. All metrics depend on the pixel pitch, so each row says which one.
@@ -146,9 +166,15 @@ next to a flat domain.
 | upstream image, every 8th pixel | 1.6×10^-2 | 125x125 | 96% | 1.55 | 1.897 |
 | upstream image, every 4th pixel | 8.0×10^-3 | 250x250 | 90% | 1.41 | 1.873 |
 | ours, 250x250 (asset grid, fp32) | 8.0×10^-3 | 250x250 | 91% | 1.42 | 1.873 |
-| upstream image, every 2th pixel | 4.0×10^-3 | 500x500 | 84% | 1.27 | 1.857 |
-| upstream image, every 1th pixel | 2.0×10^-3 | 1000x1000 | 76% | 1.14 | 1.852 |
-| window x80 (160x160, chase2) | 1.6×10^-4 | 160x160 | 44% | 0.49 | 1.924 |
+| hero 2048x2048, every 8th pixel | 7.8×10^-3 | 256x256 | 90% | 1.41 | 1.871 |
+| upstream image, every 2nd pixel | 4.0×10^-3 | 500x500 | 84% | 1.27 | 1.857 |
+| hero 2048x2048, every 4th pixel | 3.9×10^-3 | 512x512 | 84% | 1.27 | 1.857 |
+| upstream image, every pixel | 2.0×10^-3 | 1000x1000 | 76% | 1.14 | 1.852 |
+| hero 2048x2048, every 2nd pixel | 2.0×10^-3 | 1024x1024 | 76% | 1.14 | 1.853 |
+| hero 2048x2048, every pixel | 9.8×10^-4 | 2048x2048 | 69% | 1.02 | 1.860 |
+| window x80 (160x160, chase2) | 1.6×10^-4 | 160x160 | 44% | 0.47 | 1.922 |
+| window x640 (160x160, chase2) | 2.0×10^-5 | 160x160 | 48% | 0.28 | 1.901 |
+| window x5120 (160x160, chase2) | 2.5×10^-6 | 160x160 | 73% | 0.63 | 1.998 |
 
 ### 4. How far can a single pixel be trusted?
 
@@ -156,11 +182,16 @@ Two checks, both on random pixels of the hero (and of the chase windows), strati
 (the largest settle-time difference to its 4 neighbours).
 
 *Same engine, rounding-sized nudges* (`alice/replay.py`, `results/replay/summary.json`): each pixel is re-run on the A100 in full (no early exit),
-and [pending: nudge.runs] more times with the starting thought multiplied by `1 + 1e-6 * N(0, 1)`, a few dozen float32 ulps.
-A plain re-run reproduces the stored settle time for [pending: plain.all] of the [pending: plain.n] pixels, so what the explorer and the video show is
+and 5 more times with the starting thought multiplied by `1 + 1e-6 * N(0, 1)`, a few dozen float32 ulps.
+A plain re-run reproduces the stored settle time for 100.0% of the 600 pixels, so what the explorer and the video show is
 what the stored pixel says. The nudged runs show how fragile a pixel is:
 
-*[pending: table:replay_same]*
+| pixel's surroundings (stored field) | pixels re-run | plain re-run reproduces the stored settle time | unchanged by all 5 nudged re-runs (relative 1e-06) | mean largest change from a nudge (loops) |
+|---|---|---|---|---|
+| all 4 neighbours equal (flat) | 150 | 100.0% | 97% | 0.1 |
+| a neighbour differs by 1 loop | 150 | 100.0% | 55% | 1.9 |
+| a neighbour differs by 2-4 loops | 150 | 100.0% | 17% | 4.2 |
+| a neighbour differs by 5 or more | 150 | 100.0% | 19% | 4.6 |
 
 *A second float32 implementation* (MLX on an Apple M4 against the stored A100 values, [pending: replay.n_per_field] pixels per field,
 [pending: replay.n_fields] fields, `scripts/replay_agreement.py`):
@@ -207,6 +238,7 @@ Measured on this Apple M4 (shared with other jobs) and on the ALICE A100s; one r
 | A100-80GB, bfloat16 (not used) | 90.5 | same |
 | A100 MIG 4g.40gb slice, fp32 | 12.3 | results/alice/eechk_5246309.json |
 | A100 MIG 4g.40gb slice, fp32 + early exit | 33.0 | same |
+| production hero tiles (mix of full A100s and MIG slices, early exit) | 39.2 | results/metrics.json (pixels / summed tile seconds) |
 
 Time to render, from those rates (`scripts/cost_estimate.py`; early exit computes 8.8 loops per pixel instead of 24):
 
@@ -216,18 +248,18 @@ Time to render, from those rates (`scripts/cost_estimate.py`; early exit compute
 | 2048x2048 hero: 4,194,304 px | 982.4 h | 50.3 h | 18.5 h | 35.0 h |
 | zoom: 5 keyframes of 540x675: 1,822,500 px | 426.9 h | 21.8 h | 8.0 h | 15.2 h |
 
-The hero and keyframes actually cost [pending: hero.gpu_hours] and [pending: kf.gpu_hours] GPU-hours of tile time (summed over workers; full A100s and MIG slices mixed);
-everything in this repository, scans and checks included, used 1.4 A100-equivalent hours (10 jobs, `results/alice/gpu_hours.json`).
+The hero and keyframes actually cost 29.7 and 0.0 GPU-hours of tile time (summed over workers; full A100s and MIG slices mixed);
+everything in this repository, scans and checks included, used 25.3 A100-equivalent hours (101 jobs, `results/alice/gpu_hours.json`).
 
 ## Honest limits
 
 * **One puzzle, one model.** EqR's released Sudoku checkpoint on one rating-47 puzzle, the one behind loopscape's figure. Other puzzles give other maps.
 * **One slice, tiny thoughts.** A random 2-D plane (seed 0) through the all-zero start. At EqR's own start scale the puzzle scan found failures on
   664 of 5,565 puzzles, but this puzzle was solved from all 16 of its native starts.
-* **Almost every start ends right.** [pending: hero.frac_solved] of the hero's starts reach the true solution; the [pending: hero.n_unsolved] others are mostly starts still
+* **Almost every start ends right.** 99.92% of the hero's starts reach the true solution; the 3,441 others are mostly starts still
   changing at loop 24. The fractal is in the settle time.
 * **Pixel-exact only where the map is smooth.** See section 4: a second float32 implementation agrees on [pending: replay.flat] of pixels with flat surroundings
-  and on [pending: replay.dust] of speckle pixels; a 1e-6 nudge leaves [pending: nudge.flat] of flat-region pixels and [pending: nudge.dust] of speckle pixels unchanged. The reproduction of the upstream figure is statistical in the filaments for the same reason.
+  and on [pending: replay.dust] of speckle pixels; a 1e-6 nudge leaves 97% of flat-region pixels and 18% of speckle pixels unchanged. The reproduction of the upstream figure is statistical in the filaments for the same reason.
 * **float32 only.** TF32 and bfloat16 give different pictures (21.9% and 13.6% pixel agreement with the upstream image).
 * **Slim fractal.** The structure thins out under magnification (section 3); nothing was rendered beyond ×[pending: kf.zoom_max].
 * **Early exit** retires a start after 3 loops on the solution: identical settle times for 99.93% of 4,096 test pixels. Batch size matters (B=2048 is a

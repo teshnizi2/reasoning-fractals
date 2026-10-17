@@ -62,7 +62,7 @@
    "uncertainty_r2": 0.9967067374521607
   },
   {
-   "label": "upstream image, every 2th pixel",
+   "label": "upstream image, every 2nd pixel",
    "source": "upstream asset (levels)",
    "pitch": 0.004004004004004004,
    "shape": [
@@ -92,7 +92,7 @@
    "uncertainty_r2": 0.9995944703691553
   },
   {
-   "label": "upstream image, every 1th pixel",
+   "label": "upstream image, every pixel",
    "source": "upstream asset (levels)",
    "pitch": 0.002002002002002002,
    "shape": [
@@ -107,7 +107,7 @@
    "uncertainty_r2": 0.9999542353816228
   },
   {
-   "label": "hero 2048x2048, every 2th pixel",
+   "label": "hero 2048x2048, every 2nd pixel",
    "source": "hero (settle time clipped to 2..12)",
    "pitch": 0.0019540791402051783,
    "shape": [
@@ -122,7 +122,7 @@
    "uncertainty_r2": 0.9999756671915837
   },
   {
-   "label": "hero 2048x2048, every 1th pixel",
+   "label": "hero 2048x2048, every pixel",
    "source": "hero (settle time clipped to 2..12)",
    "pitch": 0.0009770395701025891,
    "shape": [

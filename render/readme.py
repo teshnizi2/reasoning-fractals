@@ -178,6 +178,10 @@ def load_numbers(root: Path) -> dict[str, Any]:
     return N
 
 
+def ordinal(n: int) -> str:
+    return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+
+
 def md_table(header: list[str], rows: list[list[str]], align: str | None = None) -> str:
     out = ["| " + " | ".join(header) + " |", "|" + "|".join((align or "---") for _ in header) + "|"]
     out += ["| " + " | ".join(str(c) for c in row) + " |" for row in rows]
@@ -239,10 +243,10 @@ def tables_results(root: Path, N: dict[str, Any]) -> dict[str, str]:
         T["hero"] = md_table(["hero (full plane)", ""], rows)
         T["hero"] += "\n\n" + md_table(
             ["settle-time labels, 5x5 boxes", "pixel pitch", "boxes touching a boundary", "S_b", "S_bb", "alpha", "boundary dim. 2 - alpha"],
-            [[f"hero, every {st}th pixel" if st != "1" else "hero, every pixel", fmt(2.0 / (N[f"hero.s{st}.shape"] * int(st) - 1), "sci1"),
+            [[f"hero, every {ordinal(int(st))} pixel" if st != "1" else "hero, every pixel", fmt(2.0 / (N["hero.side"] - 1) * int(st), "sci1"),
               fmt(N[f"hero.s{st}.boxes"], "pct0"), fmt(N[f"hero.s{st}.sb"], "f3"), fmt(N[f"hero.s{st}.sbb"], "f3"), fmt(N[f"hero.s{st}.alpha"], "f3"),
               fmt(N[f"hero.s{st}.d"], "f3")] for st in ("1", "2", "4") if f"hero.s{st}.sb" in N]
-            + ([[f"hero, every {st}th pixel, labels clipped to the upstream's 11 levels", fmt(2.0 / (N[f"hero.c{st}.shape"] * int(st) - 1), "sci1"),
+            + ([[f"hero, every {ordinal(int(st))} pixel, labels clipped to the upstream's 11 levels", fmt(2.0 / (N["hero.side"] - 1) * int(st), "sci1"),
                  fmt(N[f"hero.c{st}.boxes"], "pct0"), fmt(N[f"hero.c{st}.sb"], "f3"), fmt(N[f"hero.c{st}.sbb"], "f3"), fmt(N[f"hero.c{st}.alpha"], "f3"),
                  fmt(N[f"hero.c{st}.d"], "f3")] for st in ("2",) if f"hero.c{st}.sb" in N])
             + ([["upstream image, 1000 x 1000 (metrics computed by us from its 11 colour levels)", fmt(2.0 / (N["up.side"] - 1), "sci1"), fmt(N["up.boxes"], "pct0"),
