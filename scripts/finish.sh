@@ -10,8 +10,8 @@ KFS="kf03 kf04 kf05 kf06 kf07"
 stage=${1:?usage: scripts/finish.sh STAGE (1..7)}
 
 case "$stage" in
-1) for n in hero $KFS; do alice/sync.sh pull $n; $PY -m render.tilerun merge --spec data/cluster/$n/spec.json --out data/cluster/$n; done ;;
-2) $PY scripts/compute_metrics.py --hero data/cluster/hero --keyframes $(for k in $KFS; do echo data/cluster/$k; done) --out results/metrics.json
+1) for n in ${2:-hero $KFS}; do alice/sync.sh pull $n; $PY -m render.tilerun merge --spec data/cluster/$n/spec.json --out data/cluster/$n; done ;;   # e.g. scripts/finish.sh 1 hero
+2) $PY scripts/compute_metrics.py --hero data/cluster/hero --keyframes $(for k in $KFS; do [ -f data/cluster/$k/field.npz ] && echo data/cluster/$k; done) --out results/metrics.json
    $PY scripts/scale_dependence.py --hero data/cluster/hero --chase data/cluster/chase2
    $PY scripts/summarize_scans.py
    $PY scripts/gpu_hours.py
