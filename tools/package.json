@@ -1,0 +1,9 @@
+{
+  "name": "reasoning-fractals-tools",
+  "private": true,
+  "type": "module",
+  "description": "Browser verification for the explorer (puppeteer-core driving the local Microsoft Edge)",
+  "dependencies": {
+    "puppeteer-core": "24.2.0"
+  }
+}

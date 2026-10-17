@@ -8,3 +8,4 @@ node_modules/
 site/data-mock/
 data/cluster/
 site/data-preview/
+tools/node_modules/
