@@ -5,7 +5,7 @@
     # featured starts + video pair come from the cluster replay: scripts/plan_replay.py -> alice/replay.slurm -> scripts/apply_replay.py
     .venv/bin/python scripts/site_text.py --pack site/data                                  # copy with numbers from results/
 
-Every folder needs its finished tiles (``python -m render.tilerun merge`` is run here if field.npz is missing).
+Every folder needs its finished tiles; the builder merges them itself (the other scripts need ``field.npz``: run ``python -m render.tilerun merge`` first).
 """
 from __future__ import annotations
 
