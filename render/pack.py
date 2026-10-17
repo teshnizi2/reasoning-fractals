@@ -83,7 +83,7 @@ def write_pack(out_dir, layers: list[LayerMeta], fields: list[dict], dictionary:
 
 
 def write_images(out_dir, layer_id: int, field: dict, colourways: list[str], fmt: str = "webp",
-                 quality: int = 90, supersample: int = 1) -> dict:
+                 quality: int = 90, supersample: int = 1) -> dict:  # quality is kept for API compatibility; webp is lossless
     """Colour images of a layer in display orientation (y up), one file per colourway."""
     from PIL import Image
 
@@ -99,7 +99,7 @@ def write_images(out_dir, layer_id: int, field: dict, colourways: list[str], fmt
         fn = f"layer{layer_id}_{name}.{fmt}"
         im = Image.fromarray(np.ascontiguousarray(img))
         if fmt == "webp":
-            im.save(out / fn, quality=quality, method=6)
+            im.save(out / fn, lossless=True, quality=100, method=6)  # exact colours: single pixels are the data
         else:
             im.save(out / fn)
         names[name] = fn

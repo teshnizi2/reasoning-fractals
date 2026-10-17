@@ -9,9 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from render import gpuhours as G  # noqa: E402
 
-cmd = ("sacct -u $USER -S 2026-10-17 -X -P --noheader "
-       "--format=JobID,JobName,State,Elapsed,ElapsedRaw,AllocTRES,Start,End")
-out = subprocess.run(["ssh", "alice2", cmd], capture_output=True, text=True, check=True).stdout
+FMT = "JobID,JobName,State,Elapsed,ElapsedRaw,AllocTRES,Start,End"
+# a user-wide listing can leave out some array tasks, so list the job ids first and ask for those ids explicitly
+first = subprocess.run(["ssh", "alice2", "sacct -u $USER -S 2026-10-17 -X -P --noheader --format=JobID,JobName"], capture_output=True, text=True, check=True).stdout
+ids = sorted({line.split("|")[0].split("_")[0] for line in first.splitlines() if "|rf-" in line})
+out = subprocess.run(["ssh", "alice2", f"sacct -j {','.join(ids)} -X -P --noheader --format={FMT}"], capture_output=True, text=True, check=True).stdout
 rows = []
 for line in out.splitlines():
     f = line.split("|")
