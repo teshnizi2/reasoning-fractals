@@ -52,3 +52,26 @@ def draw_text(frame: np.ndarray, text: str, xy: tuple[int, int], size: int, font
             d.text((xy[0] + dx, xy[1] + dy), text, font=f, fill=(6, 8, 12, int(a * 0.55)))
     d.text(xy, text, font=f, fill=(*color, a))
     return np.asarray(Image.alpha_composite(base, layer).convert("RGB")).copy()
+
+
+def draw_caption(frame: np.ndarray, text: str, xy: tuple[int, int], size: int, font: str, color: tuple[int, int, int],
+                 alpha: float = 1.0, bg: tuple[int, int, int] = (14, 17, 23), bg_alpha: float = 0.80, line_gap: float = 1.3) -> np.ndarray:
+    """``text`` (lines split on newlines) at xy (top-left of the first line) on a rounded dark pill, so it stays legible
+    over bright parts of the fractal.  Returns a copy; ``alpha`` fades pill and text together."""
+    if alpha <= 0.0:
+        return frame.copy()
+    base = Image.fromarray(frame).convert("RGBA")
+    layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    f = load_font(font, size)
+    lines = text.split("\n")
+    boxes = [d.textbbox((xy[0], xy[1] + int(i * size * line_gap)), ln, font=f) for i, ln in enumerate(lines)]
+    x0, y0 = min(b[0] for b in boxes), min(b[1] for b in boxes)
+    x1, y1 = max(b[2] for b in boxes), max(b[3] for b in boxes)
+    pad = int(size * 0.45)
+    a = min(1.0, alpha)
+    d.rounded_rectangle([x0 - pad, y0 - int(pad * 0.8), x1 + pad, y1 + int(pad * 0.8)], radius=int(pad * 0.9),
+                        fill=(*bg, int(round(255 * bg_alpha * a))))
+    for i, ln in enumerate(lines):
+        d.text((xy[0], xy[1] + int(i * size * line_gap)), ln, font=f, fill=(*color, int(round(255 * a))))
+    return np.asarray(Image.alpha_composite(base, layer).convert("RGB")).copy()

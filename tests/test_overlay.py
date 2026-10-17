@@ -32,3 +32,18 @@ def test_draw_text_changes_only_the_text_region_and_returns_a_copy():
 def test_mono_and_sans_fonts_both_load():
     for name in ("sans", "mono", "sans-bold"):
         assert OV.load_font(name, 20) is not None
+
+
+def test_caption_pill_sits_behind_the_text_and_grows_with_each_line():
+    frame = np.full((300, 600, 3), (200, 230, 215), dtype=np.uint8)  # bright mint: the case that needs a pill
+    one = OV.draw_caption(frame, "A small model", (40, 40), 36, "sans", (232, 236, 245))
+    two = OV.draw_caption(frame, "A small model\nthinks in loops", (40, 40), 36, "sans", (232, 236, 245))
+    assert (frame == (200, 230, 215)).all()  # input untouched
+    dark = lambda im: ((im.astype(int).sum(-1)) < 300)  # noqa: E731  (pill is dark, the frame is bright)
+    ys1, xs1 = np.nonzero(dark(one))
+    ys2, _ = np.nonzero(dark(two))
+    assert ys1.size > 2000 and xs1.min() < 40 and xs1.max() > 40 + 150  # pill extends around the text
+    assert ys2.max() - ys2.min() > (ys1.max() - ys1.min()) + 25  # second line makes it taller
+    assert OV.draw_caption(frame, "x", (40, 40), 36, "sans", (232, 236, 245), alpha=0.0).tolist() == frame.tolist()
+    # text pixels are light on the dark pill
+    assert one[40:80, 40:300].max() > 225

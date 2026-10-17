@@ -30,6 +30,12 @@ class Camera:
         return (self.c0[0] + (self.c1[0] - self.c0[0]) * m, self.c0[1] + (self.c1[1] - self.c0[1]) * m, zoom)
 
 
+def timeline(fps: int, hold0: float, move: float, tail: float) -> list[float]:
+    """Camera progress u in [0, 1] for every frame: parked at 0 for ``hold0`` s, travelling for ``move`` s, parked at 1 for ``tail`` s."""
+    n0, n1, n2 = (int(round(v * fps)) for v in (hold0, move, tail))
+    return [0.0] * n0 + [float(v) for v in np.linspace(0.0, 1.0, n1)] + [1.0] * n2
+
+
 def _smooth(a: float, b: float, x: float) -> float:
     t = min(1.0, max(0.0, (x - a) / (b - a)))
     return t * t * (3 - 2 * t)
@@ -78,7 +84,7 @@ class Layer:
 
 
 def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: tuple[int, int],
-                 view_width_units: float = 2.0, resample=Image.BICUBIC) -> np.ndarray:
+                 view_width_units: float = 2.0, resample=Image.BICUBIC, background: tuple[int, int, int] = (0, 0, 0)) -> np.ndarray:
     """One frame (height, width, 3) uint8. ``zoom`` 1 shows ``view_width_units`` of plane across the width."""
     w, h = size
     scale = w / (view_width_units / zoom)  # frame px per plane unit
@@ -86,7 +92,8 @@ def render_frame(layers: list[Layer], cx: float, cy: float, zoom: float, size: t
     yy, xx = np.mgrid[0:h, 0:w]
     px = (xx + 0.5 - w / 2) / scale + cx  # plane x of each frame pixel centre
     py = cy - (yy + 0.5 - h / 2) / scale  # plane y
-    out = np.zeros((h, w, 3), dtype=np.float64)
+    out = np.empty((h, w, 3), dtype=np.float64)
+    out[:] = background
     for i, L in enumerate(layers):
         pitch_px = L.pitch * scale
         alpha = 1.0 if i == 0 else layer_alpha(prev_pitch_px)

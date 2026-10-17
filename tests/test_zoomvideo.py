@@ -106,3 +106,18 @@ def test_layers_sampled_from_one_smooth_function_reproduce_it_at_every_zoom():
         err = np.abs(f[45, :, 0].astype(float) - want)
         inner = slice(8, 112)  # away from the frame edge
         assert err[inner].max() < 1.5, (zoom, err[inner].max())
+
+
+def test_background_fills_whatever_the_layers_do_not_cover():
+    base = ZV.Layer(center=(0.0, 0.0), half_width=1.0, img=np.full((16, 16, 3), (200, 0, 0), np.uint8))
+    f = ZV.render_frame([base], 0.0, 0.0, 1.0, (60, 80), view_width_units=3.0, background=(14, 17, 23))
+    assert tuple(f[2, 30]) == (14, 17, 23) and tuple(f[40, 30]) == (200, 0, 0)  # above the 2x2 plane / inside it
+    assert tuple(ZV.render_frame([base], 0.0, 0.0, 1.0, (60, 80), view_width_units=3.0)[2, 30]) == (0, 0, 0)
+
+
+def test_timeline_holds_moves_and_parks_the_camera():
+    ts = ZV.timeline(fps=10, hold0=1.0, move=2.0, tail=1.5)
+    assert len(ts) == 45
+    assert ts[:10] == [0.0] * 10 and ts[-15:] == [1.0] * 15
+    mid = ts[10:30]
+    assert mid[0] == 0.0 and abs(mid[-1] - 1.0) < 1e-12 and all(b >= a for a, b in zip(mid, mid[1:]))

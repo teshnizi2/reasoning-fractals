@@ -1,0 +1,7 @@
+[
+  {"text": "A small model solves a Sudoku\nby thinking in loops.", "size": 44, "x": 54, "y": 64, "t_in": 0.5, "t_out": 3.6},
+  {"text": "Every pixel is a different first thought.\nSame puzzle, same model.", "size": 44, "x": 54, "y": 64, "t_in": 4.0, "t_out": 7.2},
+  {"text": "Colour: how many loops it takes\nto settle on its answer.", "size": 44, "x": 54, "y": 64, "t_in": 7.6, "t_out": 10.8},
+  {"text": "Zoom in. Neighbouring thoughts,\ndifferent journeys.", "size": 44, "x": 54, "y": 64, "t_in": 11.2, "t_out": 12.6},
+  {"text": "Two neighbouring thoughts, one answer:\n{a_settle} loops against {b_settle}.", "size": 44, "x": 54, "y": 64, "t_in": 13.6, "t_out": 19.2}
+]
