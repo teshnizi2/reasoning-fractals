@@ -3,7 +3,7 @@
 
     .venv/bin/python scripts/apply_replay.py --pack site/data --keyframes data/cluster/kf03 ... data/cluster/kf07
 
-Reads results/replay/plan.json and data/cluster/replay/replay_out.json (alice/sync.sh pull replay); writes
+Reads results/replay/plan_*.json and data/cluster/replay_*/replay_out.json (alice/sync.sh pull replay_hero / replay_kf); writes
 results/replay/summary.json, results/video/pair.json and meta.featured of the pack.
 """
 from __future__ import annotations
@@ -22,8 +22,8 @@ from render import tilerun as TR  # noqa: E402
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--plan", default="results/replay/plan.json")
-    ap.add_argument("--replay", default="data/cluster/replay/replay_out.json")
+    ap.add_argument("--plan", nargs="+", default=["results/replay/plan_hero.json", "results/replay/plan_kf.json"])
+    ap.add_argument("--replay", nargs="+", default=["data/cluster/replay_hero/replay_out.json", "data/cluster/replay_kf/replay_out.json"])
     ap.add_argument("--pack", default="site/data")
     ap.add_argument("--keyframes", nargs="*", default=[])
     ap.add_argument("--pair-out", default="results/video/pair.json")
@@ -31,9 +31,11 @@ def main() -> None:
     ap.add_argument("--min-robust-gap", type=int, default=3)
     ap.add_argument("--loop-seconds", type=float, default=0.28)
     a = ap.parse_args()
-    plan = json.loads((ROOT / a.plan).read_text())
-    rep = json.loads((ROOT / a.replay).read_text())
-    res = rep["items"]
+    assert len(a.plan) == len(a.replay), "one replay output per plan"
+    plan = [p for f in a.plan for p in json.loads((ROOT / f).read_text())]
+    reps = [json.loads((ROOT / f).read_text()) for f in a.replay]
+    rep = dict(meta=reps[0]["meta"])  # engine/nudges/eps: the same job script for every output
+    res = [r for x in reps for r in x["items"]]
     man_path = ROOT / a.pack / "manifest.json"
     man = json.loads(man_path.read_text())
     ny = man["layers"][0]["ny"]

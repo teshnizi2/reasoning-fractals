@@ -65,21 +65,30 @@ def test_finishing_pipeline_end_to_end_on_a_fake_render(tmp_path):
     assert [l["kind"] for l in man["layers"]] == ["base", "zoom", "zoom"] and (pack / "layer2_series.png").exists()
 
     rdir = tmp_path / "replay"
-    out = run("scripts/plan_replay.py", "--hero", hero, "--keyframes", *kf, "--out-dir", rdir, "--per-kind", "6", "--finale-per-layer", "20")
-    assert "items" in out
-    plan = json.loads((rdir / "plan.json").read_text())
-    spec_in = json.loads((rdir / "replay_in.json").read_text())
-    assert len(plan) == len(spec_in["items"]) > 10 and {p["layer"] for p in plan} >= {"hero", "kf03"}
+    # the hero is replayed as soon as it is done, the keyframes later: two plans, two replay outputs, one apply step
+    run("scripts/plan_replay.py", "--hero", hero, "--name", "hero", "--out-dir", rdir, "--per-kind", "6", "--rough-per-bin", "20")
+    run("scripts/plan_replay.py", "--keyframes", *kf, "--name", "kf", "--out-dir", rdir, "--finale-per-layer", "20")
+    plans, ins = [], []
+    for name in ("hero", "kf"):
+        plans.append(json.loads((rdir / f"plan_{name}.json").read_text()))
+        ins.append(json.loads((rdir / f"replay_in_{name}.json").read_text()))
+        assert len(plans[-1]) == len(ins[-1]["items"]) > 5
+    assert {p["layer"] for p in plans[0]} == {"hero"} and {p["layer"] for p in plans[1]} >= {"kf03", "kf04"}
+    assert any(p["kind"].startswith("rough") for p in plans[0])
 
     # what alice/replay.py does on the cluster, with the stub engine
-    res = RP.run_items(Stub().rollout, plane(), spec_in["puzzle"], SOL, spec_in["items"], nudged=spec_in["nudged"], eps=spec_in["eps"],
-                       seed=spec_in["seed"], batch=64)
-    assert sum(r["equal"] for r in res) == len(res)  # the stub is deterministic: every plain replay reproduces the stored value
-    (tmp_path / "replay_out.json").write_text(json.dumps(dict(meta=dict(engine="stub", nudged=spec_in["nudged"], eps=spec_in["eps"]), items=res)))
+    outs = []
+    for name, spec_in in zip(("hero", "kf"), ins):
+        res = RP.run_items(Stub().rollout, plane(), spec_in["puzzle"], SOL, spec_in["items"], nudged=spec_in["nudged"], eps=spec_in["eps"],
+                           seed=spec_in["seed"], batch=64)
+        assert sum(r["equal"] for r in res) == len(res)  # the stub is deterministic: every plain replay reproduces the stored value
+        outs.append(tmp_path / f"replay_out_{name}.json")
+        outs[-1].write_text(json.dumps(dict(meta=dict(engine="stub", nudged=spec_in["nudged"], eps=spec_in["eps"]), items=res)))
 
     pair = tmp_path / "pair.json"
-    run("scripts/apply_replay.py", "--plan", rdir / "plan.json", "--replay", tmp_path / "replay_out.json", "--pack", pack, "--keyframes", *kf,
+    run("scripts/apply_replay.py", "--plan", rdir / "plan_hero.json", rdir / "plan_kf.json", "--replay", *outs, "--pack", pack, "--keyframes", *kf,
         "--pair-out", pair, "--summary", tmp_path / "summary.json", "--min-robust-gap", "3")
+    assert json.loads((tmp_path / "summary.json").read_text())["roughness"]
     man = json.loads((pack / "manifest.json").read_text())
     assert man["meta"]["featured"] and all(len(f["trace"]) == 24 for f in man["meta"]["featured"])
     pj = json.loads(pair.read_text())
