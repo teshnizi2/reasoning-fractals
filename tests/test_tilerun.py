@@ -233,3 +233,11 @@ def test_notebook_mode_is_the_notebook_mesh_at_any_resolution():
         np.testing.assert_array_equal(got, full[t.r0 : t.r0 + t.h, t.c0 : t.c0 + t.w])
     assert TR.pixel_coords(spec, TR.plan_tiles(37, 16)[0]).dtype == np.float32
     assert TR._latent_precision(spec) == "float32"
+
+
+def test_backend_override_for_local_runs_drops_cuda_only_settings():
+    spec = make_spec(backend="torchfn", device="cuda", early_exit={"m": 3}, compile=True)
+    out = TR.apply_overrides(spec, backend="mlx", device=None)
+    assert out["backend"] == "mlx" and "early_exit" not in out and out["compile"] is False and spec["backend"] == "torchfn"  # copy, not in place
+    out2 = TR.apply_overrides(spec, backend=None, device="cpu")
+    assert out2["backend"] == "torchfn" and out2["device"] == "cpu" and out2["early_exit"] == {"m": 3}

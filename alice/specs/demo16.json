@@ -1,0 +1,23 @@
+{
+ "name": "demo16",
+ "note": "a 16 x 16 window around the zoom target, x64; about 4 minutes on an Apple M4 with MLX: python -m render.tilerun run --spec alice/specs/demo16.json --out data/local/demo16 --backend mlx",
+ "puzzle": "2.6..4.9..7....6..8.......27.9.3..2..8.4.2......7.95..3.79...4.......3.6.1...3...",
+ "steps": 24,
+ "plane_seed": 0,
+ "plane_file": "data/plane_seed0.npz",
+ "precision": "fp32",
+ "backend": "torchfn",
+ "device": "cuda",
+ "compile": false,
+ "early_exit": {"m": 3},
+ "batch": 64,
+ "mode": "window",
+ "center": [0.87882, 0.86937],
+ "half_width": 0.015625,
+ "nx": 16,
+ "ny": 16,
+ "n": 16,
+ "tile": 16,
+ "latent_precision": "float64",
+ "zoom": 64
+}

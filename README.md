@@ -18,6 +18,8 @@ adds a deep-zoom video and a click-a-pixel explorer, and measures how far the cl
   the picture is smooth, 48.1% inside the filaments. The statistics match (boundary dimension
   1.873 vs 1.872). The filament pixels are rounding-sensitive; the authors' own code agrees with their
   image no better than ours does (64.7%).
+* At the hero's full resolution the statistics still match: with the same 11 labels and the same pixel pitch the boundary dimension is
+  1.853 against the upstream image's 1.852, basin entropy 1.139 against 1.141.
 * The hero has 4,194,304 starting thoughts. 99.92% of them end on the true solution: the fractal is in
   *how long* the model thinks, not in whether it solves this puzzle.
 * Neighbouring pixels differ a lot: 12.3% of neighbour pairs differ by 5 loops or more, the largest gap is
@@ -66,8 +68,10 @@ The "What am I looking at?" drawer explains the picture and repeats the limits b
 * **Outcome** of a pixel: the final decoded grid. Each distinct grid gets an id (0 = the true solution), stored with its
   count and whether it is a valid Sudoku.
 * **Colour.** Settle time is the luminance (dark = fast), the outcome picks the hue: two colourways in
-  `render/colour.py`, an indigo-teal-mint one close to loopscape's look and one in the series palette (midnight and
-  amber). A pixel that ends on a wrong grid is drawn from a separate, clearly different ramp.
+  `render/colour.py`, an indigo-teal-mint one close to loopscape's look (`media/loopscape/`) and one in the series
+  palette (midnight and amber), which is the one used for the hero, the video and the explorer's default: it keeps
+  the flat domains calm and lets the speckle read as gold leaf. A pixel that ends on a wrong grid is drawn from a
+  separate, clearly different ramp.
 * **Early exit.** A start is retired once its decoded grid has equalled the true solution for three loops in a row; the
   remaining loops are filled in. Checked against full 24-loop runs on 4,096 pixels (`RUNS.md` row 4): identical settle
   time for 99.93% of the pixels, 2.7× faster (8.8 loops computed per pixel instead of 24).
@@ -84,11 +88,12 @@ uv pip install -e vendor/loopscape && source scripts/paths.sh               # Eq
 (cd site && python3 -m http.server 8772)                                    # the explorer: http://127.0.0.1:8772/
 ```
 
-Render a small window yourself (any machine; about 1.2 rollouts/s on an Apple M4 with MLX, see the throughput table):
+Render a small window yourself (about 1.2 rollouts/s on an Apple M4 with MLX, so this 16 x 16 window takes a few minutes; see the throughput table):
 
 ```bash
-# a spec file describes the window, e.g. alice/specs/kf05.json; --max-tiles keeps a laptop run short
-.venv/bin/python -m render.tilerun run --spec alice/specs/kf05.json --out data/local/kf05 --max-tiles 1
+# needs the EqR weights under data/raw (see requirements.txt) and the frozen plane data/plane_seed0.npz
+.venv/bin/python -m render.tilerun run --spec alice/specs/demo16.json --out data/local/demo16 --backend mlx
+.venv/bin/python -m render.tilerun merge --spec alice/specs/demo16.json --out data/local/demo16   # field.npz + dictionary.json
 ```
 
 The cluster runs (hero, keyframes, scans) are in `alice/README.md`; the pack, video and README builders are
@@ -151,8 +156,9 @@ everything ends on the true solution, so the picture is a map of *how long* the 
 | hero, every 2nd pixel, labels clipped to the upstream's 11 levels | 2.0×10^-3 | 76% | 1.139 | 1.498 | 0.147 | 1.853 |
 | upstream image, 1000 x 1000 (metrics computed by us from its 11 colour levels) | 2.0×10^-3 | 76% | 1.141 | 1.496 | 0.148 | 1.852 |
 
-The last row is the upstream image analysed with the same code (`loopscape.metrics`, 5x5 boxes, eps = 1..5 px); our map at the
-same pixel pitch (every 2nd pixel of the hero) lands close to it. All metrics depend on the pixel pitch, so each row says which one.
+The last two rows are the like-for-like comparison: the hero with its settle times clipped to the upstream image's 11 levels and sampled at the same pixel
+pitch, against the upstream image analysed with the same code (`loopscape.metrics`, 5x5 boxes, eps = 1..5 px). They agree to about two decimals in every
+metric. All metrics depend on the pixel pitch and on the labels, so each row says which.
 
 ### 3. Zoom: the fractal is "slim"
 

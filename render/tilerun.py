@@ -186,6 +186,19 @@ def _load_spec(path) -> dict:
     return json.loads(Path(path).read_text())
 
 
+def apply_overrides(spec: dict, backend: str | None = None, device: str | None = None) -> dict:
+    """Copy of ``spec`` for a different machine: ``--backend mlx`` (a Mac) drops the CUDA-only early exit and compile flags."""
+    out = dict(spec)
+    if backend:
+        out["backend"] = backend
+        if backend == "mlx":
+            out.pop("early_exit", None)
+            out["compile"] = False
+    if device:
+        out["device"] = device
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["run", "merge"])
@@ -195,8 +208,10 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--max-minutes", type=float, default=None)
     ap.add_argument("--max-tiles", type=int, default=None)
+    ap.add_argument("--backend", default=None, help="override the spec's engine, e.g. mlx on a Mac (early exit is cuda-only and is dropped)")
+    ap.add_argument("--device", default=None, help="override the spec's torch device (cpu, mps, cuda)")
     a = ap.parse_args()
-    spec = _load_spec(a.spec)
+    spec = apply_overrides(_load_spec(a.spec), a.backend, a.device)
     solution = S.pack([S.solve(spec["puzzle"])])[0].astype(np.int8)
     if a.cmd == "merge":
         f = merge(spec, a.out, solution)
