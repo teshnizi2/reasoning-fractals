@@ -105,29 +105,72 @@ no licence); the side-by-side figure is regenerated locally by `scripts/repro_re
 
 ### 2. The hero: what the map looks like
 
+The full plane `[-1, 1]^2` at {{hero.side|int}} x {{hero.side|int}} (`media/hero.png`, `alice/specs/hero.json`, jobs in `RUNS.md`). Colour is settle time; nearly
+everything ends on the true solution, so the picture is a map of *how long* the model thinks.
+
 {{table:hero}}
 
+The last row is the upstream image analysed with the same code (`loopscape.metrics`, 5x5 boxes, eps = 1..5 px); our map at the
+same pixel pitch (every 2nd pixel of the hero) lands close to it. All metrics depend on the pixel pitch, so each row says which one.
+
 ### 3. Zoom: the fractal is "slim"
+
+Zooming into the map does not reveal the same complexity again and again: the share of 5x5 boxes that touch a basin boundary falls as the pitch gets
+finer, and the finest windows turn into flat domains next to fine speckle. This is the scale dependence the paper calls a *slim* fractal (appendix E).
+The zoom video and the explorer therefore stop at ×{{kf.zoom_max|int}}; a chase to ×5,120 found no coherent structure beyond that, only speckle
+next to a flat domain.
 
 {{table:scale}}
 
 ### 4. How far can a single pixel be trusted?
 
+Random pixels of the chase windows and of the hero were re-run on a second float32 implementation (MLX on an Apple M4; the renders are torch on
+A100s) and compared with the stored settle times ({{replay.n_per_field|int}} pixels per field, {{replay.n_fields|int}} fields, `scripts/replay_agreement.py`).
+In flat regions the second implementation gives the same number. In the speckled "dust" it mostly does not, and the slow dust pixels
+essentially never do. The *statistics* of the dust (histograms, basin entropy, boundary dimension) are stable; individual dust pixels
+are one realisation of float32 rounding. Nudging a start by a relative 1e-6 (a few dozen float32 ulps) moves such pixels by several loops
+(`results/replay/summary.json`).
+
 {{table:replay}}
 
 ### 5. Native-scale starts: when does EqR really fail?
 
+The hero slice stays within distance 1.4 of the all-zero state, while EqR's own random initialisation has norm about 223. At that scale the picture changes:
+
 {{table:scans}}
+
+So EqR is far from perfect on Sudoku-Extreme from its own random starts, but the *wrong* endings are not stable wrong answers: they wander. That is why the
+explorer calls a pixel that is still changing after 24 loops `UNSETTLED`, and reserves `STUCK` for a wrong grid that stopped changing.
 
 ### 6. Throughput and cost
 
+Measured on this Apple M4 (shared with other jobs) and on the ALICE A100s; one rollout is 24 loops of one starting thought
+(about {{m4.gflop_per_rollout|f1}} GFLOP).
+
 {{table:throughput}}
+
+Time to render, from those rates (`scripts/cost_estimate.py`; early exit computes {{ee.mean_loops|f1}} loops per pixel instead of 24):
 
 {{table:cost}}
 
+The hero and keyframes actually cost {{hero.gpu_hours|f1}} and {{kf.gpu_hours|f1}} GPU-hours of tile time (summed over workers; full A100s and MIG slices mixed);
+everything in this repository, scans and checks included, used {{gpu.a100_hours|f1}} A100-equivalent hours ({{gpu.jobs|int}} jobs, `results/alice/gpu_hours.json`).
+
 ## Honest limits
 
-{{table:limits}}
+* **One puzzle, one model.** EqR's released Sudoku checkpoint on one rating-47 puzzle, the one behind loopscape's figure. Other puzzles give other maps.
+* **One slice, tiny thoughts.** A random 2-D plane (seed 0) through the all-zero start. At EqR's own start scale the puzzle scan found failures on
+  {{pscan.multistable|int}} of {{pscan.puzzles|int}} puzzles, but this puzzle was solved from all {{pscan.k|int}} of its native starts.
+* **Almost every start ends right.** {{hero.frac_solved|pct2}} of the hero's starts reach the true solution; the {{hero.n_unsolved|int}} others are mostly starts still
+  changing at loop 24. The fractal is in the settle time.
+* **Pixel-exact only where the map is smooth.** See section 4: a second float32 implementation agrees on {{replay.flat|pct0}} of pixels with flat surroundings
+  and on {{replay.dust|pct0}} of speckle pixels. The reproduction of the upstream figure is statistical in the filaments for the same reason.
+* **float32 only.** TF32 and bfloat16 give different pictures ({{smoke.tf32_agree|pct1}} and {{smoke.bf16_agree|pct1}} pixel agreement with the upstream image).
+* **Slim fractal.** The structure thins out under magnification (section 3); nothing was rendered beyond ×{{kf.zoom_max|int}}.
+* **Early exit** retires a start after 3 loops on the solution: identical settle times for {{ee.settle_equal|pct2}} of 4,096 test pixels. Batch size matters (B=2048 is a
+  different cuBLAS kernel regime and agrees on only {{ee.b2048_equal|pct1}}), so production used the validated batch of 1,024.
+* **Metrics depend on the pixel pitch** (and on the labels: here settle time, as in the paper).
+* **The upstream repository has no licence**, so none of its code or images is redistributed; see Credits.
 
 ## Credits and licences
 
