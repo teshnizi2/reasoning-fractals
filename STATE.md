@@ -1,6 +1,6 @@
 # STATE: reasoning-fractals (handoff note)
 
-Last updated: 2026-10-17 ~20:40 (second session; the first process died at ~13:50, see History).
+Last updated: 2026-10-17 ~21:00 (second session; the first process died at ~13:50, see History).
 
 ## Goal
 Fractal "mind" of a recurrent reasoning model: start EqR (Sudoku checkpoint) from a 2-D slice of initial latent "thoughts",
@@ -28,7 +28,7 @@ docs. Spec `BRIEF.md`, rules `../visual-series-RULES.md`. Final report <= 300 wo
   (desktop, phone, featured starts, replay). **Video**: `media/zoom-1080x1350.mp4` and `zoom-1080x1080.mp4` (20 s, H.264,
   yuv420p, no audio; gitignored, rebuild with `scripts/finish.sh 6`). **Docs**: README is generated (see below), POST.md draft
   (116 words + 3 hooks), RUNS.md rows 1-14.
-* Tests: `pytest` (fast: about 200; `-m slow` runs the model on the Mac) plus an end-to-end dry run on a stub render.
+* Tests: `pytest` runs 211 tests, all passing (the `slow` ones run the model on the Mac), plus an end-to-end dry run on a stub render.
 
 ## How to rebuild everything (scripts/finish.sh has the stages)
 1 pull + merge -> 2 metrics, scale dependence, scans, GPU hours, cost -> 3 pack + explorer copy -> 4h/4k replay plans (cluster)
