@@ -158,7 +158,7 @@ The hero slice stays within distance 1.4 of the all-zero state, while EqR's own 
 | puzzle scan | 5,565 puzzles x 16 EqR-style random starts, 24 loops (job 5246311) | 90.1% end on the solution; 4,281 puzzles always, 115 never, 664 between 15% and 85% |
 | ...the hero's puzzle | same scan | 16 of 16 starts solved (mean settle time 4.1) |
 | long run | 400 starts that were unsolved at loop 24, re-run for 96 loops (job 5246477) | 46.8% reach the solution; 213 are still changing, 0 are frozen on a wrong grid |
-| outcome maps | 15 windows of 48 x 48 around native-scale base points, 2 puzzles (job 5246477, cancelled at 15 of 32 windows) | the hero puzzle: 99.8%-100.0% solved, up to 5 distinct final grids, neighbouring pixels share their outcome 100% of the time (independent pixels would: 100%); puzzle #72: 54.0%-60.5% solved, up to 1,060 distinct final grids, neighbouring pixels share their outcome 53% of the time (independent pixels would: 51%) |
+| outcome maps | 15 windows of 48 x 48 around native-scale base points, 2 puzzles (job 5246477, cancelled at 15 of 32 windows) | the hero puzzle: 99.8%-100.0% solved, up to 5 distinct final grids; puzzle #72: 54.0%-60.5% solved, up to 1,060 distinct final grids, neighbouring pixels share their outcome 53% of the time (independent pixels would: 51%) |
 
 ![outcome maps at native scale](results/figures/oscan_sheet.png)
 
