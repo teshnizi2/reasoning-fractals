@@ -1,0 +1,69 @@
+{
+ "full_B1024_a": {
+  "seconds": 334.229124546051,
+  "rollouts_per_s": 12.255066014830387,
+  "mean_loops": 24.0,
+  "asset_agreement": 0.64697265625,
+  "frac_solved": 0.99951171875
+ },
+ "full_B1024_b": {
+  "seconds": 334.069295167923,
+  "rollouts_per_s": 12.26092922824572,
+  "mean_loops": 24.0,
+  "asset_agreement": 0.64697265625,
+  "frac_solved": 0.99951171875
+ },
+ "full_B1000": {
+  "seconds": 334.0106213092804,
+  "rollouts_per_s": 12.263083057577466,
+  "mean_loops": 24.0,
+  "asset_agreement": 0.64697265625,
+  "frac_solved": 0.99951171875
+ },
+ "early_B1024": {
+  "seconds": 124.07515692710876,
+  "rollouts_per_s": 33.01224894620419,
+  "mean_loops": 8.84033203125,
+  "asset_agreement": 0.64697265625,
+  "frac_solved": 0.9990234375
+ },
+ "early_B2048": {
+  "seconds": 123.91120529174805,
+  "rollouts_per_s": 33.055928709848374,
+  "mean_loops": 8.8505859375,
+  "asset_agreement": 0.647216796875,
+  "frac_solved": 0.99853515625
+ },
+ "pairs": {
+  "full_B1024_a__full_B1024_b": {
+   "settle_equal": 1.0,
+   "final_equal": 1.0,
+   "settle_equal_interior": 1.0,
+   "settle_equal_boundary": 1.0
+  },
+  "full_B1024_a__full_B1000": {
+   "settle_equal": 1.0,
+   "final_equal": 1.0,
+   "settle_equal_interior": 1.0,
+   "settle_equal_boundary": 1.0
+  },
+  "full_B1024_a__early_B1024": {
+   "settle_equal": 0.999267578125,
+   "final_equal": 0.999267578125,
+   "settle_equal_interior": 1.0,
+   "settle_equal_boundary": 0.9989134371604491
+  },
+  "full_B1024_a__early_B2048": {
+   "settle_equal": 0.936767578125,
+   "final_equal": 0.998046875,
+   "settle_equal_interior": 1.0,
+   "settle_equal_boundary": 0.90619340818544
+  },
+  "full_B1000__early_B1024": {
+   "settle_equal": 0.999267578125,
+   "final_equal": 0.999267578125,
+   "settle_equal_interior": 1.0,
+   "settle_equal_boundary": 0.9989134371604491
+  }
+ }
+}

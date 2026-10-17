@@ -10,7 +10,7 @@
  "early_exit": {
   "m": 3
  },
- "batch": 2048,
+ "batch": 1024,
  "name": "hero",
  "mode": "notebook",
  "n": 2048,

@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 from render import puzzles as P  # noqa: E402
 
 COMMON = dict(puzzle=P.ASSET.question, steps=24, plane_seed=0, plane_file="data/plane_seed0.npz", precision="fp32",
-              backend="torchfn", device="cuda", compile=False, early_exit={"m": 3}, batch=2048)
+              backend="torchfn", device="cuda", compile=False, early_exit={"m": 3}, batch=1024)
 
 
 def main() -> None:

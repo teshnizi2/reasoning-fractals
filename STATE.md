@@ -83,6 +83,15 @@ Full A100s were saturated (dream-engine training + other users: scheduler start 
 production jobs after the first bursts request A100 **MIG slices** (`--gres=gpu:4g.40gb:1`, A100 silicon, gpu-short)
 instead of `gpu:a100:1`. Same architecture and fp32 semantics; slower per slice (~4/7 of an A100). Mentioned in the report.
 
+## Production plan and capacity (17 Oct ~15:45)
+- Early exit validated (RUNS row 4): 99.93% identical settle times at batch 1024, 2.7x faster. Production batch = 1024
+  (B=2048 is a different cuBLAS kernel regime: still valid, but not the validated setting).
+- QOS cap: 12 GPUs per user on gpu-short (shared with the dream-engine builder, who holds ~5): I run <= ~7 slots.
+  Per-slot speed: full A100 62 rollouts/s with early exit, A100 MIG 4g.40gb 33, so full A100s are preferred.
+- Hero 2048^2 (spec alice/specs/hero.json, notebook mode, 256 tiles of 128^2): jobs 5246384 (workers 0-23, a100)
+  and 5246385 (workers 24-47, 4g.40gb), WORKERS=48. Keyframes (k=3..12, 540x675, 20 tiles each) wait for the zoom
+  chase (job 5246357, started from a hand-picked point on the core of the top-right 'eye', c = (0.87882, 0.86937)).
+
 ## Compute facts (measured)
 - One 24-step rollout = 21 L-level calls/step x 2 layers; ~0.615 TFLOP fp32 per rollout.
 - Stock loopscape path: ~1 rollout/s on MPS (B=16..128), 0.53/s on CPU (10 cores). GPU is shared: fp32 matmul
