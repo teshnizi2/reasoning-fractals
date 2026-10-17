@@ -136,6 +136,13 @@ This looks like a "slim fractal" (paper App. E): complexity strongest near the 1
 when zoomed. Zoom 640 and 5120 windows come from job 5246357; keyframes (k >= 7) are held back until they show
 whether anything coherent survives. Fallback video: hero-only zoom to ~x64 (one pixel = one thought), no extra cost.
 
+## Keyframes (submitted 15:55)
+Because the field thins out when zoomed (see above), keyframes cover only zoom 8..128 (k = 3..7), 540x675 each
+(4:5, square pixels), centred at c = (0.87882, 0.86937) (hand-picked left tip of the dark core of the top-right
+"eye"; the first automatic chase picked a flat corner because its score saturated, hence the smooth scores + anchor
+in render/chase.py). Jobs 5246430-5246439: per level an array of 10 tasks on full A100s and 10 on 4g.40gb slices,
+WORKERS=20, one 135x135 tile per task. More levels (k = 8, 9) only if chase windows at x640 still show structure.
+
 ## Next steps
 1. Re-run engine tests (background, log) and fix; commit.
 2. Reproduction: sparse pixel check + aligned low-res grid + metrics vs the asset -> `results/repro/`.

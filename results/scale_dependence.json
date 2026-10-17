@@ -1,0 +1,95 @@
+{
+ "script": "scripts/scale_dependence.py",
+ "rows": [
+  {
+   "label": "upstream image, every 8th pixel",
+   "source": "upstream asset (levels)",
+   "pitch": 0.016016016016016016,
+   "shape": [
+    125,
+    125
+   ],
+   "basin_entropy": 1.5462407226280712,
+   "boundary_basin_entropy": 1.6053163648547253,
+   "boundary_box_fraction": 0.9632,
+   "uncertainty_exponent": 0.10333970546843096,
+   "boundary_dimension": 1.8966602945315691,
+   "uncertainty_r2": 0.993252705872268
+  },
+  {
+   "label": "upstream image, every 4th pixel",
+   "source": "upstream asset (levels)",
+   "pitch": 0.008008008008008008,
+   "shape": [
+    250,
+    250
+   ],
+   "basin_entropy": 1.4123735843705196,
+   "boundary_basin_entropy": 1.5637440039531882,
+   "boundary_box_fraction": 0.9032,
+   "uncertainty_exponent": 0.12686857946317592,
+   "boundary_dimension": 1.8731314205368241,
+   "uncertainty_r2": 0.9970696814607731
+  },
+  {
+   "label": "ours, 250x250 (asset grid, fp32)",
+   "source": "results/repro/repro250_field.npz",
+   "pitch": 0.008008008008008008,
+   "shape": [
+    250,
+    250
+   ],
+   "basin_entropy": 1.4164420189258982,
+   "boundary_basin_entropy": 1.5572141808771964,
+   "boundary_box_fraction": 0.9096,
+   "uncertainty_exponent": 0.1273134811560449,
+   "boundary_dimension": 1.8726865188439552,
+   "uncertainty_r2": 0.9964073879642116
+  },
+  {
+   "label": "upstream image, every 2th pixel",
+   "source": "upstream asset (levels)",
+   "pitch": 0.004004004004004004,
+   "shape": [
+    500,
+    500
+   ],
+   "basin_entropy": 1.2700422114259873,
+   "boundary_basin_entropy": 1.5173742071995069,
+   "boundary_box_fraction": 0.837,
+   "uncertainty_exponent": 0.14315317731864347,
+   "boundary_dimension": 1.8568468226813566,
+   "uncertainty_r2": 0.9994064540297432
+  },
+  {
+   "label": "upstream image, every 1th pixel",
+   "source": "upstream asset (levels)",
+   "pitch": 0.002002002002002002,
+   "shape": [
+    1000,
+    1000
+   ],
+   "basin_entropy": 1.1414280485072477,
+   "boundary_basin_entropy": 1.4964151270128774,
+   "boundary_box_fraction": 0.762775,
+   "uncertainty_exponent": 0.14764857286358765,
+   "boundary_dimension": 1.8523514271364123,
+   "uncertainty_r2": 0.9999542353816228
+  },
+  {
+   "label": "window x80 (160x160, chase2)",
+   "source": "chase2/level1",
+   "pitch": 0.00015723270440251574,
+   "shape": [
+    160,
+    160
+   ],
+   "basin_entropy": 0.49442947718200925,
+   "boundary_basin_entropy": 1.122607061273564,
+   "boundary_box_fraction": 0.4404296875,
+   "uncertainty_exponent": 0.07570336259548827,
+   "boundary_dimension": 1.9242966374045118,
+   "uncertainty_r2": 0.9974245172991143
+  }
+ ]
+}

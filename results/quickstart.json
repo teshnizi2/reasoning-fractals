@@ -1,0 +1,13 @@
+{
+ "script": "scripts/quickstart.py",
+ "device": "cpu (Apple M4)",
+ "torch": "2.14.1",
+ "n_initial_conditions": 64,
+ "n_solved": 64,
+ "steps": 24,
+ "halted": true,
+ "seconds": 135.86631894111633,
+ "rollouts_per_s": 0.47105125463608993,
+ "puzzle": ".....6.....7.3.4..5..8.....9.8.7.3...1.....9...498.7....2....4387....2......2....",
+ "note": "loopscape README quickstart; z_H = randn(64,97,512), z_L = 0, max_steps=24, noise_scale=0"
+}
