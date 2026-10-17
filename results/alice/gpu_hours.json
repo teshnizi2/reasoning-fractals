@@ -1,0 +1,141 @@
+{
+ "by_name": {
+  "rf-smoke": {
+   "jobs": 1,
+   "gpu_hours_raw": 0.2563888888888889,
+   "a100_hours": 0.2563888888888889
+  },
+  "rf-stock": {
+   "jobs": 1,
+   "gpu_hours_raw": 0.12166666666666667,
+   "a100_hours": 0.12166666666666667
+  },
+  "rf-render": {
+   "jobs": 4,
+   "gpu_hours_raw": 0.7583333333333333,
+   "a100_hours": 0.7583333333333333
+  },
+  "rf-eechk": {
+   "jobs": 1,
+   "gpu_hours_raw": 0.14194444444444446,
+   "a100_hours": 0.08111111111111112
+  },
+  "rf-chase": {
+   "jobs": 2,
+   "gpu_hours_raw": 0.12305555555555556,
+   "a100_hours": 0.07031746031746032
+  },
+  "rf-pscan": {
+   "jobs": 1,
+   "gpu_hours_raw": 0.14194444444444446,
+   "a100_hours": 0.08111111111111112
+  }
+ },
+ "total": {
+  "jobs": 10,
+  "gpu_hours_raw": 1.5433333333333334,
+  "a100_hours": 1.3689285714285715
+ },
+ "jobs": [
+  {
+   "JobID": "5246129",
+   "JobName": "rf-smoke",
+   "State": "COMPLETED",
+   "Elapsed": "00:15:23",
+   "ElapsedRaw": "923",
+   "AllocTRES": "billing=12,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=24G,node=1",
+   "Start": "2026-10-17T14:44:11",
+   "End": "2026-10-17T14:59:34"
+  },
+  {
+   "JobID": "5246207",
+   "JobName": "rf-stock",
+   "State": "RUNNING",
+   "Elapsed": "00:07:18",
+   "ElapsedRaw": "438",
+   "AllocTRES": "billing=12,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=24G,node=1",
+   "Start": "2026-10-17T15:20:24",
+   "End": "Unknown"
+  },
+  {
+   "JobID": "5246208_0",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:24",
+   "ElapsedRaw": "684",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T15:01:49",
+   "End": "2026-10-17T15:13:13"
+  },
+  {
+   "JobID": "5246208_1",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:23",
+   "ElapsedRaw": "683",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T15:01:50",
+   "End": "2026-10-17T15:13:13"
+  },
+  {
+   "JobID": "5246208_2",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:25",
+   "ElapsedRaw": "685",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T15:01:50",
+   "End": "2026-10-17T15:13:15"
+  },
+  {
+   "JobID": "5246208_3",
+   "JobName": "rf-render",
+   "State": "COMPLETED",
+   "Elapsed": "00:11:18",
+   "ElapsedRaw": "678",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:a100=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T15:01:50",
+   "End": "2026-10-17T15:13:08"
+  },
+  {
+   "JobID": "5246309",
+   "JobName": "rf-eechk",
+   "State": "RUNNING",
+   "Elapsed": "00:08:31",
+   "ElapsedRaw": "511",
+   "AllocTRES": "billing=12,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=24G,node=1",
+   "Start": "2026-10-17T15:19:11",
+   "End": "Unknown"
+  },
+  {
+   "JobID": "5246310",
+   "JobName": "rf-chase",
+   "State": "FAILED",
+   "Elapsed": "00:00:06",
+   "ElapsedRaw": "6",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T15:19:11",
+   "End": "2026-10-17T15:19:17"
+  },
+  {
+   "JobID": "5246311",
+   "JobName": "rf-pscan",
+   "State": "RUNNING",
+   "Elapsed": "00:08:31",
+   "ElapsedRaw": "511",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T15:19:11",
+   "End": "Unknown"
+  },
+  {
+   "JobID": "5246316",
+   "JobName": "rf-chase",
+   "State": "RUNNING",
+   "Elapsed": "00:07:17",
+   "ElapsedRaw": "437",
+   "AllocTRES": "billing=14,cpu=4,gres/gpu:4g.40gb=1,gres/gpu=1,mem=32G,node=1",
+   "Start": "2026-10-17T15:20:25",
+   "End": "Unknown"
+  }
+ ]
+}

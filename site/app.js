@@ -225,8 +225,39 @@ function select(p) {
   S.sheetOpened = true;
 }
 
+function featuredAt(p) {
+  const f = (S.man.meta.featured || []).find((f) => f.layer === p.layer.id && f.col === p.col && f.row === p.row);
+  return f && f.trace ? f : null;
+}
+let playTimer = null;
+function stopPlay() { if (playTimer) { clearInterval(playTimer); playTimer = null; $("btnPlay").textContent = "▶ Replay the thinking"; } }
+function showLoop(f, t) { // t = 1..24: the decoded grid after loop t
+  const q = S.man.puzzle, cells = $("iGrid").children, g = f.trace[t - 1];
+  for (let i = 0; i < 81; i++) {
+    const el = cells[i], given = q.question[i] !== ".", ch = g[i];
+    el.className = "cell"; el.innerHTML = "";
+    if (given) { el.classList.add("given"); el.textContent = q.question[i]; continue; }
+    if (ch === "." || ch === "?") { el.classList.add("blank", "bad"); el.textContent = "·"; continue; }
+    if (ch !== q.solution[i]) { el.classList.add("bad"); el.innerHTML = `${ch}<small>${q.solution[i]}</small>`; }
+    else el.textContent = ch;
+  }
+  [...$("iTicks").children].forEach((el, i) => el.classList.toggle("now", i === t - 1));
+  $("iScrub").value = t; $("iLoopNo").textContent = "loop " + t;
+}
+function startPlay(f) {
+  stopPlay();
+  if (S.reduced) { showLoop(f, 24); return; }
+  let t = 1; showLoop(f, t); $("btnPlay").textContent = "❚❚ Pause";
+  playTimer = setInterval(() => { t += 1; if (t > 24) { stopPlay(); return; } showLoop(f, t); }, 330);
+}
+$("btnPlay").onclick = () => { if (playTimer) stopPlay(); else if (S.sel) { const f = featuredAt(S.sel); if (f) startPlay(f); } };
+$("iScrub").oninput = (e) => { stopPlay(); if (S.sel) { const f = featuredAt(S.sel); if (f) showLoop(f, +e.target.value); } };
+
 function renderInspector() {
+  stopPlay();
   const p = S.sel, L = p.layer, q = S.man.puzzle;
+  const feat = featuredAt(p);
+  $("iReplay").hidden = !feat;
   const dgt = Math.max(4, Math.ceil(-Math.log10(L.pitch)) + 2);
   $("iCoords").textContent = `a=${sgn(p.x, dgt)} b=${sgn(p.y, dgt)}`;
   const solved = !!(p.flags & 1), cens = !!(p.flags & 4);
@@ -395,6 +426,36 @@ addEventListener("keydown", (e) => {
   updateReadout();
 });
 
+// ---------------------------------------------------------------------------- featured starts
+function flyTo(x, y, scale, ms = 900) {
+  if (S.reduced || ms <= 0) { S.view = { cx: x, cy: y, scale }; limitCentre(); S.dirty = true; updateReadout(); return; }
+  cancelTour();
+  const from = { ...S.view }, t0 = performance.now();
+  const step = (now) => {
+    const p = clamp((now - t0) / ms, 0, 1), e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    S.view.scale = Math.exp(lerp(Math.log(from.scale), Math.log(scale), e));
+    S.view.cx = lerp(from.cx, x, e); S.view.cy = lerp(from.cy, y, e); S.dirty = true; updateReadout();
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function renderTry() {
+  const feats = S.man.meta.featured || [], row = $("tryRow");
+  if (!feats.length) return;
+  row.hidden = false;
+  for (const f of feats) {
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = f.label; b.title = f.title || f.label;
+    b.onclick = () => {
+      const L = S.layers.find((l) => l.id === f.layer) || base();
+      selectCell(L, f.col, f.row);
+      const [x, y] = L.xy(f.col, f.row);
+      flyTo(x, y, clamp(Math.max(S.view.scale, f.zoom ? S.fit * f.zoom : S.fit * 8), minScale(), maxScale()));
+    };
+    row.appendChild(b);
+  }
+}
+
 // ---------------------------------------------------------------------------- fly-in tour
 function tourTarget() { const L = deepest(); return { cx: L.center[0], cy: L.center[1], scale: 2.2 / L.pitch }; }
 $("btnTour").onclick = () => {
@@ -432,7 +493,7 @@ async function boot() {
   $("howList").innerHTML = (man.meta.how || []).map((t) => `<li>${t}</li>`).join("");
   const anyWrong = att.some((a, i) => i > 0 && a.count > 0);
   $("legendStuck").classList.toggle("on", anyWrong);
-  resize(); setWay(S.way); home(); updateReadout(S.W / 2, S.H / 2);
+  resize(); setWay(S.way); home(); updateReadout(S.W / 2, S.H / 2); renderTry();
   addEventListener("resize", () => { resize(); updateReadout(); });
   requestAnimationFrame(frame);
   await base().loadImage(S.way);

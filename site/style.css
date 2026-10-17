@@ -71,6 +71,14 @@ h1 {
 .chip:active { transform: translateY(1px); }
 .chip.ghost { background: transparent; }
 
+.try { margin-top: 10px; align-items: center; }
+.try .chip { padding: 5px 11px; font-size: 0.78rem; }
+.try .lbl { margin-right: 4px; }
+.replay { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; }
+.replay .chip.small { padding: 5px 11px; font-size: 0.78rem; white-space: nowrap; }
+.replay input[type=range] { flex: 1; min-width: 60px; accent-color: var(--amber); }
+.replay .lbl { white-space: nowrap; }
+
 /* ---------- readout ---------- */
 .readout {
   position: absolute; top: calc(18px + var(--safe-t)); right: calc(18px + var(--safe-r));
@@ -133,6 +141,7 @@ h1 {
 .ticks24 { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; margin-bottom: 14px; }
 .ticks24 i { height: 9px; border-radius: 2px; background: #232c3d; }
 .ticks24 i.on { background: var(--amber); }
+.ticks24 i.now { outline: 1px solid var(--text); outline-offset: 1px; }
 .ticks24 i.cap { background: transparent; border: 1px dashed var(--muted); }
 
 .grid-wrap { display: grid; gap: 6px; justify-items: center; }

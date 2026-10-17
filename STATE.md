@@ -110,6 +110,16 @@ instead of `gpu:a100:1`. Same architecture and fp32 semantics; slower per slice 
 2. If the asset slice turns out to be ~100% "solved", the post must say the fractal is in HOW LONG it thinks
    (and in which answers appear at larger initial-thought scales), not in whether it solves.
 
+## More decisions / open items (added 17 Oct afternoon)
+- Explorer built (site/index.html, style.css, app.js) against a throwaway mock pack (site/data-mock, gitignored);
+  real pack comes from `render/buildpack.py` once the hero/keyframes exist. Featured starts with loop-by-loop replay
+  traces are planned (the UI is done; traces will be computed locally with MLX and kept only if they reproduce the
+  stored settle time).
+- Early exit (solution plateau, m=3) is the production default if job 5246309 (RUNS pending) shows it changes the
+  field no more than a batch-size change does; otherwise production shrinks (hero 1536^2, fewer keyframes).
+- Series-palette colourway retuned (slate domains, amber/gold dust, `render/colour.py`); the indigo-teal-mint
+  colourway is closer to the upstream look. Choice of the better one is made on the full-res hero.
+
 ## Next steps
 1. Re-run engine tests (background, log) and fix; commit.
 2. Reproduction: sparse pixel check + aligned low-res grid + metrics vs the asset -> `results/repro/`.
