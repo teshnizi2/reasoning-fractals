@@ -1,9 +1,8 @@
 """Pair finale of the video: two neighbouring starts ringed on the fractal, their Sudoku grids replaying beneath.
 
 Everything is drawn in frame pixels; ``layout`` gives the card geometry for one frame format (``PORTRAIT`` is for a
-1080x1350 frame, ``scaled`` adapts it to other sizes).  The spec comes from ``scripts/build_pair.py``: two adjacent
-samples of the deepest keyframe (a to the left of b) whose loop-by-loop traces were re-run locally and reproduce the
-stored settle times.
+1080x1350 frame, ``scaled`` adapts it to other sizes).  The spec comes from ``scripts/apply_replay.py``: two adjacent samples of a keyframe whose loop-by-loop traces were re-run on the
+render engine (``alice/replay.py``) and reproduce the stored settle times; the slow/fast order survives rounding-sized nudges.
 """
 from __future__ import annotations
 

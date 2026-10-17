@@ -54,7 +54,7 @@ def main() -> None:
     ap.add_argument("--end-px", type=float, default=None, help="screen px per sample of the deepest layer at the end (default 56 with a pair, else 2)")
     ap.add_argument("--hold", type=float, default=1.2, help="seconds parked on the first frame")
     ap.add_argument("--finale", type=float, default=7.5, help="seconds parked at the end (the pair finale, or a plain hold)")
-    ap.add_argument("--pair", default=None, help="pair.json from scripts/build_pair.py")
+    ap.add_argument("--pair", default=None, help="pair.json from scripts/apply_replay.py")
     ap.add_argument("--captions", default=None, help="JSON list of {text,size,font,color,x,y,t_in,t_out}; {a_settle}/{b_settle} come from --pair")
     ap.add_argument("--no-counter", action="store_true")
     ap.add_argument("--no-credit", action="store_true")
