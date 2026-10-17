@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="t d">
+  <title id="t">How a thought basin map is made</title>
+  <desc id="d">A 2-D slice of the initial latent space; each point is run through the EqR recurrence for 24 loops; the loop at which the decoded Sudoku stops changing is the settle time and sets the pixel colour.</desc>
+  <defs>
+    <linearGradient id="ramp" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#0b0620"/><stop offset=".25" stop-color="#2a2a8f"/><stop offset=".5" stop-color="#0f8ea6"/>
+      <stop offset=".75" stop-color="#7fdc9b"/><stop offset="1" stop-color="#c9f7e0"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f59e0b"/></marker>
+    <style>
+      text { font-family: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif; fill: #e8ecf5; }
+      .m { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; fill: #8893ab; font-size: 13px; letter-spacing: .04em; }
+      .h { font-size: 21px; font-weight: 700; }
+      .s { font-size: 15px; fill: #c3cadb; }
+      .box { fill: #151a23; stroke: #2e3a52; stroke-width: 1.5; }
+      .amb { stroke: #f59e0b; stroke-width: 2; fill: none; }
+    </style>
+  </defs>
+  <rect width="1200" height="420" fill="#0e1117"/>
+
+  <!-- 1: the slice -->
+  <rect class="box" x="30" y="40" width="250" height="330" rx="14"/>
+  <text class="m" x="50" y="72">1 · A SLICE OF THOUGHTS</text>
+  <rect x="70" y="100" width="170" height="170" rx="6" fill="#10151e" stroke="#2e3a52"/>
+  <path d="M70 185H240M155 100V270" stroke="#2e3a52" stroke-dasharray="3 4"/>
+  <circle cx="190" cy="140" r="6" fill="#f59e0b"/>
+  <text class="m" x="200" y="132">(a, b)</text>
+  <text class="m" x="212" y="288" text-anchor="end">a</text><text class="m" x="58" y="108">b</text>
+  <text class="s" x="50" y="320">z = a·u + b·v</text>
+  <text class="s" x="50" y="342">two directions in a space</text>
+  <text class="s" x="50" y="361">of 97 × 512 numbers</text>
+
+  <path class="amb" d="M290 205H335" marker-end="url(#arr)"/>
+
+  <!-- 2: the recurrence -->
+  <rect class="box" x="345" y="40" width="330" height="330" rx="14"/>
+  <text class="m" x="365" y="72">2 · THE MODEL THINKS (24 LOOPS)</text>
+  <g transform="translate(372 100)">
+    <rect width="68" height="68" rx="8" class="box"/><text class="s" x="34" y="40" text-anchor="middle">z₀</text>
+    <path class="amb" d="M72 34H96" marker-end="url(#arr)"/>
+    <rect x="100" width="68" height="68" rx="8" class="box"/><text class="s" x="134" y="40" text-anchor="middle">z₁</text>
+    <path class="amb" d="M172 34H196" marker-end="url(#arr)"/>
+    <rect x="200" width="68" height="68" rx="8" class="box"/><text class="s" x="234" y="40" text-anchor="middle">z₂</text>
+    <text class="m" x="276" y="44">…</text>
+  </g>
+  <text class="s" x="365" y="222">same Sudoku and weights every time;</text>
+  <text class="s" x="365" y="244">only z₀ differs from pixel to pixel</text>
+  <rect x="365" y="262" width="290" height="88" rx="8" fill="#10151e" stroke="#2e3a52"/>
+  <text class="m" x="378" y="284">after every loop, decode a grid:</text>
+  <text class="m" x="378" y="308" style="fill:#e8ecf5">loop 1 → 2 8 ? 4 …  (changing)</text>
+  <text class="m" x="378" y="330" style="fill:#e8ecf5">loop 5 → 2 3 6 1 …  (settled)</text>
+
+  <path class="amb" d="M685 205H730" marker-end="url(#arr)"/>
+
+  <!-- 3: settle time -> colour -->
+  <rect class="box" x="740" y="40" width="430" height="330" rx="14"/>
+  <text class="m" x="760" y="72">3 · SETTLE TIME → COLOUR</text>
+  <g transform="translate(766 98)">
+    <rect width="378" height="56" rx="8" fill="#10151e" stroke="#2e3a52"/>
+    <g fill="#8893ab"><rect x="14" y="30" width="16" height="16" rx="3"/><rect x="36" y="22" width="16" height="24" rx="3"/><rect x="58" y="14" width="16" height="32" rx="3"/><rect x="80" y="8" width="16" height="38" rx="3"/></g>
+    <g fill="#f59e0b"><rect x="102" y="6" width="16" height="40" rx="3"/><rect x="124" y="6" width="16" height="40" rx="3"/><rect x="146" y="6" width="16" height="40" rx="3"/></g>
+    <text class="m" x="176" y="22">grid changed</text><text class="m" x="176" y="42" style="fill:#f59e0b">grid final: 7 loops</text>
+  </g>
+  <rect x="766" y="190" width="378" height="22" rx="11" fill="url(#ramp)" stroke="#2e3a52"/>
+  <text class="m" x="766" y="236">fast</text><text class="m" x="1144" y="236" text-anchor="end">slow</text>
+  <text class="s" x="766" y="278">One pixel per starting thought.</text>
+  <text class="s" x="766" y="300">Neighbouring pixels can need very</text>
+  <text class="s" x="766" y="322">different numbers of loops: that</text>
+  <text class="s" x="766" y="344">sensitivity is the fractal.</text>
+</svg>

@@ -282,9 +282,9 @@ function renderInspector() {
   const n = a ? a.n_wrong : 0, tot = S.total;
   let note;
   if (cens) note = `Still changing at loop 24: the model never settled from this start. Its last grid has <b>${n}</b> wrong cell${n === 1 ? "" : "s"}.`;
-  else if (solved) note = `Ended on the true solution, with <b>0</b> wrong cells. <b>${fmt(a ? a.count : 0)}</b> of the ${fmt(tot)} starts computed here end this way.`;
+  else if (solved) note = `Ended on the true solution, with <b>0</b> wrong cells. <b>${fmt(a ? a.count : 0)}</b> of the ${fmt(tot)} starts computed (all layers) end this way.`;
   else if (p.gid === HOLE) note = `Ended on a wrong grid (one of the rarer ones, not stored individually).`;
-  else note = `Ended on a wrong grid: <b>${n}</b> cell${n === 1 ? " is" : "s are"} not the true digit (amber, true digit small). <b>${fmt(a.count)}</b> of the ${fmt(tot)} starts computed here end exactly this way.`;
+  else note = `Ended on a wrong grid: <b>${n}</b> cell${n === 1 ? " is" : "s are"} not the true digit (amber, true digit small). <b>${fmt(a.count)}</b> of the ${fmt(tot)} starts computed (all layers) end exactly this way.`;
   $("iNote").innerHTML = note;
   $("iPitch").textContent = "Δ " + L.pitch.toExponential(1) + " per pixel";
   drawPatch();

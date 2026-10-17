@@ -64,6 +64,22 @@
    "seconds": 21.83539319038391,
    "rollouts_per_s": 0.3663776479886389,
    "gpu_util_after_pct": 17
+  },
+  {
+   "label": "torchfn-cpu",
+   "batch": 16,
+   "seconds": 48.863248109817505,
+   "rollouts_per_s": 0.32744446222733425,
+   "gpu_util_after_pct": 12
+  },
+  {
+   "label": "stock-loopscape-cpu",
+   "batch": 8,
+   "seconds": 22.11871910095215,
+   "rollouts_per_s": 0.3616845968108353,
+   "gpu_util_after_pct": 11
   }
- ]
+ ],
+ "script": "scripts/bench_local.py",
+ "flops_per_rollout_gflop": 615.3
 }
