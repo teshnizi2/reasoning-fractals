@@ -1,6 +1,8 @@
 <!-- Generated: edit docs/README.template.md, then `.venv/bin/python scripts/build_readme.py`. Every number below comes from results/*.json. -->
 # reasoning-fractals: the fractal "mind" of a reasoning model
 
+**Live explorer: <https://fractals.teshnizi.dev>** (click any pixel to see that starting thought's loops and Sudoku; "Fly in" zooms through the layers) · MIT licence
+
 ![hero](media/hero-1080x1350.png)
 
 Give a recurrent reasoning model (EqR, a small Sudoku solver that thinks by iterating) the **same Sudoku** many

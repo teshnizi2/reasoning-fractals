@@ -2,6 +2,12 @@
 
 Every number below comes from `results/` (the sources are listed at the end). Nothing here was sent anywhere.
 
+## Links (deployed 2026-10-18)
+
+- Explorer: https://fractals.teshnizi.dev (click any pixel for that starting thought's loops and Sudoku; "Fly in" zooms through the layers)
+- Code: https://github.com/teshnizi2/reasoning-fractals (MIT; loopscape's own files are not included, see the README credits)
+- The URLs are not part of the draft's word count. LinkedIn builds the link card from the page's share image (`site/og.jpg`).
+
 ## LinkedIn draft
 
 I gave a small Sudoku-solving model the same puzzle 4.2 million times and changed only its first "thought".

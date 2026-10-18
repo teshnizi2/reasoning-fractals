@@ -1,6 +1,6 @@
 # STATE: reasoning-fractals (handoff note)
 
-Last updated: 2026-10-17 ~21:00 (second session; the first process died at ~13:50, see History).
+Last updated: 2026-10-18 (deployed, licensed, history rewritten, published; the build notes date from 2026-10-17, the first process died at ~13:50, see History).
 
 ## Goal
 Fractal "mind" of a recurrent reasoning model: start EqR (Sudoku checkpoint) from a 2-D slice of initial latent "thoughts",
@@ -12,7 +12,7 @@ docs. Spec `BRIEF.md`, rules `../visual-series-RULES.md`. Final report <= 300 wo
   `ssh alice2`, partition gpu-short, folder `~/reasoning-fractals` on the cluster only, resumable tiles, rsync back,
   one `RUNS.md` row per experiment (append-only). Full A100s and MIG `4g.40gb` slices were used (QOS cap 12 GPUs per user,
   shared with dream-engine; full-GPU tasks starved in the queue, see RUNS rows 11 and 13).
-* No publishing, no `git push` (no remote is configured), no posting, no AI attribution in commits. POST.md is never posted.
+* Build rules at the time: no publishing, no `git push`. Reza approved publishing on 2026-10-18 (MIT licence, Vercel + teshnizi.dev subdomain, public repo); see "Deployed and published". Still no posting and no AI attribution in commits. POST.md is never posted.
 
 ## Status: DONE (all deliverables exist; only the verification pass and the report remain)
 * **Reproduction** (RUNS 1-4): the upstream asset puzzle was identified (blake2s of the question); our fp32 A100 render agrees
@@ -53,10 +53,10 @@ README.md is generated from `docs/README.template.md` by `scripts/build_readme.p
 * Colourways in `render/colour.py`: `series` (slate + amber, default everywhere) and `loopscape` (indigo/teal/mint).
 
 ## Open for Reza (decisions I could not ask)
-1. **Upstream licence**: loopscape has no licence file. Nothing of theirs is redistributed; files derived from their image
-   (`data/asset_samples.npz`, `results/repro/probe_*.npz`, the side-by-side figure) are untracked and gitignored, **but git
-   history before 16:26 on 17 Oct still contains them** (the repo is local only, no remote). Before any publication, rewrite or
-   squash the history, or ask the authors.
+1. **Upstream licence**: RESOLVED 2026-10-18. loopscape has no licence file and nothing of theirs is redistributed. The history was rewritten
+   once (`git filter-branch`, 94 commits kept) so that no file derived from their image (`data/asset_samples.npz`,
+   `results/repro/probe_*.npz`, the side-by-side figure) is in any commit; `scripts/verify_deliverables.py` checks this on every run.
+   Old hashes in `RUNS.md` map to the new ones in `docs/COMMIT-MAP.md`.
 2. **Wrong-answer story**: at the hero's scale >99.9% of starts solve, so the post says the fractal is in HOW LONG the model
    thinks; wrong endings only appear at EqR's native start scale, as wandering, not as stuck answers.
 3. **MIG slices** were used next to full A100s (queue cap); same silicon and fp32 semantics, only slower. Hero tiles therefore
@@ -68,6 +68,15 @@ README.md is generated from `docs/README.template.md` by `scripts/build_readme.p
    `scripts/apply_replay.py --criterion strict --rank robust` and re-run `scripts/finish.sh 6` if you prefer that.
 6. **Videos are 57 MB / 48 MB** at CRF 16 (the speckle is hard to compress); `scripts/make_video.py --crf 20` makes them about half
    that size.
+
+## Deployed and published (2026-10-18, approved by Reza)
+- Live: https://fractals.teshnizi.dev (also https://reasoning-fractals.vercel.app). Vercel project `reasoning-fractals` (team hmkhd2-1413s-projects, `prj_rCntqpBPmpy463Su6cwf1EHq0edM`), static deploy of `site/`, no build step.
+- Code: https://github.com/teshnizi2/reasoning-fractals (public, MIT licence, chosen by Reza). Our renders in the loopscape colourway (`media/loopscape/`, `site/data/layer*_loopscape.webp`) are our own output, not their image.
+- Redeploy after changing `site/`: `cd site && vercel deploy --prod --yes --scope hmkhd2-1413s-projects` (`site/.vercel/` is gitignored), then `git push`.
+- History rewrite: done in a fresh clone, then its `.git` replaced the old one. 94 commits kept (dates and messages unchanged), the tree of the last rewritten commit is identical to the original, and the six derived blobs are gone from the object store. Backups outside the repo: `~/Random projects/_publish-backups-2026-10-18/` (bundle of the old history and the old `.git` folder; they still contain the derived files, so never publish them).
+- Checked live: all 25 served files are byte-identical to `site/` (SHA-256); in the in-app browser all 6 layers loaded, `data-ready=1`, tapping a pixel gave a=+0.014167 b=-0.077675, solved, 4 loops (the same as the builder's phone screenshot), "Fly in" ran to the deepest layer, no console errors, 375 px layout without horizontal scroll.
+- Share card: `site/og.jpg` (1200x630 crop of `media/hero.png`) plus Open Graph, Twitter and canonical tags in `site/index.html`.
+- Hosting limits: Vercel Hobby includes 100 GB/month of Fast Data Transfer for the whole team (it also serves www.studypuff.com); sustained overage can lead to paused deployments (Vercel warns first; fix = upgrade to Pro or cut traffic). A first visit transfers about 3.6 MB here, so the allowance is not a concern for this one. If a post takes off, move the heavy files to a host with free egress or upgrade the team to Pro.
 
 ## ALICE jobs (details and GPU-hours: RUNS.md, results/alice/gpu_hours.json)
 smoke 5246129; repro250 5246208_0..3; stock 5246207; early-exit check 5246309; puzzle scan 5246311; chase 5246310/5246316/5246357;

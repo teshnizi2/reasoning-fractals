@@ -95,7 +95,12 @@ def main() -> None:
     check("no file over 30 MB is tracked", not big, str(big))
     for t in ("data/asset_samples.npz", "results/repro/repro250_side_by_side.png"):
         check(f"{t} (derived from the unlicensed upstream image) is not tracked", t not in tracked)
-    check("no remote configured (nothing can be pushed by accident)", not sh("git", "remote").strip())
+    ever = set(sh("git", "log", "--all", "--name-only", "--format=").split())
+    derived_ever = sorted(t for t in ever if re.search(r"(^|/)asset_samples\.npz$|results/repro/probe_[^/]*\.npz$|repro250_side_by_side\.png$", t))
+    check("no file derived from the upstream image is in any commit", not derived_ever, str(derived_ever))
+    urls = [ln.split()[1] for ln in sh("git", "remote", "-v").splitlines()]
+    check("the only remote (if any) is the published repository",
+          all(u.removesuffix(".git").endswith("github.com/teshnizi2/reasoning-fractals") for u in urls), str(urls))
     secrets = sh("git", "grep", "-nI", "-E", r"(api[_-]?key|token|password)\s*[:=]\s*['\"][A-Za-z0-9_\-]{16,}")
     check("no secret-looking strings in tracked files", not secrets.strip(), secrets.strip()[:200])
     failed = [n for n, ok, _ in results if not ok]
