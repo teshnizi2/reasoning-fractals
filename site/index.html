@@ -21,18 +21,28 @@
 <meta name="twitter:title" content="Thought basins: the fractal map of a reasoning model&#x27;s first thought">
 <meta name="twitter:description" content="The same Sudoku, millions of different first thoughts. Each pixel is one starting thought of a recurrent reasoning model; colour is how long it took to settle on an answer. The map is a fractal.">
 <meta name="twitter:image" content="https://fractals.teshnizi.dev/og.jpg">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%230e1117%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23f59e0b%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2712%27 fill=%27none%27 stroke=%27%232e3a52%27 stroke-width=%272%27/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%230e1117%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%276%27 fill=%27%23f59e0b%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2712%27 fill=%27none%27 stroke=%27%232e3a52%27 stroke-width=%272%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+<link rel="preload" href="data/manifest.json" as="fetch" crossorigin>
+<link rel="preload" href="data/layer0_series.webp" as="image" type="image/webp" fetchpriority="high">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
+<div class="boot" id="boot" role="status" aria-live="polite">
+  <p class="boot-t" id="bootT">Loading the map…</p>
+  <div class="boot-bar"><i id="bootBar"></i></div>
+  <p class="boot-s" id="bootS">about 1 MB, then the tap-to-inspect data loads quietly</p>
+</div>
 <canvas id="stage" aria-label="Map of a reasoning model's starting thoughts, coloured by how long each took to settle" role="img"></canvas>
 
 <div class="hud" id="hud">
   <header class="masthead">
-    <p class="kicker"><span class="dot"></span>latent atlas · EqR on one Sudoku</p>
+    <p class="kicker"><span class="dot" aria-hidden="true"></span>latent atlas · EqR on one Sudoku</p>
     <h1>Thought basins</h1>
     <p class="sub" id="sub">Each pixel is one starting thought for the same Sudoku. Colour is how long the model took to settle on its answer.</p>
     <div class="row">
@@ -136,6 +146,7 @@
   </div>
 </section>
 
+<p class="status" id="status" role="status" aria-live="polite" hidden></p>
 <noscript><p class="noscript">This explorer needs JavaScript (a canvas and a few binary files).</p></noscript>
 <script type="module" src="app.js"></script>
 </body>
