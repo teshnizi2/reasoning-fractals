@@ -21,6 +21,7 @@ const fmt = (n) => n.toLocaleString("en-US");
 const sgn = (v, d) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d);
 
 // ---------------------------------------------------------------------------- data
+const CAN_GUNZIP = typeof DecompressionStream === "function" && typeof Blob === "function" && !!Blob.prototype.stream;
 async function gunzip(buf) {
   const stream = new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"));
   return new Uint8Array(await new Response(stream).arrayBuffer());
@@ -59,7 +60,7 @@ class Layer {
   }
   loadData() {
     if (!this._data) {
-      this._data = fetch(DATA + this.data).then((r) => r.arrayBuffer()).then(gunzip).then((b) => { this.px = b; S.dirty = true; });
+      this._data = fetch(DATA + this.data).then((r) => { if (!r.ok) throw new Error(this.data + " " + r.status); return r.arrayBuffer(); }).then(gunzip).then((b) => { this.px = b; S.dirty = true; });
     }
     return this._data;
   }
@@ -85,8 +86,8 @@ const minScale = () => S.fit * 0.85;
 const maxScale = () => 14 / deepest().pitch;
 
 function resize() {
-  S.dpr = Math.min(window.devicePixelRatio || 1, 2.5);
   S.W = innerWidth; S.H = innerHeight;
+  S.dpr = Math.min(window.devicePixelRatio || 1, S.W < 760 ? 2 : 2.5); // keeps the canvas small on phones
   cv.width = Math.round(S.W * S.dpr); cv.height = Math.round(S.H * S.dpr);
   const b = base();
   if (b) {
@@ -360,6 +361,7 @@ function endPtr(e) {
   if (p && gesture && !gesture.moved && ptrs.size === 0 && performance.now() - p.t0 < 600) {
     const [x, y] = toPlane(e.clientX, e.clientY), h = lookup(x, y);
     if (h) select(h);
+    else if (!S.dataOk) tapNeedsData();
   }
   if (ptrs.size === 0) { S.drag = false; cv.classList.remove("drag"); gesture = null; }
   else gesture && (gesture.dist = pinchDist());
@@ -455,7 +457,8 @@ function renderTry() {
   for (const f of feats) {
     const b = document.createElement("button");
     b.className = "chip"; b.textContent = f.label; b.title = f.title || f.label;
-    b.onclick = () => {
+    b.onclick = async () => {
+      if (!S.dataOk) { status("Loading the inspector data…"); await loadInspectorData(); if (!S.dataOk) return; }
       const L = S.layers.find((l) => l.id === f.layer) || base();
       selectCell(L, f.col, f.row);
       const [x, y] = L.xy(f.col, f.row);
@@ -485,14 +488,46 @@ function stepTour(now) {
 }
 
 // ---------------------------------------------------------------------------- boot
+// The first screen needs only the manifest and the base image. The inspector tables (attractors.json, layer*.bin.gz,
+// about 2.5 MB) load afterwards, or on the first touch when the connection is slow or Save-Data is on.
+const conn = navigator.connection || {};
+const SLOW = !!conn.saveData || /(^|-)2g$|3g/.test(conn.effectiveType || "");
+const bootT = $("bootT"), bootS = $("bootS");
+function bootDone() { const b = $("boot"); b.classList.add("done"); setTimeout(() => b.remove(), 400); }
+function bootFail(msg) { bootT.textContent = msg; $("boot").classList.add("fail"); }
+function status(msg) { const el = $("status"); el.textContent = msg; el.hidden = !msg; }
+function tapNeedsData() {
+  if (S.dataFail) { status(S.dataFail); return; }
+  status("Loading the inspector data…"); loadInspectorData();
+}
+function loadInspectorData() {
+  if (S.dataP) return S.dataP;
+  if (!CAN_GUNZIP) {
+    S.dataFail = "This browser cannot unpack the inspector data, so tapping a pixel is off. The map, zoom and fly-in still work.";
+    status(S.dataFail); return (S.dataP = Promise.resolve());
+  }
+  S.dataP = (async () => {
+    try {
+      S.att = await fetch(DATA + "attractors.json").then((r) => r.json());
+      const order = [...S.layers].sort((a, b) => a.nx * a.ny - b.nx * b.ny); // small layers first: usable sooner
+      for (const L of order) await L.loadData();
+      S.dataOk = true;
+      $("legendStuck").classList.toggle("on", S.att.some((a, i) => i > 0 && a.count > 0));
+      status("");
+    } catch (e) {
+      console.error(e);
+      S.dataFail = "Could not load the inspector data. The map still works; reload to try again.";
+      status(S.dataFail);
+    }
+  })();
+  return S.dataP;
+}
+
 async function boot() {
   if (CAPTURE) document.body.classList.add("capture");
   buildGridDom();
-  const [man, att] = await Promise.all([
-    fetch(DATA + "manifest.json").then((r) => r.json()),
-    fetch(DATA + "attractors.json").then((r) => r.json()),
-  ]);
-  S.man = man; S.att = att;
+  const man = await fetch(DATA + "manifest.json").then((r) => { if (!r.ok) throw new Error("manifest " + r.status); return r.json(); });
+  S.man = man;
   S.layers = man.layers.map((m) => new Layer(m)).sort((a, b) => b.half_width - a.half_width);
   S.total = S.layers.reduce((s, L) => s + L.nx * L.ny, 0);
   S.ways = Object.keys(man.meta.colourways);
@@ -500,19 +535,24 @@ async function boot() {
   if (man.meta.subtitle) $("sub").textContent = man.meta.subtitle;
   $("limitsList").innerHTML = (man.meta.limits || []).map((t) => `<li>${t}</li>`).join("");
   $("howList").innerHTML = (man.meta.how || []).map((t) => `<li>${t}</li>`).join("");
-  const anyWrong = att.some((a, i) => i > 0 && a.count > 0);
-  $("legendStuck").classList.toggle("on", anyWrong);
   resize(); setWay(S.way); home(); updateReadout(S.W / 2, S.H / 2); renderTry();
   addEventListener("resize", () => { resize(); updateReadout(); });
   requestAnimationFrame(frame);
+  bootT.textContent = "Loading the map…";
   await base().loadImage(S.way);
-  S.layers.forEach((L) => L.loadData());
-  S.layers.slice(1).forEach((L) => L.loadImage(S.way));
-  await Promise.all(S.layers.map((L) => L.loadData()));
+  S.dirty = true; draw(); bootDone();
+  S.layers.slice(1).forEach((L) => L.loadImage(S.way).catch(console.error));
+  const wantNow = !SLOW || qs.get("select") || qs.get("capture");
+  if (wantNow) await loadInspectorData();
+  else status("Slow connection: tap the map to load the inspector data (2.5 MB).");
   if (qs.get("view")) { const [cx, cy, z] = qs.get("view").split(",").map(Number); S.view = { cx, cy, scale: S.fit * z }; limitCentre(); }
   if (qs.get("select")) { const [x, y] = qs.get("select").split(",").map(Number), h = lookup(x, y); if (h) select(h); }
-  await Promise.all(S.layers.slice(1).map((L) => L.loadImage(S.way)));
+  await Promise.all(S.layers.slice(1).map((L) => L.loadImage(S.way).catch(() => {})));
   S.dirty = true; updateReadout();
   document.body.dataset.ready = "1";
 }
-boot().catch((e) => { console.error(e); document.body.dataset.error = String(e); const m = document.createElement("p"); m.className = "noscript"; m.textContent = "Could not load the data pack: " + e.message; document.body.appendChild(m); });
+boot().catch((e) => {
+  console.error(e); document.body.dataset.error = String(e);
+  bootFail("Could not load the map (" + e.message + "). Check the connection and reload.");
+  const a = document.createElement("a"); a.href = "og.jpg"; a.textContent = "Show the still picture instead"; a.className = "boot-link"; $("boot").appendChild(a);
+});

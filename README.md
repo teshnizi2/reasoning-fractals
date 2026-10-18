@@ -3,7 +3,9 @@
 
 **Live explorer: <https://fractals.teshnizi.dev>** (click any pixel to see that starting thought's loops and Sudoku; "Fly in" zooms through the layers) · MIT licence
 
-![hero](media/hero-1080x1350.png)
+![The hero map: swirling gold and navy filaments, each pixel the number of loops the model needed to settle](media/hero-1080x1350.png)
+
+**Run it locally:** `cd site && python3 -m http.server 8772`, then open <http://127.0.0.1:8772/> (static files, no build, no install).
 
 Give a recurrent reasoning model (EqR, a small Sudoku solver that thinks by iterating) the **same Sudoku** many
 times and change only its **initial latent "thought"**. Colour every starting point by how many loops the model
