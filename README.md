@@ -298,9 +298,15 @@ everything in this repository, scans and checks included, used 31.6 A100-equival
 
 ## Credits and licences
 
+* This repository's own code and our own renders (images, videos, explorer data) are released under the MIT licence
+  (`LICENSE`).
 * **loopscape** and the paper (Lai, Bao, Quinn, Gilpin), https://github.com/GilpinLab/loopscape. The repository carries
-  no licence, so none of its code or images is redistributed here (`vendor/` is gitignored); the upstream image and
-  numbers derived pixel-by-pixel from it stay local and out of git.
+  no licence, so none of its code or images is redistributed here (`vendor/` is gitignored); the upstream image and the
+  arrays derived pixel-by-pixel from it (frozen samples, probe arrays, the side-by-side figure) stay local and out of git.
+  Aggregate statistics we computed from the upstream image are reported in the tables above.
+* **History.** The git history was rewritten once before publication to remove those derived arrays, which the first
+  local commits had briefly tracked. Commit hashes cited in `RUNS.md` name the original local commits;
+  `docs/COMMIT-MAP.md` maps each to the commit in this repository.
 * **EqR** (Huang, Geng, Kolter, arXiv:2605.21488), Apache-2.0 code and weights from locuslab
   (`locuslab/EqR`, pinned commit e9934826; `locuslab/EqR-model`).
 * **Sudoku-Extreme** puzzles (HRM, Wang et al.; HF `sapientinc/sudoku-extreme`).
